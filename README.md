@@ -1,2 +1,2 @@
 # APLParticleSim
-Simplistic particle barrier penetration simulation in APL
+Simplistic simulations in APL
