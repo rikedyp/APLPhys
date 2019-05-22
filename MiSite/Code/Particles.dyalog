@@ -1,6 +1,13 @@
 ﻿:Namespace Particles
-
-    HookeGrid←{⍺⍺{+/,⍺⍺×⍺↓⍵-⍵[2;2]}⌺3 3⊢⍵} ⍝ Hooke's law on neighbours in square grid
+    ⎕DIV←1  
+    ⍝ LJ testing
+    ⍝0.1 1 #.Particles.(1 1 LJ Grid VVerlet)⍣2⊢#.Testing.(r v f)
+    Abs←{0.5*⍨+/⍵*2}
+    Hooke←{⍺⍺×⍵-⍵[2;2]} ⍝ Hooke's law between nearest neighbours 
+    LJ←{d←Abs↑r←⍵-⍵[2;2] ⋄ r×(48×⍺⍺[1]÷d*2)×(12*⍨⍺⍺[2]÷d)-0.5×(6*⍨⍺⍺[2]÷d)} ⍝ Lennard-Jones between nearest neighbours
+    ⍝Grid←{⍺⍺{+/,⍺↓⍺⍺ ⍵}⌺3 3⊢⍵} ⍝ Apply force to nearest neighbours in a square grid
+    Grid←{(+/∘,↓∘⍺⍺)⌺3 3⊢⍵} ⍝ Apply force to nearest neighbours in a square grid
+    ⍝LJGrid←
       VVerlet←{ (dt m)(r v f)←⍺ ⍵ 
           ⍝ Velocity Verlet integrator 
           ⍝ Left: Time step and mass
