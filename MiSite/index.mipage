@@ -1,4 +1,12 @@
 ﻿:class index :MiPage
+
+    ⍝ What must be set before running?
+    ⍝ - How to only check for certain settings once before run time, but also no code duplication
+    ⍝ What can be changed on the fly?
+    ⍝ How to run LAMMPS with determinism + known initial conditions?
+    ⍝ This is demo front end - should also be easy to produce numerical only sims in few lines (probably just a for loop)
+    ⍝ Is it possible (or even desired) to do tail recursive dfn or iteration using ⍣?
+
     ⎕DIV←1
     :include #.Particles
     :field count
@@ -8,44 +16,82 @@
     :field f
     :field neighbours
     :field ∆t
+    :field dumpfreq
     :field play
+    :field timescale 
+    :field T
 
     ∇ Compose;s;start
       :Access Public
       Init
       Use'jQuery'
-      m←'#m min=1 max=10 step=1'Add _.Input'range' 1 'Mass in kg'
-      ⍝m.On'change' 'Change'
-      k←'#k min=1 max=10 step=1'Add _.Input'range' 1 'Spring constant in N/m'
-      ⍝k.On'change' 'Change'
-      eps←'#eps min=-10000 max=1000 step=1'Add _.Input'range' ¯1000 'Lennard Jones well depth in eV?'
-      ⍝eps.On'change' 'Change'
-      sig←'#sig min=0.01 max=1 step=0.01'Add _.Input'range' 0.08 'Lennard Jones particle diameter'
-      ⍝sig.On'change' 'Change'
-      (Add _.Button'Start/Stop').On'click' 'StartStop'
-⍝
-      labels Add⍤1 0⊢_.b ⍝span '●' ⍝ <b>
-      '#T'Add _.Timer ∆t
-      On'tick' 'Tick'(('k' 'val' '#k')('m' 'val' '#m')('eps' 'val' '#eps')('sig' 'val' '#sig'))
-      ⍝ TODO set up as form
+      controlpanel←'#controlpanel'Add _.div
+      control←'#control'controlpanel.Add _.form
+      m←'#m min=1 max=10 step=1'control.Add _.Input'range' 1 'Mass in kg'
+      k←'#k min=1 max=10 step=1'control.Add _.Input'range' 1 'Spring constant in N/m'
+      eps←'#eps min=-10000 max=1000 step=1'control.Add _.Input'range' ¯1000 'Lennard Jones well depth in eV?'
+      sig←'#sig min=0.01 max=1 step=0.01'control.Add _.Input'range' 0.08 'Lennard Jones particle diameter'
+      (control.Add _.Button'Start/Stop').On'click' 'StartStop'   
+      (control.Add _.Button'Step once').On'click' 'Tick'   
      
-      Add _.style'b {transition:',∆t F'ms;transition-timing-function:linear;position:absolute;display:block;border-radius:8px;height:15px;width:15px;background:radial-gradient(rgba(127,255,255,1) 10%,rgba(0,255,255,0.9) 30%,transparent 70%)}'
+      Add _.StyleSheet'Assets/style.css'
      
-     ⍝ Add _.style,⊂(⍕¨r){'#',(⊃⍵),'{top:calc(3*',(1⊃⍺),'vw + 2em);left:calc(3*',(2⊃⍺),'vw)}'}⍤1 0⊢labels
-      ⍝∘∘∘
+      viewport←'#viewport'Add _.div
+      labels viewport.Add⍤1 0⊢_.b ⍝span '●' ⍝ <b>
+      Add _.Timer ∆t 0 'tick' 'T' ⍝ Tick with update
+      (On 'tick' 'Tick').Hourglass←0
+           
+
+      ⍝Add _.style'b {transition:',∆t F'ms linear;}' ⍝ Smooth animation (no BCs only)
+      Init
+      ⍝ Display scaling
+      scale←'36'
+      pad←'0em'  
+      '#box'viewport.Add _.div
+      
+(      height width)←boxdim×⍎scale
+      css←'#box{width:%Wpx;height:%Hpx}'
+      css←'%W' '%H'⎕R(⍕¨width height)⊢css
+      Add _.style  css 
+      ⍝ Display colours
+      Add _.style,⊂∊{'b:nth-child(',(⍕⍵),'){filter:hue-rotate(',(⍕⍵×360÷⍺),'deg)}'}¨∘⍳⍨n
     ∇
 
     ∇ Init
      
-      play←1
-      ∆t←200
-      count←10*2
+      play←0
+      timescale←1
+      ∆t←50
+      count←12⍝10*2
       labels←'p',↑⍕¨⍳count
-      r←↑,⍳2⍴count*0.5
-      v←↑count⍴⊂0 0
-      f←↑count⍴⊂0 0
+      ⍝r←↑,⍳2⍴count*0.5
+      ⍝v←↑count⍴⊂0 0
+      ⍝f←↑count⍴⊂0 0
      
-     
+      ⍝ LJ Options
+      ⍝ -------
+      epsilon←1 ⍝ Potential well depth
+      rcutoff←2.5 ⍝ Potential cutoff distance
+      phicutoff←-/4÷rcutoff*12 6 ⍝ Potential shifting value (phi when r=0?)
+      n←count⍝20 ⍝ Number of particles
+      boxdim←20 20 ⍝ Rectangular bounding box
+      ⍝nsteps←10000
+      dumpfreq←100 ⍝ How often to save data to log
+      dt←.0032 ⍝ Reduced time step
+      T←.5 ⍝ Thermostat temp in reduced temperature units
+      T1←0.02
+      dT←0.0001
+      Tstep←100
+      ⍝ LJ Set up
+      ⍝ ---------
+      dim←≢boxdim
+      phicutoff←-/4÷rcutoff*12 6
+      volume←×/boxdim
+      density←n÷volume
+      pos acc←2⍴⊂n dim⍴0
+      pos←?pos
+      vel←¯0.5+?n dim⍴0
+            
     ∇
 
     ∇ js←Change
@@ -55,42 +101,52 @@
 
     ∇ js←StartStop
       :Access public
+      js←Execute('Trun()' 'Tstop()')[1+play]
+      ⍝ TODO checkbox over button
       play←~play
-      js←⍬
     ∇
 
     ∇ js←Tick
       :Access Public
      ⍝ TODO: Init function called on VALUE ERROR
-      :Repeat
-          :Trap 6
+     ⍝ :Repeat  
+
+     ⍝     :Trap 6
           ⍝ Simulate one step
               (k m eps sig)←0 Get,¨'k' 'm' 'eps' 'sig'
-              :If play
-                  (r v f)←((∆t÷1000)m)(k Hooke Grid VVerlet) r v f
-                  ⍝(r v f)←((∆t÷1000)m)(eps sig #.Particles.LJ) #.Particles.Grid #.Particles.VVerlet r v f
-                  ⍝⍞←r[1;]
-                  ⍝⍞←∆t m eps sig ,⊂⍴¨r v f
-              :EndIf
+              ⍝(r v f)←((∆t×timescale÷1000)m)(k Hooke Grid VVerlet)r v f
+              ⍝(r v f)←((∆t×1000)m)(eps sig #.Particles.LJ) #.Particles.Grid #.Particles.VVerlet r v f
+              ⍝ Random jiggles
+              ⍝r←r+⍤1⊢0.1×¯2+?100 2⍴3⍝+⍤1⊢1 ¯1
+              ⍝r←30|r
+              ⍝⍞←r[1;]
+              ⍝⍞←∆t m eps sig ,⊂⍴¨r v f
               ⍝r+←¯0.01+0.02×?0×r
-              ⍝⍞←'-',⊃1↑r
-              ⍝⍞←(⊃labels)CSS⍤1⊢1↑r
-              js←Execute labels CSS⍤1⊢r
+     
               ⍝⍞←'∨'
+     
+              ⍝ Simulate n steps (LJ)
+              :For i :In ⍳dumpfreq
+                  (pos vel acc)←3↑(boxdim n epsilon rcutoff dt T)LJMelt pos vel acc
+              :EndFor 
+              T←{⍵≥T1:⍵-dT⋄⍵}T ⍝ Changing temp causes occasional jumpiness?
+              r←boxdim×⍤1⊢{e÷⍨⌊0.5+pos×e←10*⍵}3 ⍝ Real units | Round 3dp
+              js←Execute labels CSS⍤1⊢r
               :Return
-          :Else
-              Init
-              ⍝⍞←'×'
-          :EndTrap
-      :EndRepeat
+     ⍝     :Else
+     ⍝         Init
+     ⍝         ⍞←'×'
+     ⍝     :EndTrap
+     ⍝ :EndRepeat
      
     ∇
+
+
 
     ∇ css←id CSS(top left)
    ⍝   ∘∘∘
     ⍝ Scale and translate postitions for display
-      scale←'100'
-      pad←'8em'
+      
       ⍝(top left)←scale×top left
       top←'calc(',scale,'*',top F'px + ',pad,')'
       left←'calc(',scale,'*',left F'px + ',pad,')'

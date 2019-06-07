@@ -1,0 +1,48 @@
+body {
+  background: black;
+  color: white;
+}
+#box {
+  position: relative;
+  border-color: silver;
+  border-style: outset;
+  border-width:20px;
+}
+b {
+  height:40px;
+  width:40px;
+  border-radius:50%;
+  background:radial-gradient(circle at 40% 30%, rgba(127,255,255,1) 10%,rgba(0,255,255,0.9) 30%,transparent 70%);
+  position:absolute;
+  display:block;
+}
+label{
+  display: block;
+}
+input{
+  display: block;
+  margin-left: 20%;
+}
+button {
+  margin-left: 33%; 
+}
+#controlpanel{
+  display: inline-block;
+  float: left;
+  width: 20vw;
+  height: 100vh;
+  border: 3px;
+  border-color: white;
+}
+#control{
+  background: #111;
+  line-height: 5em;
+}
+#viewport{
+  display: inline-block;
+  float: right;
+  width: 60vw;
+  position: fixed;
+  top: 1vw;
+  left: 20vw;
+}

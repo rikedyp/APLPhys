@@ -1,0 +1,47 @@
+! NMDC
+! A code for molecular dynamics using a Nose-Poincare thermostat and 
+! an Andersen barostat.
+!
+! N Park
+! AWE Aldermaston, Reading, Berks
+
+MODULE global_params_mod
+
+  USE kind_mod
+
+  REAL(KIND=DBL), SAVE :: LJ_rcut! = 9.0d-3
+  REAL(KIND=DBL), SAVE :: LJ_sigma! = 9.0d-3
+  REAL(KIND=DBL), SAVE :: LJ_eps! = 1.0d5
+  REAL(KIND=DBL), SAVE :: powerlaw_const, powerlaw_index
+
+  TYPE, PUBLIC :: eam_params
+     REAL(KIND=DBL) :: D   != 1.307921251628d1
+     REAL(KIND=DBL) :: a1  != 8.28945997705d3
+     REAL(KIND=DBL) :: a2  != 1.83251035107d-2
+     REAL(KIND=DBL) :: c1  != 1.072729128641d1
+     REAL(KIND=DBL) :: c2  != 3.19759369823d-1
+     REAL(KIND=DBL) :: rc1 != 4.218d0 !4.107d0
+     REAL(KIND=DBL) :: rc2 != 4.985d0 !4.853d0
+  END TYPE eam_params
+
+  type, public :: meam_params
+     real(kind=dbl) :: E_c
+     real(kind=dbl) :: r_e
+     real(kind=dbl) :: B
+     real(kind=dbl) :: A
+     real(kind=dbl) :: omega
+     real(kind=dbl), dimension(0:3) :: beta
+     real(kind=dbl), dimension(3) :: t
+     real(kind=dbl) :: Cmax
+     real(kind=dbl) :: Cmin
+     real(kind=dbl) :: S
+     real(kind=dbl) :: d
+     real(kind=dbl) :: r_c
+     real(kind=dbl) :: delr
+     real(kind=dbl) :: z1
+     real(kind=dbl) :: z2
+  end type meam_params
+
+
+
+end

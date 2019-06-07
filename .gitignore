@@ -1,1 +1,5 @@
 aplcore
+*.csv.*
+*.mpg
+*.mov
+*.ogv

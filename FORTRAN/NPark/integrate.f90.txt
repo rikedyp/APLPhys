@@ -1,0 +1,287 @@
+! NMDC
+! A code for molecular dynamics using a Nose-Poincare thermostat and 
+! an Andersen barostat.
+!
+! N Park
+! AWE Aldermaston, Reading, Berks
+!
+! RCS data
+! $Id: integrate.f90,v 1.15 2005/05/06 10:53:31 gnpk Exp gnpk $
+
+
+MODULE main_loop
+
+  USE kind_mod
+  USE calc_mod
+
+  IMPLICIT NONE
+
+CONTAINS
+
+  SUBROUTINE integrate
+
+    USE calc_mod
+    USE sub_mod
+    USE restart
+    USE setup, ONLY : setup_integrate, create_atoms, create_vels, &
+         ens_out, thermo_out, read_atoms
+
+    ! Variables associated with particles
+    IMPLICIT NONE
+    REAL(KIND=DBL), ALLOCATABLE, DIMENSION(:,:) :: pos      ! position - real frame
+    REAL(KIND=DBL), ALLOCATABLE, DIMENSION(:,:) :: sc_pos   ! scaled position - canonical frame
+    REAL(KIND=DBL), ALLOCATABLE, DIMENSION(:,:) :: mom      ! momentum
+    REAL(KIND=DBL), ALLOCATABLE, DIMENSION(:,:) :: sc_mom   ! scaled momentum
+    REAL(KIND=DBL), ALLOCATABLE, DIMENSION(:) :: mass       ! mass
+    INTEGER :: natoms                                       ! N atoms
+
+    ! Variables associated with the simulation box
+    REAL(KIND=DBL), DIMENSION(2,3) :: bounds  ! box lims (side, dir)
+    REAL(KIND=DBL) :: vol, vol1               ! current volume
+    REAL(KIND=DBL) :: ext_press               ! desired pressure
+    REAL(KIND=DBL) :: store_KE                ! store for KE
+    REAL(KIND=DBL) :: store_pot               ! store for PE
+    REAL(KIND=DBL) :: store_pressure          ! store for pressure
+
+    REAL(KIND=DBL) :: degfKT                  ! no degs freedom * k_boltz * desired temp
+    REAL(KIND=DBL) :: ext_temp                ! desired temperature
+
+    ! Variables associated with the integrator
+    REAL(KIND=DBL) :: dt, h_2                                ! width timestep
+    REAL(KIND=DBL) :: s_n, s_n1, pi_s, q_s                   ! thermostat vars
+    REAL(KIND=DBL) :: pi_v, q_v, h_zero                      ! barostat vars
+    REAL(KIND=DBL) :: hmh0s                                  ! NPA Hamiltonian
+    REAL(KIND=DBL) :: const, const1, const2                  ! holding constants
+    REAL(KIND=DBL), ALLOCATABLE, DIMENSION(:,:) :: force     ! directional forces 
+    REAL(KIND=DBL) :: crv, crv1       ! v^1/3
+    REAL(KIND=DBL) :: xvel, yvel, zvel
+
+    INTEGER :: method
+    INTEGER :: atm_f_unit
+
+    ! Local variables
+    INTEGER :: i, dir, step, nsteps, neigh_freq, ierr
+    INTEGER :: thermo_freq, snap_freq, restart_freq, start_step
+    logical :: mom_unscaled_out
+
+
+
+    ! BEGIN
+    s_n = 1.0d0
+    pi_v = 0.0d0
+    pi_s = 0.0d0
+    h_zero = 0.0d0
+    start_step = 0
+
+
+    CALL setup_integrate(bounds, ext_press, ext_temp, &
+         q_v, q_s, natoms, method, nsteps, dt, neigh_freq, &
+         thermo_freq, snap_freq, restart_freq, start_step, atm_f_unit)
+
+    degfKT = dble(3.0d0*(natoms-1.0d0)+1.0d0) * k_boltz * ext_temp
+
+    ALLOCATE(pos(3,natoms), sc_pos(3,natoms), mom(3,natoms), &
+         sc_mom(3,natoms), force(3,natoms), mass(1)) 
+
+    mass(1) = 6.3d1
+
+    select case(atm_f_unit)
+    case(20)
+       CALL read_atoms(atm_f_unit, pos, bounds, vol)
+       CALL create_vels(natoms, pos, ext_temp, mom, mass)
+    case(21)
+       ierr = read_restart(pos, mom, bounds, H_zero, start_step)
+    case default
+       CALL create_atoms(pos, bounds, vol)
+       CALL create_vels(natoms, pos, ext_temp, mom, mass)
+    END select
+
+    vol = (bounds(2,1)-bounds(1,1)) * (bounds(2,2)-bounds(1,2)) * &
+         (bounds(2,3)-bounds(1,3))
+
+    crv = vol**(1.0d0/3.0d0)
+
+    CALL ens_out(natoms, pos, mom/mass(1), 0.0d0)
+
+    ! scaled pos = real pos / v^(1/3)
+    ! scaled mom = real mom * v^(1/3)
+    sc_pos = pos / crv
+    sc_mom = mom * crv
+
+
+    CALL neighbour(natoms,pos,bounds,method)
+
+    CALL potential_and_forces(natoms, method, pos, bounds, force, store_pot, crv)
+
+    store_KE = PKE(natoms, sc_mom, mass, crv, s_n)
+
+    !This value can be read in from a previous simluation or re-calculated
+    h_zero =  get_H_NPA(s_n,vol,degfKT,ext_press,store_KE,store_pot,pi_v,q_v,pi_s,q_s)
+
+    store_pressure = pressure(vol, store_KE)
+
+    !This may be non-zero for 'continuation' runs
+    hmh0s =  ( get_H_NPA(s_n,vol,degfKT,ext_press,store_KE,store_pot,pi_v,q_v,pi_s,q_s) - h_zero) * s_n
+
+    CALL thermo_out(natoms, store_KE, s_n, vol, store_pressure, &
+         store_pot, start_step, hmh0s, mass)
+
+
+    !===============================================================================
+    !===============================================================================
+
+    ! The labels refer to the equations given in ref 2
+
+
+
+    !Half timestep
+    h_2 = dt/2.0d0
+
+
+    ! Top of integration step
+    integration:       DO step = start_step+1, start_step+nsteps
+
+       ! Update neighbour lists as requested
+       IF(MOD(step,neigh_freq).EQ.0) THEN
+          CALL neighbour(natoms,pos,bounds,method)
+       END IF
+
+
+       ! Eqn 9a - Update the velocities by a half timestep
+       const1 = h_2 * s_n
+       DO i=1, natoms
+          DO dir = 1,3
+             sc_mom(dir,i) = sc_mom(dir,i) + const1*(force(dir,i)*crv)
+          END DO
+       END DO
+
+
+       ! Eqn 9b
+       ! Store the PKE function to use in pressure and 9c
+       store_KE = PKE(natoms, sc_mom, mass, crv, s_n)
+       store_pressure = pressure(vol, store_KE)
+       pi_v = pi_v + h_2 * s_n * (store_pressure - ext_press)
+
+
+       ! Eqn 9c
+       ! Calculate C
+       const1 = degfKT*(1.0d0+DLOG(s_n)) + ext_press * vol
+       const1 = h_2 * (const1 + (0.5d0*pi_v*pi_v/q_v) + store_pot - store_KE - h_zero) - pi_s
+
+       pi_s = (-2.0d0 * const1) / (1.0d0 + DSQRT(1.0d0 - (const1*dt/q_s)))
+
+
+       ! Eqn 9d
+       const = h_2*(pi_s/q_s)
+       const1 = 1.0d0 + const
+       const2 = 1.0d0 - const
+
+       s_n1 = s_n * const1 / const2
+
+
+       ! Eqn 9e
+       const1 = pi_v / q_v
+
+       vol1 = vol + (h_2 * const1 * (s_n + s_n1))
+
+
+
+       ! Update volume, box dimensions and calculate side-length
+       ! from the new volume.
+       CALL boxbounds(vol1,bounds)
+       crv1 = vol1**(1.0d0/3.0d0)
+
+
+       ! Eqn 9f
+       const1 = 1.0d0/(s_n * crv * crv)
+       const2 = 1.0d0/(s_n1 * crv1 * crv1)
+       const1 = h_2 * (const1+const2)
+
+       DO i=1, natoms
+          DO dir = 1,3
+             sc_pos(dir,i) = sc_pos(dir,i) + const1*(sc_mom(dir,i)/mass(1))
+          END DO
+       END DO
+       pos(:,:) = sc_pos(:,:) * crv1
+
+
+       CALL potential_and_forces(natoms, method, pos, bounds, force, store_pot, crv1)
+
+
+       ! Eqn 9g
+       ! Store PKE with updated variables
+       store_KE = PKE(natoms, sc_mom, mass, crv1, s_n1)
+
+       const1 = degfKT*(1.0d0+DLOG(s_n1)) + ext_press*vol1
+       const2 = ((pi_v*pi_v)/q_v) + ((pi_s*pi_s)/q_s)
+       const2 = 0.5d0*const2 + store_pot
+
+       pi_s = pi_s - h_2*(const1 + const2 - store_KE - h_zero)
+
+
+       ! Eqn 9h
+       ! Store the pressure for output later on
+       store_pressure = pressure(vol1, store_KE)
+
+       pi_v = pi_v + h_2 * s_n1 * (store_pressure - ext_press)
+
+
+       !==============================================================================
+       !==============================================================================
+
+       ! Wrap up by updating the vol and s_n variables
+       s_n = s_n1
+       vol = vol1
+       crv = crv1
+
+       ! Perform final half step on velocities
+       const1 = h_2 * s_n           !! Half step
+       DO i=1, natoms
+          DO dir = 1,3
+             sc_mom(dir,i) = sc_mom(dir,i) + const1*(force(dir,i)*crv)
+          END DO
+       END DO
+
+       store_KE = PKE(natoms, sc_mom, mass, crv, s_n)
+
+
+       ! Output some thermodynamics
+       IF(MOD(step,thermo_freq).EQ.0) THEN
+
+          store_KE = PKE(natoms, sc_mom, mass, crv, s_n)
+
+          hmh0s =  ( get_H_NPA(s_n,vol,degfKT,ext_press,store_KE,store_pot, &
+               pi_v,q_v,pi_s,q_s) - h_zero ) * s_n
+
+          CALL thermo_out( natoms, store_KE, s_n, vol, store_pressure, &
+               store_pot, step, hmh0s, mass )
+       END IF
+
+
+       mom_unscaled_out = .false.
+
+       ! Output atomic coordinates
+       IF(MOD(step,snap_freq).EQ.0) THEN
+
+          mom = sc_mom / crv1
+          mom_unscaled_out=.true.
+          CALL ens_out(natoms, pos, mom/mass(1), DBLE(step)*dt)
+
+       END IF
+
+       ! Output restart file
+       IF(MOD(step,restart_freq).EQ.0) THEN
+
+          if(.not.mom_unscaled_out) mom = sc_mom / crv1
+          ierr = write_restart(pos, mom, bounds, H_zero, step)
+
+       END IF
+
+    END DO integration
+
+
+  END SUBROUTINE integrate
+
+
+END MODULE main_loop
+

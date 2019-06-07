@@ -1,0 +1,40 @@
+! NMDC
+! A code for molecular dynamics using a Nose-Poincare thermostat and 
+! an Andersen barostat.
+!
+! refs
+! 1. Bond, Leimkuhler, Laird
+!   J. Comp. Phys. 151(1999)114-134
+!
+! 2. Sturgeon, Laird
+!   J. Chem. Phys. 112(2000)3474-3482
+!
+! written by
+!   N Park
+!   Material Modelling Group
+!   AWE
+!   Aldermaston, Reading, Berks, UK
+!
+! Version 0.1
+! 21 Jan 2004
+!
+! RCS Data
+! $Source: /ELM/home/gnpk/progs/fortran/meam/ncode/src/RCS/nmdc.f90,v $
+! $Name:  $
+! $Revision: 1.5 $
+! $State: Exp $
+! $Author: gnpk $
+! $Date: 2004/02/26 10:55:11 $
+
+
+PROGRAM NMDC
+
+       USE main_loop
+
+       IMPLICIT NONE
+
+!      call setup_vars
+
+       CALL integrate
+
+END PROGRAM NMDC

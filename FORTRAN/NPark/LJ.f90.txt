@@ -1,0 +1,90 @@
+! NMDC
+! A code for molecular dynamics using a Nose-Poincare thermostat and 
+! an Andersen barostat.
+!
+! N Park
+! AWE Aldermaston, Reading, Berks
+!
+! RCS data
+! $Id: LJ.f90,v 1.9 2005/04/13 14:25:40 gnpk Exp $
+
+MODULE Lennard_Jones
+
+  USE kind_mod
+  USE global_params_mod, ONLY : LJ_rcut, LJ_eps, LJ_sigma
+  IMPLICIT NONE
+
+  PRIVATE
+
+  PUBLIC ljpf, ljgu
+
+  REAL(KIND=DBL), SAVE :: Urc! = 2.5d-1
+
+CONTAINS
+
+  ! =======================================================================
+
+  REAL(KIND=DBL) FUNCTION ljpf(r)
+
+    REAL(KIND=DBL), INTENT(in) :: r
+    LOGICAL, SAVE :: NRC = .true.
+
+    if (NRC) then
+       Urc = psi(LJ_rcut)
+       NRC = .false.
+    end if
+
+    ljpf = psi(r) - Urc
+
+    return
+
+  END FUNCTION ljpf
+
+  ! =======================================================================
+
+  REAL(KIND=DBL) FUNCTION psi(r)
+
+    !                  sigma         sigma
+    !  psi(r) = 4eps((------)^12 - (------)^6)
+    !                   r              r
+
+    REAL(KIND=DBL), INTENT(in) :: r
+
+    REAL(KIND=DBL) :: const1
+
+    const1 = (LJ_sigma/r)**6
+    psi = 4.0d0*LJ_eps*const1*(const1-1.d0)
+
+    return
+
+  END FUNCTION psi
+
+  ! =======================================================================
+
+  REAL(KIND=DBL) FUNCTION ljgu(r)
+
+    ! dpsi      6(rc^2 - r^2)(Urc.r^14 + 4eps.sig^6(r^2.sig^6 + rc^2(r^2 - 2sig^6)))
+    ! ----  =  ---------------------------------------------------------------------
+    !  dr                         rc^6 . r^13
+
+    REAL(KIND=DBL), INTENT(in) :: r
+
+    REAL(KIND=DBL) :: s6, oor, oor2, oor6, oor7, oor13
+
+
+    s6 = LJ_sigma**6
+
+    oor  = 1.0d0/r
+    oor2 = oor*oor
+    oor6 = oor2*oor2*oor2
+    oor7 = oor6*oor
+
+    ljgu = 24.0*LJ_eps*s6*oor7*(1.0d0 - (2.0d0*s6*oor6) )
+
+    return
+
+  END FUNCTION ljgu
+
+  ! =======================================================================
+
+END MODULE Lennard_Jones
