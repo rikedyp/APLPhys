@@ -62,7 +62,7 @@
       play←0
       timescale←1
       ∆t←50
-      count←12⍝10*2
+      count←8⍝10*2
       labels←'p',↑⍕¨⍳count
       ⍝r←↑,⍳2⍴count*0.5
       ⍝v←↑count⍴⊂0 0
