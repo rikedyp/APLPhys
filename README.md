@@ -18,8 +18,9 @@ We hope to expand this project to include other computational simulation models,
 A bit of a toy for showing off the stencil ⌺ primitive.  
 Masses are arranged in a 2D grid. Adjacent masses are connected by simple Hooke springs with no resistance. The mass-spring grid floats in a vacuum.  
 ### Lennard-Jones melt
-For speed testing against python/numpy and LAMMPS.  
+For speed testing against python, FORTRAN and LAMMPS.  
 A block of hexagonally packed particles interact via pair-wise LJ potential. The integrator is the velocity Verlet algorithm. 
 ## Web-based front end
+This MiServer-based UI demonstrates the simulations in an interactive browser-based environment.
 ### Menu
 ### CSS balls
