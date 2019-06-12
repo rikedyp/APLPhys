@@ -4,7 +4,7 @@ Simplistic simulations in APL
 ## Overview
 This project is a preliminary investigation into physics simulations in APL. It is intended to demonstrate APL as a tool for translating mathematical formulae into executable code.
 
-The code is available as a Dyalog workspace, a ]Link-able structure of text source and python and LAMMPS scripts for comparison.
+The code is available as Dyalog scripted namespaces and python, FORTRAN and LAMMPS examples for comparison.
 
 The project is explained in a series of Jupyter notebooks which can be read here on GitHub, using [nbviewer](https://nbviewer.jupyter.org/) or with a Jupyter installation with the [Dyalog Jupyter kernel](https://github.com/Dyalog/dyalog-jupyter-kernel).
 ### Audience
