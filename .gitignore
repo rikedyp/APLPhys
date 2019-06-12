@@ -3,3 +3,5 @@ aplcore
 *.mpg
 *.mov
 *.ogv
+*.dcf
+sessions.dcf
