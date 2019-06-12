@@ -6,13 +6,13 @@
       ⍝#.⎕PP←34
       ⍝#.⎕CT←1e¯14
       PP←6
-      n←1000 ⍝ Number of atoms
+      n←3000 ⍝ Number of atoms
     ⍝ TODO: box dimension / lattice vector to create particles
       dt←0.0032
       dumpfreq←100
       epsilon←1
       rcutoff←2.5
-      boxdim←10000 10000
+      boxdim←100 100
       T←0.5
     ⍝ Derived constants
     ⍝ -----------------
@@ -31,7 +31,8 @@
       ⍝vel←boxdim÷⍨⍤1⊢vel
       ⍝acc←n dim⍴0 ⍝ No initial acceleration
       p←#.Particles
-      (acc ene_pot_avg virial)←(boxdim epsilon rcutoff phicutoff)p.ComputeForcesLJ pos
+      p.(boxdim dim phicutoff rcutoff epsilon)←boxdim dim phicutoff rcutoff epsilon
+      (acc ene_pot_avg virial)←p.ComputeForcesLJ pos
     ∇
 
     ∇ state←drop LoadState file

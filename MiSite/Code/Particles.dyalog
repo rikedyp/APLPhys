@@ -2,6 +2,7 @@
     ⎕DIV←1   
     ⍝ LJ testing
     ⍝0.1 1 #.Particles.(1 1 LJ Grid VVerlet)⍣2⊢#.Testing.(r v f)
+    Table←{⍺⍺⍤1 99⍨⍵}
     Abs←{0.5*⍨+/⍵*2}
     Hooke←{⍺⍺×⍵-⍵[2;2]} ⍝ Hooke's law between nearest neighbours
     ⍝LJ←{d←Abs↑r←⍵-⍵[2;2] ⋄ r×(48×⍺⍺[1]÷d*2)×(12*⍨⍺⍺[2]÷d)-0.5×(6*⍨⍺⍺[2]÷d)} ⍝ Lennard-Jones between nearest neighbours
@@ -31,26 +32,25 @@
           ene_kin_avg temp
       }
       ComputeForcesLJ←{
-          (boxdim epsilon rcutoff phicutoff)←⍺
-          pos←⍵
+          ⍝(boxdim epsilon rcutoff phicutoff)←⍺
+          ⍝ pos←⍵
           dim←≢boxdim
-          n←≢pos
+          n←≢⍵
           ⍝ Relative displacement between pairs of particles
           ⍝S←∘.-⍨↓pos ⍝ TODO is there a less expensive way to do this?
-          Table←{⍺⍺⍤1 99⍨⍵}
-          S←-⍤1 Table pos ⍝ Table operator
+          S←-⍤1 Table ⍵ ⍝ Table operator
           ⍝ If distance > 0.5, subtract 0.5 to find periodic interaction distance
           ⍝ TODO surely a way to do this using just mod?
           ⍝S←(⊢-×)@(⍸0.5≤|S)⊢S
           ⍝S-←(××0.5≤|)S
           S-←((0.5∘<)-(¯0.5∘>))S
-          R←S×⍤1⊢boxdim ⍝ Scale to reduced LJ units
+          R←S×⍤1⊢boxdim ⍝ Scale to reduced LJ units        
           ⍝ Calculate potential inside cutoff
-          Rmask←(rcutoff*2)>+/R*2
+          Rmask←(rcutoff*2)>Rsq←+/R*2
           (1 1⍉Rmask)←0
           calcpos←1+(⍴Rmask)⊤¯1+⍸,Rmask ⍝ ≡ ↑⍸Rmask
-          Rcalc←(,Rmask)⌿,[1 2]R
-          rm2←÷Rcalcsq←+/Rcalc*2
+          Rcalcsq←(,Rmask)⌿,[1 2]Rsq
+          rm2←÷Rcalcsq⍝←+/Rcalc*2
           rm6←rm2*3
           rm12←rm6*2
           phi←epsilon×4×(rm12-rm6)-phicutoff
