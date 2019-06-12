@@ -1,0 +1,31 @@
+! NMDC
+! A code for molecular dynamics using a Nose-Poincare thermostat and 
+! an Andersen barostat.
+!
+! N Park
+! AWE Aldermaston, Reading, Berks
+
+MODULE kind_mod
+
+  INTEGER, PARAMETER :: SGL=4
+  INTEGER, PARAMETER :: DBL=8
+
+  INTEGER, PARAMETER :: ofile=6
+  INTEGER, PARAMETER :: efile=0
+  INTEGER, PARAMETER :: ifile=5
+
+  REAL(KIND=DBL),PARAMETER:: pi = 3.1415926535897932384626433832795027974790D0
+  REAL(KIND=DBL), PARAMETER :: k_boltz=8.618367d-5
+
+CONTAINS
+
+  SUBROUTINE error(string)
+
+    CHARACTER(LEN=*) :: string
+
+    write(efile,*) string
+    stop
+
+  END SUBROUTINE error
+
+END MODULE kind_mod

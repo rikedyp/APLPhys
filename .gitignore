@@ -1,1 +1,7 @@
 aplcore
+*.csv.*
+*.mpg
+*.mov
+*.ogv
+*.dcf
+sessions.dcf

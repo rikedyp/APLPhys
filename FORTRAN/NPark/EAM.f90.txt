@@ -1,0 +1,78 @@
+! NMDC
+! A code for molecular dynamics using a Nose-Poincare thermostat and 
+! an Andersen barostat.
+!
+! N Park
+! AWE Aldermaston, Reading, Berks
+!
+! RCS data
+! $Id: EAM.f90,v 1.3 2005/05/06 10:53:31 gnpk Exp gnpk $
+
+MODULE EAM
+
+  ! EAM scheme based on Nozaki03 (6/22)
+  ! Mat Sci Eng A350 (2003) 233-237
+
+  USE kind_mod
+  !   USE calc_mod, ONLY : rcut
+  USE setup, ONLY : eam_dat
+  IMPLICIT NONE
+
+  PRIVATE
+
+  PUBLIC  eamgu
+
+  REAL(KIND=DBL), SAVE :: Urc! = 2.5d-1
+
+CONTAINS
+
+  ! =======================================================================
+
+
+  REAL(KIND=DBL) FUNCTION eamgu(r,f,p,df,dp)
+
+
+    REAL(KIND=DBL), INTENT(in) :: r
+    REAL(KIND=DBL), INTENT(out) :: f
+    REAL(KIND=DBL), INTENT(out) :: p
+    REAL(KIND=DBL), INTENT(out) :: df
+    REAL(KIND=DBL), INTENT(out) :: dp
+
+    if(r.lt.eam_dat%rc1)then
+       p = psi(eam_dat%a1, eam_dat%c1, eam_dat%rc1, r)
+       dp = -p * (eam_dat%c1 + 2.0d0/(eam_dat%rc1-r))
+    else
+       p = 0.0d0
+       dp = 0.0d0
+    end if
+    f = psi(eam_dat%a2, eam_dat%c2, eam_dat%rc2, r)
+    df = -f * (eam_dat%c2 + 2.0d0/(eam_dat%rc2-r))
+
+    eamgu = 0.
+
+    return
+
+  END FUNCTION eamgu
+
+  ! =======================================================================
+
+
+  REAL(KIND=DBL) FUNCTION psi(a,c,r_c,r)
+
+    !  
+    !  psi(r) = a(r_c - r_ij)^2.exp(-c.r_ij)
+    !  
+
+    REAL(KIND=DBL), INTENT(in) :: a,c,r_c,r
+
+
+    psi = a*(r_c - r)*(r_c - r)*exp(-c*r)
+
+    return
+
+
+  END FUNCTION psi
+
+  ! =======================================================================
+
+END MODULE EAM

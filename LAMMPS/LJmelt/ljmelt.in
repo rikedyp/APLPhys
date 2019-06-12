@@ -1,0 +1,66 @@
+# 2d Lennard-Jones melt
+
+variable    x index 1
+variable    y index 1
+variable    z index 1
+
+variable    xx equal 10000 #40*$x
+variable    yy equal 10000 #20*$y
+variable    zz equal 20*$z
+
+units        lj
+atom_style    atomic
+dimension 2
+timestep 0.0032
+
+newton off
+
+#lattice       hex 0.8442 #Set the lattice vector
+region        box block 0 ${xx} 0 ${yy} 0 1 # Make region for the periodic box
+#region        two block 5 15 5 15 0 1 # Make a region for where the atoms will begin
+boundary p p p
+create_box    1 box
+#create_atoms    1 region two # Create the atoms
+create_atoms 1 random 3000 66 NULL
+mass        1 1.0
+
+velocity    all create 1.44 87994 loop geom # Set their initial velocity which will be scaled during the simulation
+
+pair_style    lj/cut 2.5 # Define the intermolecular interaction with the Lennard-Jones function with a cutoff of 2.5
+pair_coeff    1 1 1.0 1.0 2.5 # Setting the sigma and epsilon values
+
+# This neighbor list improves the efficiency of the calculation by only calculating interactions with particles within cutoff+0.3
+neighbor    0 nsq#bin 
+neigh_modify    delay 0 every 1 check no
+
+#dump pdump all xyz 100 dump.lj #Saves the trajectory to a file to open in VMD
+dump xdump all custom 1 dumpx.lj x y z
+#dump xtcdump all xtc 1 dumpxtc.lj 
+#dump sdump all custom 1 dumps.lj xs ys zs
+dump vdump all custom 1 dumpv.lj vx vy vz
+#dump fdump all custom 1 dumpf.lj fx fy fz
+
+dump_modify xdump format float %.20g sort id#40g
+#dump_modify sdump format float %.34g
+dump_modify vdump format float %.20g sort id
+#dump_modify fdump format float %.15g
+
+#dump    3 all movie 100 movie.mpg type type &
+#    zoom 1.6 adiam 1.5
+#dump_modify 3 pad 5
+
+#thermo 1
+
+# Velocity Verlet
+run_style verlet
+
+fix        1 all nve # Performs an integration to move the sample through time
+fix        2 all enforce2d # Make sure there is no forces in the z direction 
+fix        bfix all temp/berendsen 0.5 0.5 0.0032#0.5 0.5 0.0032
+
+#dump tdump all custom 1 dumptemp.lj c_3_temp
+#thermo 1
+#thermo_style custom c_bfix_temp c_thermo_temp
+#thermo_modify format float %1.35f
+
+run        3000 #run for this number of steps the default timestep for lj is 0.005 tau 
