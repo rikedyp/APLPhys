@@ -5,8 +5,7 @@
 ⍝ Simulation parameters
 periodic ← 1            ⍝ Periodic boundary conditions?
 fixtemp ← 0.5           ⍝ Temperature for thermostat
-thermostat ← Berendsen  ⍝ Choice of thermostat (default 'None')
-timestep ← 0.0032       ⍝ Timestep (PairStyle's units)
+dt ← 0.0032             ⍝ Timestep (PairStyle's units)
 neighfreq ← 1           ⍝ How often to check nearest neighbours?
 
 ⍝ Simulation setup functions
@@ -15,12 +14,14 @@ CreateBox 400 600       ⍝ Dimensions of box (PairStyle's units)
 CreateAtoms 12 random random
 ⍝ Pairstyle LJcut sigma epsilon
 PairStyle 'LJcut' 2.5 1
-RunStyle 'Verlet'
+Thermostat ← Berendsen  ⍝ Choice of thermostat (default none)
+SetRunStyle 'Verlet'
 
 ⍝ Output parameters
 ⍝ Dump to text file every 100 steps
-TextDump 100 'traj.xyz'
+TextDump 'pos' 100 './Dumps/pos.xyz'
+TextDump 'vel' 1 './Dumps/vel.xyz'
 ⍝ Dump positions to CSV every 20 steps
 ⍝ CSVDump 20 pos
 
-Run 3000                ⍝ Run the simulation for 3000 steps
+Simulate 3000                ⍝ Run the simulation for 3000 steps

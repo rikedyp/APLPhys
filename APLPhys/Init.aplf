@@ -3,7 +3,7 @@
  ⍝ Initial values
  random←'random'
  ⍝ Thermostats
- Berendsen←'Berendsen'
+ ⍝Berendsen←'Berendsen'
  ⍝ Default values
  thermostat←'None'
  ⍝ Output dump options
