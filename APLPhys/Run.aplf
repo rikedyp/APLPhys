@@ -1,0 +1,8 @@
+ Run file;i;instructions
+ instructions←⊃⎕NGET file 1
+ ⍝ Run user script
+ ⍝ ⍎¨instructions
+ :For i :In instructions
+     ⎕←i
+     ⍎i
+ :EndFor

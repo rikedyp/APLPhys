@@ -1,0 +1,3 @@
+ CreateBox args
+ boxdim←args
+ dim←≢boxdim

@@ -1,0 +1,12 @@
+ CreateAtoms args
+ natoms pos vel←args
+ :If 'random'≡⊃⊆pos
+     ⎕RL←{3 4::⍬ ⋄ 2⊃⍵}⊆pos
+     pos←?natoms dim⍴0
+ :EndIf
+ :If 'random'≡⊃⊆vel
+     ⎕RL←{3 4::⍬ ⋄ 2⊃⍵}⊆vel
+     vel←?natoms dim⍴0
+ :ElseIf 0≡2⊃args
+     vel←natoms dim⍴0
+ :EndIf

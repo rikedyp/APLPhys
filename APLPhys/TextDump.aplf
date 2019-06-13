@@ -1,0 +1,4 @@
+ TextDump(logitem freq filename)
+ dumps,←logitem
+ dumpfreqs,←freq
+ dumpfiles,←filename
