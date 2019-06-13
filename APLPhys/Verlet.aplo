@@ -1,0 +1,14 @@
+ Verlet←{
+   ⍝ Velocity-Verlet numerical integrator
+     (pos vel acc)←⍵ ⍝ Previous state
+     pos←periodic|pos ⍝ Fold positions if periodic boundary conditions set
+     pos+←dt×vel+0.5×acc×dt ⍝ Step position
+     (ene_kin_avg temp)←ComputeTemp vel
+     chi←fixtemp Thermostat temp ⍝ Velocity recaling factor for thermostat
+     vel←(chi×vel)+0.5×dt×acc ⍝ Half-step velocity
+     (acc ene_pot_avg virial)←⍺⍺ pos ⍝ Compute forces
+     vel+←0.5×dt×acc ⍝ Complete velocity step
+     (ene_kin_avg temp)←ComputeTemp vel
+     pressure←(density×temp)+virial÷volume
+     pos vel acc ene_kin_avg ene_pot_avg temp pressure
+ }

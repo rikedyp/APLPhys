@@ -1,0 +1,10 @@
+ {r}←Init
+ ⍝ Names that script files can use
+ ⍝ Initial values
+ random←'random'
+ ⍝ Thermostats
+ ⍝Berendsen←'Berendsen'
+ ⍝ Default values
+ thermostat←'None'
+ ⍝ Output dump options
+ dumps dumpfreqs dumpfiles←⍬ ⍬ ⍬

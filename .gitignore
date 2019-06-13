@@ -4,4 +4,5 @@ aplcore
 *.mov
 *.ogv
 *.dcf
+*.xyz
 sessions.dcf

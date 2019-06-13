@@ -1,0 +1,5 @@
+ filenames DumpText(i dumps);d
+ filenames←⊃⊆filenames
+ :For d :In ⍳⍴dumps
+     (⊂(⊂' '),(⊂'Step: ',⍕i),↓⍕dumps[d])⎕NPUT filenames[d],2
+ :EndFor

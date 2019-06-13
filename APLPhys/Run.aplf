@@ -1,0 +1,8 @@
+ Run file;i;instructions
+ ⍝ Load user script
+ instructions←⊃⎕NGET file 1
+ ⍝ Set defaults / clear arrays
+ Init
+ ⍝ Run user script
+ ⍎¨instructions
+ ⎕←'Run ',file,' completed'

@@ -1,0 +1,9 @@
+ ComputeTemp←{
+     vel←⍵
+     real_vel←boxdim×⍤1⊢vel
+     ene_kin←0.5×+/,real_vel*2 ⍝ 0.5×v*2
+     ene_kin_avg←ene_kin÷natoms
+     temp←2×ene_kin_avg÷dim
+     temp←(dim×natoms-1)÷⍨+/,real_vel*2 ⍝ n-1: Intensive properties are translation invariant
+     ene_kin_avg temp
+ }
