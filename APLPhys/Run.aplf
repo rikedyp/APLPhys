@@ -4,9 +4,5 @@
  ⍝ Set defaults / clear arrays
  Init
  ⍝ Run user script
- ⍝ ⍎¨instructions
- :For i :In instructions
-     ⎕←i
-     ⍎i
- :EndFor
+ ⍎¨instructions
  ⎕←'Run ',file,' completed'
