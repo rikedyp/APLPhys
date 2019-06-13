@@ -9,6 +9,8 @@
      :For i :In ⍳nsteps
          log←ComputeForces RunStyle pos vel acc
          (pos vel acc)←3↑log
-         (⊂dumpfiles[d])DumpText i,⊂⍎¨dumps[d←⍸0=dumpfreqs|i]
+         :If 0<≢d←⍸0=dumpfreqs|i
+             (⊂dumpfiles[d])DumpText i,⊂⍎¨dumps[d]
+         :EndIf
      :EndFor
  :EndIf
