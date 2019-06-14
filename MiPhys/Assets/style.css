@@ -1,48 +1,29 @@
+@font-face{font-family:'APL333';src:local('APL333'),url(Assets/APL333.ttf)}
+@font-face{font-family:'APL385 Unicode';src:local('APL385 Unicode'),url(Assets/APL385.ttf)}
 body {
-  background: black;
-  color: white;
+  filter: invert(.9);
+  background: rgba(0,0,0,0.8);
+  font-family: 'APL385 Unicode';
+  /*color: white;*/
 }
-#box {
-  position: relative;
-  border-color: silver;
-  border-style: outset;
-  border-width:20px;
+body.w {
+  filter:invert(0);
+  background: rgba(0,0,0,0.1);
 }
-b {
-  height:40px;
-  width:40px;
-  border-radius:50%;
-  background:radial-gradient(circle at 40% 30%, rgba(127,255,255,1) 10%,rgba(0,255,255,0.9) 30%,transparent 70%);
-  position:absolute;
-  display:block;
-}
-label{
+#ctrlpanel {
   display: block;
-}
-input{
-  display: block;
-  margin-left: 20%;
-}
-button {
-  margin-left: 33%; 
-}
-#controlpanel{
-  display: inline-block;
-  float: left;
-  width: 20vw;
-  height: 100vh;
-  border: 3px;
-  border-color: white;
-}
-#control{
-  background: #111;
-  line-height: 5em;
-}
-#viewport{
-  display: inline-block;
-  float: right;
-  width: 60vw;
   position: fixed;
-  top: 1vw;
-  left: 20vw;
+  width: 30vw;
+}
+#viewport {
+  display: inline-block;
+  background: rgba(1,1,1,0.1);
+  position: absolute;
+  right: 3.5vw;
+  top: 5vh;
+  width: 60vw;
+  height: 50vw;
+}
+.collapsebtn{
+  margin-left: 40%; 
 }
