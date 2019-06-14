@@ -1,8 +1,14 @@
- Run file;i;instructions
+ Run file;i;instructions;currentscript;source;newsource
  ⍝ Load user script
  instructions←⊃⎕NGET file 1
  ⍝ Set defaults / clear arrays
  Init
  ⍝ Run user script
- ⍎¨instructions
+ ⍝ ⍎¨instructions
+ ⎕FX'currentscript' '',instructions
+ source←⎕NR'currentscript'
+ currentscript
+ :If source≢newsource←⎕NR'currentscript'
+     (⊂2↓newsource)⎕NPUT file
+ :EndIf
  ⎕←'Run ',file,' completed'
