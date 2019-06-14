@@ -1,0 +1,4 @@
+<Server>
+	<Name>MiPhys</Name>
+  <ClassName>APLPhysServer</ClassName>
+</Server>

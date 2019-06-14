@@ -1,28 +1,25 @@
 ﻿:Class index :MiPage
 
-    ∇ Compose;s;start;about;ljmelt;viewport;ctrlpanel
-      :Access Public   
-      Add _.StyleSheet'Assets/style.css'
-      ctrlpanel←'#ctrlpanel'Add _.div  
-      viewport←'viewport'Add _.div 
-      viewport.Add _.jqDraggable'#viewport'
-      viewport.Add _.jqResizable'#viewport'
-      ⍝ --- CONTROL PANEL ---                 
-      (tabs←'tabs'ctrlpanel.Add _.Tabs)⍝.Theme←'083D77' 
-      ctrlpanel.Add _.hr
-      '.collapsebtn'ctrlpanel.Add _.button'Show/Hide'
-      ⍝ --- ABOUT ---
-      about←_.p'Welcome to MiPhys'
-      about,←_.p'The demo GUI frontend to APLPhys'
-      'About'tabs.AddSection about  
-      ⍝ --- LJ Melt ---
-      ljmelt←_.p'Lennard-Jones Melt'
-      ljmelt←_.p'Velocity verlet integration of a Lennard-Jones melt with a Berendsen thermostat'
-      'LJmelt'tabs.AddSection ljmelt
-      ⍝ --- VIEWPORT ---
-      viewport.Add _.p'This is where the sims are vis''d'     
+⍝ MiPhys index page
+⍝ The MiServer based GUI frontend to APLPhys demos
+
+    APLPhysPath←'C:\Users\rpark\Documents\APL\Projects\APLPhys\APLPhys\'
+
+    ∇ Compose;tabs;about;ljmelt;ljframe
+      :Access Public
+      Add _.StyleSheet'Assets/style.css'    
+    ⍝ --- CONTROL PANEL ---
+      tabs←'tabs'Add _.Tabs
+    ⍝ --- ABOUT ---
+      tabs.Titles,←⊂'About'
+      about←tabs.Sections,←'About'New _.div
+      about.Add _.p'Welcome to MiPhys'
+      about.Add _.p'The demo GUI frontend to APLPhys'
+    ⍝ --- LJ Melt ---
+      tabs.Titles,←⊂'LJmelt'
+      ljmelt←tabs.Sections,←'.viewframe #LJmelt'New _.div
+      ljframe←ljmelt.Add _.iframe
+      ljframe.Set 'src' 'LJmelt.mipage'     
     ∇
-    
-    
 
 :EndClass

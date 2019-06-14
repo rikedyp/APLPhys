@@ -10,20 +10,41 @@ body.w {
   filter:invert(0);
   background: rgba(0,0,0,0.1);
 }
-#ctrlpanel {
+.ctrlpanel {
   display: block;
   position: fixed;
   width: 30vw;
 }
+.ctrlform > textarea {
+  display: block;
+  margin: 1em;
+  width: 85%;
+  margin-left: 5%;
+  height: 20em;
+}
+.ctrlform > button {
+  margin-left: 3em;
+}
+#tabs {
+  width: 100vw;
+}
 #viewport {
   display: inline-block;
   background: rgba(1,1,1,0.1);
-  position: absolute;
+  position: absolute!important;
   right: 3.5vw;
   top: 5vh;
   width: 60vw;
   height: 50vw;
 }
-.collapsebtn{
+.collapsebtn {
   margin-left: 40%; 
 }
+iframe {
+  width: 100vw;
+  height: 100vh;
+  border: none;
+}
+/*.viewframe {
+  height: 100vh;
+}*/

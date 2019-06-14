@@ -1,0 +1,65 @@
+﻿:Class LJmelt :MiPage
+
+    :Field public script
+
+    ∇ Compose
+      :Access public
+      Add _.StyleSheet'Assets/style.css'
+      Add _.Style'body{filter:invert(0);background:rgba(0,0,0,0);}'
+    ⍝ --- CONTROL ---
+      ctrlpanel←'.ctrlpanel'Add _.div
+      ctrlpanel.Add _.h4'Lennard-Jones Melt'
+      ctrlpanel.Add _.p'Velocity-Verlet integration of a Lennard-Jones melt with a Berendsen thermostat'
+      ctrlform←'.ctrlform'ctrlpanel.Add _.form
+      ⍝('#runscript'ctrlform.Add _.Button'Run script').On'click' 'RunScript'
+      (Add _.Handler'#runscript' 'click' 'RunScript').Hourglass←0
+      '#startstop'ctrlform.Add _.Button'Start/Stop'
+      (Add _.Handler'#startstop' 'click' 'StartStop').Hourglass←0
+      '#steponce'ctrlform.Add _.Button'Step once'
+      Add _.Handler'#steponce' 'click' 'Tick'
+      Add _.br
+    ⍝ --- INPUT SCRIPT ---
+      script←'⍝ LJmelt.aplphys',⎕UCS 10
+      script,←'⍝ Demo APLPhys script',⎕UCS 10
+      script,←'⍝ Simulation parameters',⎕UCS 10
+      script,←'periodic ← 1',⎕UCS 10
+      script,←'dt←0.0032',⎕UCS 10
+      '#aplphys name=aplphys'ctrlform.Add _.textarea script
+    ⍝ --- VIEWPORT ---
+      viewport←'viewport'Add _.div
+      viewport.Add _.jqDraggable'#viewport'
+      viewport.Add _.jqResizable'#viewport'
+    ⍝ --- SIMULATION ---
+    ⍝ labels viewport.Add⍤1 0⊢_.b
+    ⍝ Add _.Timer dt 0 'tick' 'T' ⍝ Tick with update
+    ⍝ (On 'tick' 'Tick').Hourglass←0
+    ∇
+
+    ∇ js←RunScript
+      :Access public
+      script←''Get'aplphys'⍝(⎕UCS 13)(≠⊆⊢)Get'aplphys'
+      ⎕←'Run Script'
+⍝      ∘∘∘
+      script←(⎕UCS 10 13){⍵⊆⍨∧⌿⍺∘.≠⍵}script
+    ⍝ ↓↓ Why this breaks? ↓↓
+    ⍝ #.APLPhys.aplscript←⎕FIX script
+    ⍝  #.APLPhys.aplscript
+    ⍝ #.APLPhys.⍎¨script
+      :For line :In script
+          #.APLPhys.⍎⎕←line
+      :EndFor
+      js←⍬
+    ∇
+
+    ∇ js←StartStop
+      :Access public
+      js←⎕←('Timer start' 'Timer stop')[1+play]
+     
+    ∇
+
+    ∇ js←Tick
+      :Access public
+      js←⎕←'tick'
+    ∇
+
+:EndClass
