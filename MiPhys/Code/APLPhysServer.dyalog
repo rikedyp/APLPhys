@@ -10,12 +10,13 @@
     ∇ onServerStart
       :Access public override
       ⎕←'Initialising APLPhys...'
-      ⎕SE.Link.Create'#.APLPhys'APLPhysPath 
+      ⎕SE.Link.Create'#.APLPhys'APLPhysPath
+      #.APLPhys.Init
       ⎕←'APLPhys loaded.'
     ∇
     ∇ onSessionStart req
       :Access public override
-      ⍝ Maybe reset stuff on server start   
+      ⍝ Maybe reset stuff on server start
       ⎕←'Session started at ',⎕TS
     ∇
 

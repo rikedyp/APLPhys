@@ -6,5 +6,6 @@
  ⍝Berendsen←'Berendsen'
  ⍝ Default values
  thermostat←'None'
+ neighfreq←1
  ⍝ Output dump options
  dumps dumpfreqs dumpfiles←⍬ ⍬ ⍬

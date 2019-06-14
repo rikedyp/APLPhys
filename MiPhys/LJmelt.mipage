@@ -4,35 +4,70 @@
 
     ∇ Compose
       :Access public
-      Add _.StyleSheet'Assets/style.css'
+      Add _.StyleSheet'Assets/LJmelt.css'
       Add _.Style'body{filter:invert(0);background:rgba(0,0,0,0);}'
     ⍝ --- CONTROL ---
       ctrlpanel←'.ctrlpanel'Add _.div
       ctrlpanel.Add _.h4'Lennard-Jones Melt'
       ctrlpanel.Add _.p'Velocity-Verlet integration of a Lennard-Jones melt with a Berendsen thermostat'
       ctrlform←'.ctrlform'ctrlpanel.Add _.form
-      ⍝('#runscript'ctrlform.Add _.Button'Run script').On'click' 'RunScript'
+      '#runscript'ctrlform.Add _.Button'Run script'
       (Add _.Handler'#runscript' 'click' 'RunScript').Hourglass←0
       '#startstop'ctrlform.Add _.Button'Start/Stop'
       (Add _.Handler'#startstop' 'click' 'StartStop').Hourglass←0
       '#steponce'ctrlform.Add _.Button'Step once'
       Add _.Handler'#steponce' 'click' 'Tick'
       Add _.br
+ ⍝     ∘∘∘
     ⍝ --- INPUT SCRIPT ---
-      script←'⍝ LJmelt.aplphys',⎕UCS 10
-      script,←'⍝ Demo APLPhys script',⎕UCS 10
-      script,←'⍝ Simulation parameters',⎕UCS 10
-      script,←'periodic ← 1',⎕UCS 10
-      script,←'dt←0.0032',⎕UCS 10
+      script←⊂'⍝ LJmelt.aplphys'
+      script,←⊂'⍝ Demo APLPhys script'
+      script,←⊂'⍝ Simulation parameters'
+      script,←⊂'periodic ← 1'
+      script,←⊂'dt ← 0.0032'
+      script,←⊂'fixtemp ← 0.5'
+      script,←⊂'neighfreq ← 1'
+      script,←⊂' '
+      script,←⊂'CreateBox 40 60'
+      script,←⊂'CreateAtoms 12 random random'
+      script,←⊂'PairStyle ''LJcut'' 2.5 1'
+      script,←⊂'Thermostat←Berendsen'
+      script,←⊂'SetRunStyle''Verlet'''
+      script,←⊂' '
+      script,←⊂'dumpfreq ← 100'
+      script←script,¨⎕UCS 10
       '#aplphys name=aplphys'ctrlform.Add _.textarea script
     ⍝ --- VIEWPORT ---
       viewport←'viewport'Add _.div
       viewport.Add _.jqDraggable'#viewport'
       viewport.Add _.jqResizable'#viewport'
     ⍝ --- SIMULATION ---
-    ⍝ labels viewport.Add⍤1 0⊢_.b
-    ⍝ Add _.Timer dt 0 'tick' 'T' ⍝ Tick with update
-    ⍝ (On 'tick' 'Tick').Hourglass←0
+      ⍝∘∘∘
+      :For line :In script
+          ⎕←line
+          #.APLPhys.⍎line~⎕UCS 10
+      :EndFor
+      ⍝#.APLPhys.⍎¨script
+    ⍝ Get values from APLPhys
+⍝    ∘∘∘
+      Init
+    ⍝ Render particles
+      Render
+      Add _.Timer 50 0 'tick' 'T' ⍝ Tick with update
+      (On'tick' 'Tick').Hourglass←0
+    ∇
+
+    ∇ js←Render
+      labels viewport.Add⍤1⊢_.b
+    ⍝ Display settings
+      scale←'6'
+      (height width)←boxdim×⍎scale
+      css←'#box{width:%Wpx;height:%Hpx}'
+      css←'%W' '%H'⎕R(⍕¨width height)⊢css
+      Add _.style css
+      ⍝ Display colours
+      Add _.style,⊂∊{'b:nth-child(',(⍕⍵),'){filter:hue-rotate(',(⍕⍵×360÷⍺),'deg)}'}¨∘⍳⍨natoms
+     
     ∇
 
     ∇ js←RunScript
@@ -41,25 +76,59 @@
       ⎕←'Run Script'
 ⍝      ∘∘∘
       script←(⎕UCS 10 13){⍵⊆⍨∧⌿⍺∘.≠⍵}script
+      #.APLPhys.Init
     ⍝ ↓↓ Why this breaks? ↓↓
     ⍝ #.APLPhys.aplscript←⎕FIX script
     ⍝  #.APLPhys.aplscript
     ⍝ #.APLPhys.⍎¨script
       :For line :In script
-          #.APLPhys.⍎⎕←line
+          ⎕←line
+          #.APLPhys.⍎line
       :EndFor
+      Init
       js←⍬
+    ∇
+
+    ∇ Init
+      play←0
+      #.APLPhys.(acc←⊃ComputeForces pos)
+      dumpfreq←#.APLPhys.dumpfreq
+      natoms←#.APLPhys.natoms
+      labels←'p',↑⍕¨⍳natoms
+      boxdim←#.APLPhys.boxdim
+      dt←#.APLPhys.dt
+      pos←#.APLPhys.pos
     ∇
 
     ∇ js←StartStop
       :Access public
-      js←⎕←('Timer start' 'Timer stop')[1+play]
-     
+      ⎕←('Timer start' 'Timer stop')[1+play]
+      js←Execute('Trun()' 'Tstop()')[1+play]
+      play←~play
     ∇
 
-    ∇ js←Tick
+    ∇ js←Tick;i
       :Access public
-      js←⎕←'tick'
+     ⍝ ⎕←'tick'
+      :For i :In ⍳dumpfreq
+          #.APLPhys.(pos vel acc←3↑ComputeForces RunStyle pos vel acc)
+      :EndFor
+      pos←#.APLPhys.pos
+      r←boxdim×⍤1⊢{e÷⍨⌊0.5+pos×e←10*⍵}3 ⍝ Reduced LJ units | Rounded to 3dp
+      js←Execute labels CSS⍤1⊢r
     ∇
+
+    ∇ css←id CSS(top left)
+    ⍝ Scale and translate positions for display
+    ⍝ (top left)←scale×top left
+      top←'calc(',scale,'*',top F'px)'
+      left←'calc(',scale,'*',left F'px)'
+    ⍝ Format positions for CSS
+      css←'{"top":"',top F'",'
+      css,←'"left":"',left F'"}'
+      css←'$("#',(id~' '),'").css(',css,');'
+    ∇
+
+    F←{⍵,⍨'¯'⎕R'-'⍕⍺⍺}
 
 :EndClass
