@@ -7,7 +7,7 @@
      :EndFor
  :Else
      :For i :In ⍳nsteps
-         log←ComputeForces RunStyle pos vel acc
+         log←ComputeForces RunStyle pos vel acc ⍬ ⍬ ⍬ ⍬
          (pos vel acc)←3↑log
          :If 0<≢d←⍸0=dumpfreqs|i
              (⊂dumpfiles[d])DumpText i,⊂⍎¨dumps[d]
