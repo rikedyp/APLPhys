@@ -1,21 +1,22 @@
 @font-face{font-family:'APL333';src:local('APL333'),url(Assets/APL333.ttf)}
 @font-face{font-family:'APL385 Unicode';src:local('APL385 Unicode'),url(Assets/APL385.ttf)}
-body {
-  filter: invert(.9);
-  background: rgba(0,0,0,0.8);
+*{
   font-family: 'APL385 Unicode';
-  /*color: white;*/
+  color: white;
+  background: rgba(1,1,1,0.9);
 }
-body.w {
+/*body.w {
   filter:invert(0);
   background: rgba(0,0,0,0.1);
-}
+}*/
 .ctrlpanel {
   display: block;
   position: fixed;
   width: 30vw;
 }
 .ctrlform > textarea {
+  /*background: black;*/
+
   display: block;
   margin: 1em;
   width: 85%;
@@ -32,6 +33,7 @@ body.w {
   display: inline-block;
   background: rgba(1,1,1,0.1);
   position: absolute!important;
+  border: outset;
   right: 3.5vw;
   top: 5vh;
   width: 60vw;
@@ -40,11 +42,6 @@ body.w {
 .collapsebtn {
   margin-left: 40%; 
 }
-iframe {
-  width: 100vw;
-  height: 100vh;
-  border: none;
-}
 b {
   height:40px;
   width:40px;
@@ -52,6 +49,7 @@ b {
   background:radial-gradient(circle at 40% 30%, rgba(127,255,255,1) 10%,rgba(0,255,255,0.9) 30%,transparent 70%);
   position:absolute;
   display:block;
+  z-index: -1;
 }
 /*.viewframe {
   height: 100vh;

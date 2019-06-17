@@ -4,7 +4,6 @@ body {
   filter: invert(.9);
   background: rgba(0,0,0,0.8);
   font-family: 'APL385 Unicode';
-  /*color: white;*/
 }
 body.w {
   filter:invert(0);
@@ -44,7 +43,5 @@ iframe {
   width: 100vw;
   height: 100vh;
   border: none;
+  filter: invert(1);
 }
-/*.viewframe {
-  height: 100vh;
-}*/
