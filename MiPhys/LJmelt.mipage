@@ -1,15 +1,15 @@
 ﻿:Class LJmelt :MiPage
 
-    :Field public script
-    :Field public maxatoms
-    :Field public natoms
-    :Field public dumpfreq
-    :Field public dt
-    :Field public pos
-    :Field public labels
-    :Field public play
-    :Field public bs ⍝ Ball size
-    :Field public bw ⍝ Border width
+    :Field public script    ⍝ Editable simulation APLPhys script
+    :Field public maxatoms  ⍝ Maximum allowed number of particles for demo
+    :Field public natoms    ⍝ Number of particles / balls
+    :Field public dumpfreq  ⍝ Number of steps before visual position update
+    :Field public dt        ⍝ Timestep (reduced LJ units)
+    :Field public pos       ⍝ Ball positions
+    :Field public labels    ⍝ Ball HTML labels
+    :Field public play      ⍝ Simulation play state
+    :Field public bs        ⍝ Ball size
+    :Field public bw        ⍝ Border width
 
     ∇ Compose
       :Access public
@@ -27,7 +27,6 @@
       '#steponce'ctrlform.Add _.Button'Step once'
       Add _.Handler'#steponce' 'click' 'Tick'
       Add _.br
- ⍝     ∘∘∘
     ⍝ --- INPUT SCRIPT ---
       script←⊂'⍝ LJmelt.aplphys'
       script,←⊂'⍝ Demo APLPhys script'
@@ -46,7 +45,6 @@
       script,←⊂'dumpfreq ← 100'
       script←script,¨⎕UCS 10
       '#aplphys name=aplphys'ctrlform.Add _.textarea script
-    ⍝ --- SIMULATION ---
     ⍝ --- VIEWPORT ---
       viewport←'viewport'Add _.div
       viewport.Add _.jqDraggable'#viewport'
