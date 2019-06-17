@@ -96,18 +96,10 @@
       script←''Get'aplphys'
       script←(⎕UCS 10 13){⍵⊆⍨∧⌿⍺∘.≠⍵}script
       #.APLPhys.Init
-    ⍝ ↓↓ Why this breaks? ↓↓
-     
       #.APLPhys.⎕FX'aplscript' '',script
       #.APLPhys.aplscript
-⍝    #.APLPhys.⍎¨script
-⍝      :For line :In script
-⍝         ⍝ ⎕←line
-⍝          #.APLPhys.⍎line
-⍝      :EndFor
       Init
       js←Render
-      ⍝js←⍬
     ∇
 
     ∇ js←StartStop
@@ -124,12 +116,10 @@
 
     ∇ js←Tick;i
       :Access public
-     ⍝ ⎕←'tick'
       :For i :In ⍳dumpfreq
           #.APLPhys.(pos vel acc←3↑ComputeForces RunStyle pos vel acc)
       :EndFor
       pos←#.APLPhys.pos
-⍝      ∘∘∘
       r←(-bw÷scale)+boxdim×⍤1⊢{e÷⍨⌊0.5+pos×e←10*⍵}3 ⍝ Reduced LJ units | Rounded to 3dp
       js←Execute labels CSS⍤1⊢r
     ∇
@@ -144,7 +134,8 @@
       css,←'"left":"',left F'"}'
       css←'$("#',(id~' '),'").css(',css,');'
     ∇
-
+    
+    ⍝ Format numbers for javascript
     F←{⍵,⍨'¯'⎕R'-'⍕⍺⍺}
 
 :EndClass
