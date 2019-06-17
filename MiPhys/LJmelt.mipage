@@ -58,11 +58,16 @@
       play←0
     ∇
 
-    ∇ Init
+    ∇ js←Init
     ⍝ Link MiPhys with APLPhys parameters
       #.APLPhys.(acc←⊃ComputeForces pos)
       dumpfreq←#.APLPhys.dumpfreq
-      natoms←#.APLPhys.natoms
+      :If #.APLPhys.natoms≤maxatoms
+          natoms←#.APLPhys.natoms
+          js←⍬
+      :Else
+          js←Execute _.jBox.Modal'Number of atoms exceeds maximum allowed for this demo (',(⍕maxatoms),' atoms)'
+      :EndIf
       labels←'p',↑⍕¨⍳natoms
       boxdim←#.APLPhys.boxdim
       dt←#.APLPhys.dt
@@ -98,8 +103,8 @@
       #.APLPhys.Init
       #.APLPhys.⎕FX'aplscript' '',script
       #.APLPhys.aplscript
-      Init
-      js←Render
+      js←Init
+      js,←Render
     ∇
 
     ∇ js←StartStop
@@ -134,7 +139,7 @@
       css,←'"left":"',left F'"}'
       css←'$("#',(id~' '),'").css(',css,');'
     ∇
-    
+
     ⍝ Format numbers for javascript
     F←{⍵,⍨'¯'⎕R'-'⍕⍺⍺}
 
