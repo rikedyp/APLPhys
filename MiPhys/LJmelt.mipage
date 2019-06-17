@@ -17,7 +17,6 @@
       Use'jBox'
       Use'dcPanel'
       Add _.StyleSheet'Assets/LJmelt.css'
-    ⍝  Add _.Style'body{filter:invert(0);background:rgba(0,0,0,0);}'
     ⍝ --- CONTROL ---
       ctrlpanel←'.ctrlpanel'Add _.div
       ctrlpanel.Add _.h4'Lennard-Jones Melt'
@@ -51,12 +50,9 @@
     ⍝ --- VIEWPORT ---
       viewport←'viewport'Add _.div
       viewport.Add _.jqDraggable'#viewport'
-     ⍝ viewport.Add _.jqResizable'#viewport'
       maxatoms←30
       labels←'p',↑⍕¨⍳maxatoms
       labels viewport.Add⍤1⊢_.b
-      ⍝RunScript
-     ⍝ Render
       Add _.Timer 50 0 'tick' 'T' ⍝ Tick with update
       (On'tick' 'Tick').Hourglass←0
       play←0
@@ -64,7 +60,6 @@
 
     ∇ Init
     ⍝ Link MiPhys with APLPhys parameters
-    ⍝ TODO: More elegant way (can probably . into APLPhys in other places)
       #.APLPhys.(acc←⊃ComputeForces pos)
       dumpfreq←#.APLPhys.dumpfreq
       natoms←#.APLPhys.natoms
@@ -73,24 +68,16 @@
       dt←#.APLPhys.dt
       pos←#.APLPhys.pos
       ballsize←#.APLPhys.rcutoff
-    ⍝ Set viewport size
-    ⍝Add _.style '#viewport{width:}'
-     
     ∇
 
     ∇ js←Render;b;disp;l;css;height;width
-      js←⍬
     ⍝ Viewport size
       scale←14
       (height width)←boxdim×scale
       css←'width:%Wpx;height:%Hpx;border-width:%BWpx;'
       bs←⍕2×bw←ballsize×scale÷4
       css←'%W' '%H' '%BW'⎕R(⍕¨width height bw)⊢css
-      js,←'parent.frames[0].document.getElementById("viewport").style.cssText+="',css,'";'
-      ⍝js,←'parent.frames[0].document.getElementById("viewport").style.width="%Wpx";'
-      ⍝js,←'parent.frames[0].document.getElementById("viewport").style.height="%Hpx";'
-     
-     
+      js←'parent.frames[0].document.getElementById("viewport").style.cssText+="',css,'";'
     ⍝ Show natoms
       :For b :In ⍳maxatoms
           :If (⊂l←('p',⍕b))∊' '~⍨¨↓labels
@@ -106,19 +93,18 @@
 
     ∇ js←RunScript
       :Access public
-      script←''Get'aplphys'⍝(⎕UCS 13)(≠⊆⊢)Get'aplphys'
-      ⎕←'Run Script'
-⍝      ∘∘∘
+      script←''Get'aplphys'
       script←(⎕UCS 10 13){⍵⊆⍨∧⌿⍺∘.≠⍵}script
       #.APLPhys.Init
     ⍝ ↓↓ Why this breaks? ↓↓
-    ⍝ #.APLPhys.aplscript←⎕FIX script
-    ⍝  #.APLPhys.aplscript
-    ⍝ #.APLPhys.⍎¨script
-      :For line :In script
-         ⍝ ⎕←line
-          #.APLPhys.⍎line
-      :EndFor
+     
+      #.APLPhys.⎕FX'aplscript' '',script
+      #.APLPhys.aplscript
+⍝    #.APLPhys.⍎¨script
+⍝      :For line :In script
+⍝         ⍝ ⎕←line
+⍝          #.APLPhys.⍎line
+⍝      :EndFor
       Init
       js←Render
       ⍝js←⍬
@@ -133,7 +119,7 @@
           play←~play
       :Else
           js←Execute _.jBox.Modal'Run the script before starting the simulation'
-      :EndTrap     
+      :EndTrap
     ∇
 
     ∇ js←Tick;i
