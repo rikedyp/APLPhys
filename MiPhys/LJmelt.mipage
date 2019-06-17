@@ -7,6 +7,9 @@
     :Field public dt
     :Field public pos
     :Field public labels
+    :Field public play
+    :Field public bs ⍝ Ball size
+    :Field public bw ⍝ Border width
 
     ∇ Compose
       :Access public
@@ -55,10 +58,10 @@
      ⍝ Render
       Add _.Timer 50 0 'tick' 'T' ⍝ Tick with update
       (On'tick' 'Tick').Hourglass←0
+      play←0
     ∇
 
     ∇ Init
-      play←0
     ⍝ Link MiPhys with APLPhys parameters
     ⍝ TODO: More elegant way (can probably . into APLPhys in other places)
       #.APLPhys.(acc←⊃ComputeForces pos)
@@ -71,20 +74,21 @@
       ballsize←#.APLPhys.rcutoff
     ⍝ Set viewport size
     ⍝Add _.style '#viewport{width:}'
+     
     ∇
 
     ∇ js←Render;b;disp;l;css;height;width
       js←⍬
     ⍝ Viewport size
       scale←14
-      (height width)←boxdim×scale                                                                      
-      css←'width:%Wpx;height:%Hpx;border-width:%BWpx;'     
+      (height width)←boxdim×scale
+      css←'width:%Wpx;height:%Hpx;border-width:%BWpx;'
       bs←⍕2×bw←ballsize×scale÷4
       css←'%W' '%H' '%BW'⎕R(⍕¨width height bw)⊢css
       js,←'parent.frames[0].document.getElementById("viewport").style.cssText+="',css,'";'
       ⍝js,←'parent.frames[0].document.getElementById("viewport").style.width="%Wpx";'
       ⍝js,←'parent.frames[0].document.getElementById("viewport").style.height="%Hpx";'
-      
+     
      
     ⍝ Show natoms
       :For b :In ⍳maxatoms
