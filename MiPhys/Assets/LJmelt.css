@@ -14,17 +14,23 @@
   position: fixed;
   width: 30vw;
 }
+.ctrlpanel > h4 {
+  margin-left: 7em;
+}
+.ctrlpanel > p {
+  margin-left: 1em;
+}
 .ctrlform > textarea {
   /*background: black;*/
-
   display: block;
   margin: 1em;
-  width: 85%;
-  margin-left: 5%;
-  height: 20em;
+  width: 23em;
+  margin-left: 1.5em;
+  height: 25em;
 }
 .ctrlform > button {
-  margin-left: 3em;
+  margin-left: 1.6em;
+  font-size: 0.95em;
 }
 #tabs {
   width: 100vw;
