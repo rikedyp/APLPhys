@@ -13,8 +13,11 @@
 
     ∇ Compose
       :Access public
+    ⍝ --- POPUPS AND STYLING ---
+      Use'jBox'
+      Use'dcPanel'
       Add _.StyleSheet'Assets/LJmelt.css'
-      Add _.Style'body{filter:invert(0);background:rgba(0,0,0,0);}'
+    ⍝  Add _.Style'body{filter:invert(0);background:rgba(0,0,0,0);}'
     ⍝ --- CONTROL ---
       ctrlpanel←'.ctrlpanel'Add _.div
       ctrlpanel.Add _.h4'Lennard-Jones Melt'
@@ -123,9 +126,14 @@
 
     ∇ js←StartStop
       :Access public
-      ⎕←('Timer start' 'Timer stop')[1+play]
-      js←Execute('Trun()' 'Tstop()')[1+play]
-      play←~play
+      :Trap 6
+          ⎕←boxdim
+          ⎕←('Timer start' 'Timer stop')[1+play]
+          js←Execute('Trun()' 'Tstop()')[1+play]
+          play←~play
+      :Else
+          js←Execute _.jBox.Modal'Run the script before starting the simulation'
+      :EndTrap     
     ∇
 
     ∇ js←Tick;i
