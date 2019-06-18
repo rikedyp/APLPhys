@@ -6,3 +6,4 @@ aplcore
 *.dcf
 *.xyz
 sessions.dcf
+Jupyter/.ipynb_checkpoints/*
