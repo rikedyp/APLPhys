@@ -5,7 +5,7 @@
      R←S×⍤1⊢boxdim ⍝ Scale to reduced LJ units
    ⍝ Calculate potential inside cutoff
      Rmask←(rcutoff*2)>Rsq←+/R*2
-     (1 1⍉Rmask)←0
+     Rmask←∘.>⍨⍳≢Rmask ⍝ Compute forces for Fji
      calcpos←1+(⍴Rmask)⊤¯1+⍸,Rmask ⍝ ≡ ↑⍸Rmask
      Rcalcsq←(,Rmask)⌿,[1 2]Rsq
      rm2←÷Rcalcsq
@@ -15,11 +15,14 @@
      dphi←epsilon×24×rm2×(2×rm12)-rm6
      ene_pot←+/0.5×phi
      virial←-+/dphi×Rcalcsq
-          ⍝ Accumulate acceleration
+    ⍝ Accumulate acceleration
      acc←natoms dim⍴0
      t0←(1+(≢S)⊥¯1+calcpos)⌷⍤0 99⊢((2*⍨≢S),dim)⍴S
      t1←dphi×⍤1⍉t0
-     t2←⍉t1(+/¨⊂)⍤1⍨2≠/¯1,ids←⊣⌿calcpos
+     t1,←-t1 ⍝ Fji = Fij
+     ids←∊calcpos
+     ⍝t2←⍉t1(+/¨⊂)⍤1⍨2≠/¯1,ids←⊣⌿calcpos
+     t2←(ids){+⌿⍵}⌸⍉t1
      acc[∪ids;]←t2
      acc(ene_pot÷natoms)(-virial÷dim)
  }
