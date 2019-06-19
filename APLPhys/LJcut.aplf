@@ -1,7 +1,7 @@
  LJcut←{
-     pos←⍵
-     S←-⍤1{⍺⍺⍤1 99⍨⍵}pos ⍝ Relative displacements between pairs of particles
-     S-←{periodic:((0.5∘<)-(¯0.5∘>))⍵ ⋄ 0}S ⍝ Modify if periodic boundary conditions set
+   ⍝ pos←⍵
+     S←-⍤1⍤1 99⍨⍵ ⍝ Relative displacements between pairs of particles
+     S-←{periodic:((0.5∘<)-(¯0.5∘>))⍵ ⋄ 0}S ⍝ Wrap displacements if periodic boundary conditions set
      R←S×⍤1⊢boxdim ⍝ Scale to reduced LJ units
    ⍝ Calculate potential inside cutoff
      Rmask←(rcutoff*2)>Rsq←+/R*2
@@ -15,7 +15,7 @@
      dphi←epsilon×24×rm2×(2×rm12)-rm6
      ene_pot←+/0.5×phi
      virial←-+/dphi×Rcalcsq
-    ⍝ Accumulate acceleration
+   ⍝ Accumulate forces
      acc←natoms dim⍴0
      t0←(1+(≢S)⊥¯1+calcpos)⌷⍤0 99⊢((2*⍨≢S),dim)⍴S
      t1←dphi×⍤1⍉t0
@@ -24,5 +24,6 @@
      ⍝t2←⍉t1(+/¨⊂)⍤1⍨2≠/¯1,ids←⊣⌿calcpos
      t2←(ids){+⌿⍵}⌸⍉t1
      acc[∪ids;]←t2
+   ⍝ Return forces/accelerations, average potential energy and virial (for pressure calculation)
      acc(ene_pot÷natoms)(-virial÷dim)
  }
