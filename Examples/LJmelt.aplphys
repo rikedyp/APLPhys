@@ -14,7 +14,7 @@ CreateBox 400 600       ⍝ Dimensions of box (PairStyle's units)
 CreateAtoms 12 random random
 ⍝ Pairstyle LJcut sigma epsilon
 PairStyle 'LJcut' 2.5 1
-Thermostat ← Berendsen  ⍝ Choice of thermostat (default none)
+Thermostat ← TempRescale  ⍝ Choice of thermostat (default none)
 SetRunStyle 'Verlet'
 
 ⍝ Output parameters
