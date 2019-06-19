@@ -7,7 +7,9 @@ This project is a preliminary investigation into physics simulations in APL. It 
 The code is available as Dyalog [\]Link](https://github.com/dyalog/link)-able .apl* files.
 
 ### Documentation
-The code will be explained in a series of Jupyter notebooks which can be read here on GitHub, using [nbviewer](https://nbviewer.jupyter.org/) or with a Jupyter installation with the [Dyalog Jupyter kernel](https://github.com/Dyalog/dyalog-jupyter-kernel). These will reside in the [Jupyter] folder.
+The overall project will be documented on the [wiki](https://github.com/rikedyp/APLPhys/wiki)
+
+Individual code examples will be explained in a series of Jupyter notebooks which can be read here on GitHub, using [nbviewer](https://nbviewer.jupyter.org/) or with a Jupyter installation with the [Dyalog Jupyter kernel](https://github.com/Dyalog/dyalog-jupyter-kernel). These will reside in the [Jupyter](#) folder.
 
 ### Audience
 We hope that this project will appeal to physical science, computing and mathematics students and teachers; researchers in physics and materials science, and those using molecular dynamics in particular; and of course the APL and array programming communities.
