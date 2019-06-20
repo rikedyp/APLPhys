@@ -41,8 +41,8 @@
       script,←⊂'CreateBox 40 60'
       script,←⊂'CreateAtoms 12 random random'
       script,←⊂'PairStyle ''LJcut'' 2.5 1'
-      script,←⊂'Thermostat←Berendsen'
-      script,←⊂'SetRunStyle''Verlet'''
+      script,←⊂'Thermostat ← TempRescale'
+      script,←⊂'RunStyle ← Verlet'
       script,←⊂' '
       script,←⊂'dumpfreq ← 100'
       script←script,¨⎕UCS 10

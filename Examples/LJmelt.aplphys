@@ -15,13 +15,11 @@ CreateAtoms 12 random random
 ⍝ Pairstyle LJcut sigma epsilon
 PairStyle 'LJcut' 2.5 1
 Thermostat ← TempRescale  ⍝ Choice of thermostat (default none)
-SetRunStyle 'Verlet'
+RunStyle ← Verlet
 
 ⍝ Output parameters
 ⍝ Dump to text file every 100 steps
 TextDump 'pos' 100 './Dumps/pos.xyz'
 TextDump 'vel' 1 './Dumps/vel.xyz'
-⍝ Dump positions to CSV every 20 steps
-⍝ CSVDump 20 pos
 
 Simulate 3000                ⍝ Run the simulation for 3000 steps

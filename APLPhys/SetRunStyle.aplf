@@ -1,2 +1,0 @@
- SetRunStyle style
- RunStyle←⍎style
