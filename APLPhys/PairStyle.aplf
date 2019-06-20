@@ -1,9 +1,6 @@
  PairStyle style
  :If 'LJcut'≡⊃style
      rcutoff epsilon←1↓style
-    ⍝ Derived constants
      phicutoff←-/4÷rcutoff*12 6
-     volume←×/boxdim
-     density←natoms÷volume
      ComputeForces←LJcut
  :EndIf
