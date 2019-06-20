@@ -8,6 +8,7 @@
     :Field public pos       ⍝ Ball positions
     :Field public labels    ⍝ Ball HTML labels
     :Field public play      ⍝ Simulation play state
+    :Field public step      ⍝ Simulation step number
     :Field public bs        ⍝ Ball size
     :Field public bw        ⍝ Border width
 
@@ -28,7 +29,8 @@
       (Add _.Handler'#startstop' 'click' 'StartStop').Hourglass←0
       '#steponce'ctrlform.Add _.Button'Step once'
       Add _.Handler'#steponce' 'click' 'StepOnce'
-      Add _.br
+      '#step'ctrlform.Add _.p 'Step: '
+      Add _.br      
     ⍝ --- INPUT SCRIPT ---
       script←⊂'⍝ LJmelt.aplphys'
       script,←⊂'⍝ Demo APLPhys script'
@@ -50,7 +52,7 @@
     ⍝ --- VIEWPORT ---
       viewport←'viewport'Add _.div
       viewport.Add _.jqDraggable'#viewport'
-      maxatoms←30
+      maxatoms←64
       labels←'p',↑⍕¨⍳maxatoms
       labels viewport.Add⍤1⊢_.b
       Add _.Timer 50 0 'tick' 'T' ⍝ Tick with update
@@ -103,6 +105,7 @@
       #.APLPhys.⎕FX'aplscript' '',script
       #.APLPhys.aplscript
       play←0
+      step←0
       js←Init
       js,←Render
     ∇
@@ -132,7 +135,9 @@
       :Access public
       #.APLPhys.(pos vel acc←3↑ComputeForces RunStyle⍣dumpfreq⊢pos vel acc ⍬ ⍬ ⍬ ⍬)
       r←(-bw÷scale)+#.APLPhys.boxdim×⍤1⊢{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Reduced LJ units | Rounded to 3dp
-      js←Execute labels CSS⍤1⊢r
+      js←Execute labels CSS⍤1⊢r                                  
+      step+←dumpfreq
+      js,←Execute 'parent.frames[0].$("#step").html("Step: ',step,'")'
     ∇
 
     ∇ css←id CSS(top left)
