@@ -6,7 +6,6 @@
 periodic ← 1            ⍝ Periodic boundary conditions?
 fixtemp ← 0.5           ⍝ Temperature for thermostat
 dt ← 0.0032             ⍝ Timestep (PairStyle's units)
-neighfreq ← 1           ⍝ How often to check nearest neighbours?
 
 ⍝ Simulation setup functions
 CreateBox 400 600       ⍝ Dimensions of box (PairStyle's units)
