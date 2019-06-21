@@ -29,8 +29,8 @@
       (Add _.Handler'#startstop' 'click' 'StartStop').Hourglass←0
       '#steponce'ctrlform.Add _.Button'Step once'
       Add _.Handler'#steponce' 'click' 'StepOnce'
-      '#step'ctrlform.Add _.p 'Step: '
-      Add _.br      
+      '#step'ctrlform.Add _.p'Step: '
+      Add _.br
     ⍝ --- INPUT SCRIPT ---
       script←⊂'⍝ LJmelt.aplphys'
       script,←⊂'⍝ Demo APLPhys script'
@@ -57,6 +57,7 @@
       labels viewport.Add⍤1⊢_.b
       Add _.Timer 50 0 'tick' 'T' ⍝ Tick with update
       (On'tick' 'Tick').Hourglass←0
+      play←0
     ∇
 
     ∇ js←Init
@@ -104,7 +105,6 @@
       #.APLPhys.Init
       #.APLPhys.⎕FX'aplscript' '',script
       #.APLPhys.aplscript
-      play←0
       step←0
       js←Init
       js,←Render
@@ -113,6 +113,7 @@
     ∇ js←StartStop
       :Access public
       :Trap 6
+          ⎕←scale
           ⎕←('Timer start' 'Timer stop')[1+play]
           js←Execute('Trun()' 'Tstop()')[1+play]
           play←~play
@@ -124,7 +125,8 @@
     ∇ js←StepOnce
     ⍝ Wrap step once in trap so Tick can be minimal (execute quickly)
       :Access public
-      :Trap 6
+      :Trap 6 
+          ⎕←scale
           js←Tick
       :Else
           js←Execute _.jBox.Modal'Run the script before starting the simulation'
@@ -135,9 +137,9 @@
       :Access public
       #.APLPhys.(pos vel acc←3↑ComputeForces RunStyle⍣dumpfreq⊢pos vel acc ⍬ ⍬ ⍬ ⍬)
       r←(-bw÷scale)+#.APLPhys.boxdim×⍤1⊢{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Reduced LJ units | Rounded to 3dp
-      js←Execute labels CSS⍤1⊢r                                  
+      js←Execute labels CSS⍤1⊢r
       step+←dumpfreq
-      js,←Execute 'parent.frames[0].$("#step").html("Step: ',step,'")'
+      js,←Execute'parent.frames[0].$("#step").html("Step: ',step,'")'
     ∇
 
     ∇ css←id CSS(top left)
