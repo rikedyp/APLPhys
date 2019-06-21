@@ -37,11 +37,11 @@
       script,←⊂'⍝ Simulation parameters'
       script,←⊂'periodic ← 1'
       script,←⊂'dt ← 0.0032'
-      script,←⊂'fixtemp ← 0.5'
+      script,←⊂'fixtemp ← 0.01'
       script,←⊂'neighfreq ← 1'
       script,←⊂' '
-      script,←⊂'CreateBox 40 60'
-      script,←⊂'CreateAtoms 12 random random'
+      script,←⊂'CreateBox 30 30'
+      script,←⊂'CreateAtoms 32 random random'
       script,←⊂'PairStyle ''LJcut'' 2.5 1'
       script,←⊂'Thermostat ← TempRescale'
       script,←⊂'RunStyle ← Verlet'
@@ -52,7 +52,7 @@
     ⍝ --- VIEWPORT ---
       viewport←'viewport'Add _.div
       viewport.Add _.jqDraggable'#viewport'
-      maxatoms←64
+      maxatoms←40
       labels←'p',↑⍕¨⍳maxatoms
       labels viewport.Add⍤1⊢_.b
       Add _.Timer 50 0 'tick' 'T' ⍝ Tick with update
