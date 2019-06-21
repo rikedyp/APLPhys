@@ -6,5 +6,6 @@ aplcore
 *.dcf
 *.xyz
 LAMMPS/*
+Maybes/*
 sessions.dcf
 Jupyter/.ipynb_checkpoints/*
