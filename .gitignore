@@ -7,5 +7,6 @@ aplcore
 *.xyz
 LAMMPS/*
 Maybes/*
+JSON_APL/*
 sessions.dcf
 Jupyter/.ipynb_checkpoints/*
