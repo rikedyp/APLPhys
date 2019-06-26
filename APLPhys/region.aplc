@@ -1,0 +1,18 @@
+:Class region
+
+    :field public id
+    :field public shape 
+    :field public periodic
+    :field public pos
+    :field public subregions
+
+    ∇ Compose args
+      :Access public
+      :Implements constructor
+      :If 'box'≡⊃args
+          (shape pos)←1↓args
+      :EndIf
+      ⍝ Default non-periodic
+      periodic←0
+    ∇
+:EndClass
