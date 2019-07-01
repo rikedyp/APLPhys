@@ -1,25 +1,29 @@
- region CreateAtoms args;object
- ⍝ Fill specified region with natoms
+ {region}CreateAtoms args
+ ⍝ Fill first or specified region with natoms
  ⍝ If ⍬≡natoms, fill region with maximum possible atoms for given lattice
  natoms pos vel←args
- :If ⍬≡natoms
-     region.atoms←⍬
-     :If 'hex'≡⊃pos
-         latvec←2⊃pos
-         density←2÷×/latvec 3*2 0.5
-         natoms←region.volume×density
-         pos←natoms region.dim⍴0
-     :ElseIf 'random'≡⊃pos
-         ⎕←'ERROR: Must specify natoms for random positions'
-     :Else
-         ⎕←'Position parameter not recognised'
+ :Trap 6 ⍝ Fill region if specified, else fill first region in ⎕NL-⍳9
+     :If ⍬≡natoms
+         :If 'hex'≡⊃pos
+             latvec←2⊃pos
+             density←2÷×/latvec 3*2 0.5
+             natoms←region.volume×density
+             pos←natoms region.dim⍴0
+         :EndIf
      :EndIf
  :Else
-     :If 'hex'≡⊃pos
-         ⎕←'Hex lattice: ',natoms,' atoms'
-         ⎕←'Specific atoms'
-     :ElseIf 'random'≡⊃pos
-         pos←?natoms region.dim⍴0
-         pos-←(+⌿÷≢)pos ⍝ Center positions at Centre-of-Mass
-     :EndIf
+     ⎕←'No region specified'
+     ⎕←⎕NL ¯9
+ :EndTrap
+ :If 'hex'≡⊃pos
+   ⍝ natoms←
+ :ElseIf 'random'≡⊃pos
+     ⎕RL←{3 4::⍬ ⋄ 2⊃⍵}⊆pos
+     pos←?natoms dim⍴0
+ :EndIf
+ :If 'random'≡⊃vel
+     ⎕RL←{3 4::⍬ ⋄ 2⊃⍵}⊆vel
+     vel←¯0.5+?natoms dim⍴0
+ :ElseIf 0≡2⊃args
+     vel←natoms dim⍴0
  :EndIf
