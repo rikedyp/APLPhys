@@ -1,0 +1,37 @@
+⍝ Argon.aplphys
+⍝ APLPhys script
+⍝ Velocity-verlet integration of Lennard-Jones particles with Nosé-Hoover-Langevin NPT
+⍝ --- TODO ---
+⍝   - 3D
+⍝   - Verlet leap-frog [10]
+⍝   - 2fs time step (2THz - Nyquist?) (check 1fs)
+⍝   - 500 - 1372 atoms 
+⍝   - P* = 0.002418
+⍝   - Thermo relax 200fs 
+⍝   - Baro relax 100fs
+⍝   - ∆T = 0.5K per 30,000 steps (heating rate 8.33×10*9 K/s)
+⍝   - ∆T 8.33×10*9 K/s | 8.33×10*8 K/s
+⍝   - ↑↑↑ Heating and cooling
+⍝   - Temp-dependent intensive properties avg over 1/3 total simulation time steps at each temperature (equilibration, 10k steps)
+⍝   - FCC 5×5×5 crystal
+
+
+⍝ Simulation parameters
+periodic ← 1            ⍝ Periodic boundary conditions?
+fixtemp ← 0.5           ⍝ Temperature for thermostat
+dt ← 0.0032             ⍝ Timestep (PairStyle's units)
+
+⍝ Simulation setup functions
+CreateBox 400 600       ⍝ Dimensions of box (PairStyle's units)
+⍝ CreateAtoms natoms positions velocities
+CreateAtoms 32 random random
+⍝ Pairstyle LJcut sigma epsilon
+PairStyle 'LJcut' 3.5 1 ⍝ 6.78 1
+Thermostat ← TempRescale  ⍝ Choice of thermostat (default none)
+RunStyle ← Verlet
+
+⍝ Output parameters
+⍝ Dump to text file every 100 steps
+TextDump 'pos' 100 './pos.xyz'
+
+Simulate 3000                ⍝ Run the simulation for 3000 steps
