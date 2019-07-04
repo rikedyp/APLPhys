@@ -1,0 +1,6 @@
+ ComputePress←{
+     force←⍺
+     pos vel←⍵
+     mom←vel×mass
+     (÷dim×volume)×something + (÷dim×volume)×+/vel*2
+ }

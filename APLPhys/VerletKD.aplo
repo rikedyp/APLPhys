@@ -1,0 +1,42 @@
+ VerletKD←{
+   ⍝ Velocity-Verlet numerical integrator for the Kolb & Dünweg
+   ⍝ modified Anderson barostat and stochastic thermostat
+   ⍝ === Definitions from the paper (conventional units) ===
+   ⍝ TODO put this in multi-line subscript superscript form
+   ⍝ pos = r
+   ⍝ vel = p÷m where m = mass
+   ⍝ press = instantaneous pressure 
+   ⍝ P = barostat pressure
+   ⍝ momv = Πᵥ 
+   ⍝ volume = V 
+   ⍝ Requires a square or cubic simulation box: 1=(≢∪)boxdim
+   L0←⊃boxdim ⍝ TODO don't do this every time
+     (pos vel acc ene_kin_avg ene_pot_avg temp press)←⍵ ⍝ Previous state
+     (pos0 vel0)←pos vel ⍝ Keep old pos and vel for pressure calculations
+     pos←periodic|pos ⍝ Fold positions if periodic boundary conditions set
+     (force ene_pot_avg virial)←⍺⍺ ⍝ Compute forces ? (might not need)
+     vel+←acc×∆t÷2 ⍝ Half-step velocity
+     ⍝ Compute pressure from updated momenta
+     press←(mass×acc) ComputePress pos0 vel
+     momv+←(press-P)×∆t÷2 ⍝ Half-step volume momentum
+     volume+←momv×∆t÷2×Q ⍝ Half-step volume 
+     Lhalf←volume*÷d ⍝ Half-step box length
+     volume+←momv×∆t÷2×Q ⍝ Complete-step volume 
+     L←volume*÷dim ⍝ Complete-step box length
+     pos+←vel×∆t×÷/L Lhalf*2 ⍝ Full-step positions
+     pos×←(L÷L0) ⍝ Rescale positions due to new box size
+     vel×←(L0÷L) ⍝ Rescale velocities due to new box size
+     momv+←(press-P)×∆t÷2 ⍝ Complete-step volume momentum
+     (force ene_pot_avg virial)←⍺⍺ ⍝ Compute forces
+     vel+←force×∆t÷2 ⍝ Complete-step velocity 
+
+     pos+←dt×vel+0.5×acc×dt ⍝ Step position
+     (ene_kin_avg temp)←ComputeTemp vel
+     chi←fixtemp Thermostat temp ⍝ Velocity recaling factor for thermostat
+     vel←(chi×vel)+0.5×dt×acc ⍝ Half-step velocity
+     (acc ene_pot_avg virial)←⍺⍺ pos ⍝ Compute forces
+     vel+←0.5×dt×acc ⍝ Complete velocity step
+     (ene_kin_avg temp)←ComputeTemp vel
+     pressure←(density×temp)+virial÷volume
+     pos vel acc ene_kin_avg ene_pot_avg temp pressure
+ }
