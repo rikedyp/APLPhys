@@ -5,7 +5,7 @@
      R←S×⍤1⊢boxdim ⍝ Scale to reduced LJ units
    ⍝ Calculate potential inside cutoff
      Rmask←(rcutoff*2)>Rsq←+/R*2
-     Rmask←∘.>⍨⍳≢Rmask ⍝ Compute forces for Fji
+     Rmask∧←∘.>⍨⍳≢Rmask ⍝ Compute forces for Fji
      calcpos←1+(⍴Rmask)⊤¯1+⍸,Rmask ⍝ ≡ ↑⍸Rmask
      Rcalcsq←(,Rmask)⌿,[1 2]Rsq
      rm2←÷Rcalcsq
