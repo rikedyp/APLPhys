@@ -1,0 +1,159 @@
+﻿:Class LJindent :MiPage
+
+    :Field public script    ⍝ Editable simulation APLPhys script
+    :Field public maxatoms  ⍝ Maximum allowed number of particles for demo
+    :Field public natoms    ⍝ Number of particles / balls
+    :Field public dumpfreq  ⍝ Number of steps before visual position update
+    :Field public dt        ⍝ Timestep (reduced LJ units)
+    :Field public pos       ⍝ Ball positions
+    :Field public labels    ⍝ Ball HTML labels
+    :Field public play      ⍝ Simulation play state
+    :Field public step      ⍝ Simulation step number
+    :Field public bs        ⍝ Ball size
+    :Field public bw        ⍝ Border width
+
+    ∇ Compose
+      :Access public
+    ⍝ --- POPUPS AND STYLING ---
+      Use'jBox'
+      Use'dcPanel'
+      Add _.StyleSheet'Assets/LJmelt.css'
+    ⍝ --- CONTROL ---
+      ctrlpanel←'.ctrlpanel'Add _.div
+      ctrlpanel.Add _.h4'Lennard-Jones Melt with spherical indenter'
+      ctrlpanel.Add _.p'Velocity-Verlet integration of a Lennard-Jones melt with a Berendsen thermostat'
+      ctrlform←'.ctrlform'ctrlpanel.Add _.form
+      '#runscript'ctrlform.Add _.Button'Run script'
+      (Add _.Handler'#runscript' 'click' 'RunScript').Hourglass←0
+      '#startstop'ctrlform.Add _.Button'Start/Stop'
+      (Add _.Handler'#startstop' 'click' 'StartStop').Hourglass←0
+      '#steponce'ctrlform.Add _.Button'Step once'
+      Add _.Handler'#steponce' 'click' 'StepOnce'
+      '#step'ctrlform.Add _.p'Step: '
+      Add _.br
+    ⍝ --- INPUT SCRIPT ---
+      script←⊂'⍝ LJmelt.aplphys'
+      script,←⊂'⍝ Demo APLPhys script'
+      script,←⊂'⍝ Simulation parameters'
+      script,←⊂'periodic ← 1'
+      script,←⊂'dt ← 0.0032'
+      script,←⊂'fixtemp ← 0.01'
+      script,←⊂'neighfreq ← 1'
+      script,←⊂' '
+      script,←⊂'CreateBox 30 30'
+      script,←⊂'CreateAtoms 32 random random'
+      script,←⊂'PairStyle ''LJcut'' 2.5 1'
+      script,←⊂'Thermostat ← TempRescale'
+      script,←⊂'RunStyle ← Verlet'
+      script,←⊂' '
+      script,←⊂'dumpfreq ← 100'
+      script←script,¨⎕UCS 10
+      '#aplphys name=aplphys'ctrlform.Add _.textarea script
+    ⍝ --- VIEWPORT ---
+      viewport←'viewport'Add _.div
+      viewport.Add _.jqDraggable'#viewport'
+      maxatoms←40
+      labels←'p',↑⍕¨⍳maxatoms
+      labels viewport.Add⍤1⊢_.b
+      Add _.Timer 50 0 'tick' 'T' ⍝ Tick with update
+      (On'tick' 'Tick').Hourglass←0
+      play←0
+    ∇
+
+    ∇ js←Init
+    ⍝ Link MiPhys with APLPhys parameters
+      #.APLPhys.(acc←⊃ComputeForces pos)
+      dumpfreq←#.APLPhys.dumpfreq
+      :If #.APLPhys.natoms≤maxatoms
+          natoms←#.APLPhys.natoms
+          js←⍬
+      :Else
+          js←Execute _.jBox.Modal'Number of atoms exceeds maximum allowed for this demo (',(⍕maxatoms),' atoms)'
+      :EndIf
+      labels←'p',↑⍕¨⍳natoms
+      boxdim←#.APLPhys.boxdim
+      dt←#.APLPhys.dt
+      pos←#.APLPhys.pos
+      ballsize←#.APLPhys.rcutoff
+    ∇
+
+    ∇ js←Render;b;disp;l;css;height;width
+    ⍝ Viewport size
+      scale←14
+      (height width)←boxdim×scale
+      css←'width:%Wpx;height:%Hpx;border-width:%BWpx;'
+      bs←⍕2×bw←ballsize×scale÷4
+      css←'%W' '%H' '%BW'⎕R(⍕¨width height bw)⊢css
+      js←'parent.frames[1].document.getElementById("viewport").style.cssText+="',css,'";'
+    ⍝ Show natoms
+      :For b :In ⍳maxatoms
+          :If (⊂l←('p',⍕b))∊' '~⍨¨↓labels
+              css←'display:block;width:',(bs),'px;height:',(bs←⍕ballsize×scale÷2),'px;'⍝filter:hue-rotate(',(⍕b×360÷natoms),'deg);'
+              js,←'parent.frames[1].document.getElementById("',(⍕l),'").style.cssText+="',css,'";'
+          ⍝ Ball colour
+          :Else
+              js,←'parent.frames[1].document.getElementById("',(⍕l),'").style.display="None";'
+          :EndIf
+      :EndFor
+      js←Execute(js)
+    ∇
+
+    ∇ js←RunScript
+      :Access public
+      script←''Get'aplphys'
+      script←(⎕UCS 10 13){⍵⊆⍨∧⌿⍺∘.≠⍵}script
+      #.APLPhys.Init
+      #.APLPhys.⎕FX'aplscript' '',script
+      #.APLPhys.aplscript
+      step←0
+      js←Init
+      js,←Render
+    ∇
+
+    ∇ js←StartStop
+      :Access public
+      :Trap 6
+          ⎕←scale
+          ⎕←('Timer start' 'Timer stop')[1+play]
+          js←Execute('Trun()' 'Tstop()')[1+play]
+          play←~play
+      :Else
+          js←Execute _.jBox.Modal'Run the script before starting the simulation'
+      :EndTrap
+    ∇
+
+    ∇ js←StepOnce
+    ⍝ Wrap step once in trap so Tick can be minimal (execute quickly)
+      :Access public
+      :Trap 6 
+          ⎕←scale
+          js←Tick
+      :Else
+          js←Execute _.jBox.Modal'Run the script before starting the simulation'
+      :EndTrap
+    ∇
+
+    ∇ js←Tick;i
+      :Access public
+      #.APLPhys.(pos vel acc←3↑ComputeForces RunStyle⍣dumpfreq⊢pos vel acc ⍬ ⍬ ⍬ ⍬)
+      r←(-bw÷scale)+#.APLPhys.boxdim×⍤1⊢{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Reduced LJ units | Rounded to 3dp
+      js←Execute labels CSS⍤1⊢r
+      step+←dumpfreq
+      js,←Execute'parent.frames[1].$("#step").html("Step: ',step,'")'
+    ∇
+
+    ∇ css←id CSS(top left)
+    ⍝ Scale and translate positions for display
+    ⍝ (top left)←scale×top left
+      top←'calc(',scale,'*',top F'px)'
+      left←'calc(',scale,'*',left F'px)'
+    ⍝ Format positions for CSS
+      css←'{"top":"',top F'",'
+      css,←'"left":"',left F'"}'
+      css←'$("#',(id~' '),'").css(',css,');'
+    ∇
+
+    ⍝ Format numbers for javascript
+    F←{⍵,⍨'¯'⎕R'-'⍕⍺⍺}
+
+:EndClass

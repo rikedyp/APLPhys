@@ -5,9 +5,9 @@
 
     APLPhysPath←'C:\Users\rpark\Documents\APL\Projects\APLPhys\APLPhys\'
 
-    ∇ Compose;tabs;about;ljmelt;ljframe
+    ∇ Compose;tabs;about;ljmelt;ljframe;ljindent;ljiframe
       :Access Public
-      Add _.StyleSheet'Assets/style.css'    
+      Add _.StyleSheet'Assets/style.css'
     ⍝ --- CONTROL PANEL ---
       tabs←'tabs'Add _.Tabs
     ⍝ --- ABOUT ---
@@ -19,7 +19,12 @@
       tabs.Titles,←⊂'LJmelt'
       ljmelt←tabs.Sections,←'.viewframe #LJmelt'New _.div
       ljframe←ljmelt.Add _.iframe
-      ljframe.Set 'src' 'LJmelt.mipage'     
+      ljframe.Set'src' 'LJmelt.mipage'
+    ⍝ --- LJ Melt ---
+      tabs.Titles,←⊂'LJindent'
+      ljindent←tabs.Sections,←'.viewframe #LJindent'New _.div
+      ljiframe←ljindent.Add _.iframe
+      ljiframe.Set'src' 'LJindent.mipage'
     ∇
 
 :EndClass
