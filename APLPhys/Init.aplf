@@ -1,7 +1,8 @@
  {r}←Init
  ⍝ Names that script files can use
  ⍝ Initial values
- random←'random'
+ random←⊂'random'
+ hexagonal←⊂'hexagonal'
  ⍝ Thermostats
  ⍝Berendsen←'Berendsen'
  ⍝ Default values
