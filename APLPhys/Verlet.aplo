@@ -1,6 +1,6 @@
  Verlet←{
    ⍝ Velocity-Verlet numerical integrator
-     (pos vel acc _ _ _ _)←⍵ ⍝ Previous state
+     (pos vel acc ene_kin_avg ene_pot_avg temp pressure)←⍵ ⍝ Previous state
      pos←periodic|pos ⍝ Fold positions if periodic boundary conditions set
      pos+←dt×vel+0.5×acc×dt ⍝ Step position
      (ene_kin_avg temp)←ComputeTemp vel
