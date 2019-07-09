@@ -3,22 +3,22 @@
 ⍝ Velocity-verlet integration of Lennard-Jones particles with Berendsen thermostat
 
 ⍝ Simulation parameters
-periodic ← 1            ⍝ Periodic boundary conditions?
-fixtemp ← 0.5           ⍝ Temperature for thermostat
-dt ← 0.0032             ⍝ Timestep (PairStyle's units)
+ periodic←1            ⍝ Periodic boundary conditions?
+ fixtemp←0.5           ⍝ Temperature for thermostat
+ ∆t←0.0032             ⍝ Timestep (PairStyle's units)
 
 ⍝ Simulation setup functions
-CreateBox 400 600       ⍝ Dimensions of box (PairStyle's units)
+ CreateBox 400 600       ⍝ Dimensions of box (PairStyle's units)
 ⍝ CreateAtoms natoms positions velocities
-CreateAtoms 12 random random
+ CreateAtoms 12 random random
 ⍝ Pairstyle LJcut sigma epsilon
-PairStyle 'LJcut' 2.5 1
-Thermostat ← TempRescale  ⍝ Choice of thermostat (default none)
-RunStyle ← Verlet
+ PairStyle'LJcut' 2.5 1
+ Thermostat←TempRescale  ⍝ Choice of thermostat (default none)
+ RunStyle←Verlet
 
 ⍝ Output parameters
 ⍝ Dump to text file every 100 steps
-TextDump 'pos' 100 './Dumps/pos.xyz'
-TextDump 'vel' 1 './Dumps/vel.xyz'
+ TextDump'pos' 100 './Dumps/pos.xyz'
+ TextDump'vel' 1 './Dumps/vel.xyz'
 
-Simulate 3000                ⍝ Run the simulation for 3000 steps
+ Simulate 3000                ⍝ Run the simulation for 3000 steps

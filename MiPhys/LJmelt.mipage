@@ -36,7 +36,7 @@
       script,←⊂'⍝ Demo APLPhys script'
       script,←⊂'⍝ Simulation parameters'
       script,←⊂'periodic ← 1'
-      script,←⊂'dt ← 0.0032'
+      script,←⊂'∆t ← 0.0032'
       script,←⊂'fixtemp ← 0.01'
       script,←⊂'neighfreq ← 1'
       script,←⊂' '
@@ -72,7 +72,7 @@
       :EndIf
       labels←'p',↑⍕¨⍳natoms
       boxdim←#.APLPhys.boxdim
-      dt←#.APLPhys.dt
+      ∆t←#.APLPhys.∆t
       pos←#.APLPhys.pos
       ballsize←#.APLPhys.rcutoff
     ∇
