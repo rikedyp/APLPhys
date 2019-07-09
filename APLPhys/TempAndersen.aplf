@@ -1,0 +1,10 @@
+ TempAndersen←{
+⍝ nu×∆t: collision frequency × timestep
+     vel←⍵ ⍝ old velocities
+     sigma←fixtemp*0.5 ⍝ sqrt(temp)
+     kickatoms←(nu×∆t)>?natoms⍴0 ⍝ Choose atoms from collision frequency
+     nkick←+/kickatoms
+     newvel←nkick dim⍴NormRand(nkick×dim)sigma ⍝ Generate new random velocities
+     vel[⍸kickatoms;]←newvel ⍝ Apply kicks to atoms
+     vel
+ }

@@ -1,0 +1,18 @@
+⍝ LJAndersen.aplphys
+⍝ Demo APLPhys script
+⍝ Simulation parameters
+periodic ← 1
+∆t ← 0.0032
+nu←1
+fixtemp ← 0.01
+neighfreq ← 1
+ 
+CreateBox 30 30
+CreateAtoms 32 random random
+PairStyle 'LJcut' 2.5 1
+Thermostat ← TempAndersen
+RunStyle ← Verlet
+ 
+dumpfreq ← 100
+
+Simulate 3000
