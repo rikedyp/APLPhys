@@ -1,9 +1,11 @@
  CreateAtoms(n posopt velopt)
  natoms←n
- :If pos∊random
-     pos←?natoms dim⍴0
-     pos←pos-⍤1⊢(+⌿÷≢)pos
+ density←natoms÷volume
+ :If posopt∊random
+     pos←?natoms dim⍴0 ⍝ Generate random positions
  :EndIf
- :If vel∊random
-     vel←¯0.5+?natoms dim⍴0
+ :If velopt∊random
+     vel←?natoms dim⍴0
+     ⍝ Remove CoM drift
+     vel←vel-⍤1⊢(+⌿÷≢)vel
  :EndIf
