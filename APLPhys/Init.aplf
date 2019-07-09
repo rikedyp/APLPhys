@@ -3,10 +3,8 @@
  ⍝ Initial values
  random←⊂'random'
  hexagonal←⊂'hexagonal'
- ⍝ Thermostats
- ⍝Berendsen←'Berendsen'
  ⍝ Default values
- thermostat←'None'
+ Thermostat←{⍵}
  neighfreq←1
  ⍝ Output dump options
  dumps dumpfreqs dumpfiles←⍬ ⍬ ⍬
