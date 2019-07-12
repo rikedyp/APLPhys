@@ -1,0 +1,17 @@
+ filenames DumpSave(steps dumps);folder
+
+ :For d :In ⍳≢dumps
+     :If (⊃⌽(folder←'.'(≠⊆⊢)⊃filenames[d]))≡'csv'
+         :Trap 22
+             ⎕MKDIR folder←'.',⊃⊃{(~'.csv'⍷⍵)⊆⍵}folder
+
+             :For i :In ⍳steps÷dumpfreqs[d]
+                 (⊃(⍎(⊃,/(dumps[d],'log')))[i])⎕CSV folder,'/',(⍕i),'.csv'
+             :EndFor
+         :EndTrap
+     :Else
+         :For i :In ⍳steps÷dumpfreqs[d]
+             (⊂(⊂' '),(⊂'Step: ',⍕(i×dumpfreqs[d])),↓(⍕((⍎(⊃,/(dumps[d],'log')))[i])))⎕NPUT filenames[d],2
+         :EndFor
+     :EndIf
+ :EndFor
