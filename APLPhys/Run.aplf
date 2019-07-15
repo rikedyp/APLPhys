@@ -1,5 +1,6 @@
  Run file;i;instructions;currentscript;source;newsource
  ⍝ Load user script
+ file←{⍵/⍨∨\⍵≠' '}{⍵↓⍨-⊥⍨' '=⍵}file ⍝ Remove leading and trailing blanks
  :If '.aplphys'≡¯8↑file
      instructions←⊃⎕NGET file 1
  :Else
