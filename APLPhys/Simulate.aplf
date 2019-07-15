@@ -1,4 +1,4 @@
- Simulate nsteps;i
+ Simulate nsteps;i;b
  ⍝ Initial forces
  (acc ene_pot_avg virial)←ComputeForces pos
  :If 0=≢dumps
@@ -7,11 +7,13 @@
          (pos vel acc)←3↑log
      :EndFor
  :Else
+     poslog vellog acclog←⍬ ⍬ ⍬
      :For i :In ⍳nsteps
          log←ComputeForces RunStyle pos vel acc ⍬ ⍬ ⍬ ⍬
          (pos vel acc)←3↑log
-         :If 0<≢d←⍸0=dumpfreqs|i
-             (⊂dumpfiles[d])DumpText i,⊂⍎¨dumps[d]
+         :If 0<≢d←(b←0=dumpfreqs|i)/dumps
+             {⍎((⍵,'log'),',←⊂',⍵)}¨d
          :EndIf
      :EndFor
+     (dumpfiles)DumpSave(i,⊂dumps)
  :EndIf

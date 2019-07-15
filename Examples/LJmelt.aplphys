@@ -18,7 +18,7 @@
 
 ⍝ Output parameters
 ⍝ Dump to text file every 100 steps
- TextDump'pos' 100 './Dumps/pos.xyz'
- TextDump'vel' 1 './Dumps/vel.xyz'
+ TextDump'pos' 100 './Dumps/pos.txt'
+ TextDump'vel' 100 './Dumps/vel.csv'
 
  Simulate 3000                ⍝ Run the simulation for 3000 steps
