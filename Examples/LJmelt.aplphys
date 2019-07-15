@@ -1,6 +1,6 @@
 ⍝ LJmelt.aplphys
 ⍝ Demo APLPhys script
-⍝ Velocity-verlet integration of Lennard-Jones particles with Berendsen thermostat
+⍝ Velocity-verlet integration of Lennard-Jones particles with TempRescale thermostat
 
 ⍝ Simulation parameters
  periodic←1            ⍝ Periodic boundary conditions?

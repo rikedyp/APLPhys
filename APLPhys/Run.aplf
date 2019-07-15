@@ -1,6 +1,10 @@
  Run file;i;instructions;currentscript;source;newsource
  ⍝ Load user script
- instructions←⊃⎕NGET file 1
+ :If '.aplphys'≡¯8↑file
+     instructions←⊃⎕NGET file 1
+ :Else
+     instructions←⊃⎕NGET(file,'.aplphys')1
+ :EndIf
  ⍝ Set defaults / clear arrays
  Init
  ⍝ Run user script
