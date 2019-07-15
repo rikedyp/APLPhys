@@ -10,8 +10,8 @@
              :EndFor
          :EndTrap
      :Else
-         :For i :In ⍳steps÷dumpfreqs[d]
-             (⊂(⊂' '),(⊂'Step: ',⍕(i×dumpfreqs[d])),↓(⍕((⍎(⊃,/(dumps[d],'log')))[i])))⎕NPUT filenames[d],2
-         :EndFor
+
+         (⊂↓{⍕⍪,((⊂'step:'),¨dumpfreqs[d]×⍳⍴⍵),[1.5]⍵}⍎(⊃,/(dumps[d],'log')))⎕NPUT filenames[d],1
+
      :EndIf
  :EndFor

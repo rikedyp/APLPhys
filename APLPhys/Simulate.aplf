@@ -13,8 +13,6 @@
          (pos vel acc)←3↑log
          :If 0<≢d←(b←0=dumpfreqs|i)/dumps
              {⍎((⍵,'log'),',←⊂',⍵)}¨d
-
-             ⍝(⊂b/dumpfiles)DumpText i,⊂⍎¨d
          :EndIf
      :EndFor
      (dumpfiles)DumpSave(i,⊂dumps)
