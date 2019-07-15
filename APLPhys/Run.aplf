@@ -1,15 +1,13 @@
  Run file;i;instructions;currentscript;source;newsource
  ⍝ Load user script
  file←{⍵/⍨∨\⍵≠' '}{⍵↓⍨-⊥⍨' '=⍵}file ⍝ Remove leading and trailing blanks
- :If '.aplphys'≡¯8↑file
-     instructions←⊃⎕NGET file 1
- :Else
-     instructions←⊃⎕NGET(file,'.aplphys')1
+ :If '.aplphys'≢¯8↑file
+     file,←'.aplphys'
  :EndIf
+ instructions←⊃⎕NGET file 1
  ⍝ Set defaults / clear arrays
  Init
  ⍝ Run user script
- ⍝ ⍎¨instructions
  ⎕FX'currentscript' '',instructions
  source←⎕NR'currentscript'
  currentscript
