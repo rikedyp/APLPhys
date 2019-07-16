@@ -8,7 +8,7 @@
  ∆t←0.0032             ⍝ Timestep (PairStyle's units)
 
 ⍝ Simulation setup functions
- CreateBox 30 30       ⍝ Dimensions of box (PairStyle's units)
+ CreateBox 10 10       ⍝ Dimensions of box (PairStyle's units)
 ⍝ CreateAtoms natoms positions velocities
  CreateAtoms 32 random random
 ⍝ Pairstyle LJcut sigma epsilon
@@ -21,5 +21,8 @@
 ⍝ Dump'pos' 100 './Dumps/pos.txt' ⍝ Dump pos to Dumps/pos.txt
 ⍝ Dump'vel' 100 './Dumps/vel.csv' ⍝ Dump vel to *.csv in Dumps/vel folder (for e.g. ParaView)
  Dump'temp' 100 './Dumps/temp.txt'
+ Dump'pressure' 100 './Dumps/pressure.txt'
+ Dump'ene_kin_avg' 100 './Dumps/ene_kin_avg.txt'
+ Dump'ene_pot_avg' 100 './Dumps/ene_pot_avg.txt'
 
  Simulate 10000                ⍝ Run the simulation for 10000 steps
