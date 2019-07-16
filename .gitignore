@@ -12,5 +12,5 @@ sessions.dcf
 Jupyter/.ipynb_checkpoints/*
 Dumps/
 APLPhys/RunStyle.aplo
-APLPhys/currentscript.aplf
 APLPhys/Thermostat.aplf
+APLPhys/currentscript.aplf
