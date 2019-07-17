@@ -6,13 +6,14 @@
          (pos vel acc)←3↑ComputeForces RunStyle pos vel acc ⍬ ⍬ ⍬ ⍬
      :EndFor
  :Else
-     log←⍬ ⍬ ⍬ ⍬ ⍬ ⍬ ⍬
+     log←⎕NS''
+     {⍎'log.',⍵,'←⍬'}¨dumps
      lookup←'pos' 'vel' 'acc' 'ene_kin_avg' 'ene_pot_avg' 'temp' 'pressure'
      :For i :In ⍳nsteps
          quantities←ComputeForces RunStyle pos vel acc ⍬ ⍬ ⍬ ⍬
          (pos vel acc)←3↑quantities
          :If 0<≢d←(b←0=dumpfreqs|i)/dumps
-             {{log[⍵],←⊂quantities[⍵]}¨+/(⍳≢lookup)×(⊂⍵)⍷lookup}¨d
+             {⍵{⍎'log.',⍺,',←⍵'}quantities[1⍳⍨(⊂⍵)⍷lookup]}¨d
          :EndIf
      :EndFor
      (dumpfiles)DumpSave(i,⊂dumps)
