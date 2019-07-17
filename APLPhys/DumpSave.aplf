@@ -6,12 +6,12 @@
              ⎕MKDIR folder←'.',⊃⊃{(~'.csv'⍷⍵)⊆⍵}folder
 
              :For i :In ⍳steps÷dumpfreqs[d]
-                 (⊃(⍎(⊃,/(dumps[d],'log')))[i])⎕CSV folder,'/',(⍕i),'.csv'
+                 (⊃(⊃log[+/(⍳≢lookup)×dumps[d]⍷lookup])[i])⎕CSV folder,'/',(⍕i),'.csv'
              :EndFor
          :EndTrap
      :Else
 
-         (⊂↓{⍕⍪,((⊂'step:'),¨dumpfreqs[d]×⍳⍴⍵),[1.5]⍵}⍎(⊃,/(dumps[d],'log')))⎕NPUT filenames[d],1
+         (⊂↓{⍕⍪,((⊂'step:'),¨dumpfreqs[d]×⍳⍴⍵),[1.5]⍵}⊃log[+/(⍳≢lookup)×dumps[d]⍷lookup])⎕NPUT filenames[d],1
 
      :EndIf
  :EndFor
