@@ -3,4 +3,8 @@
      rcutoff epsilon←1↓style
      phicutoff←-/4÷rcutoff*12 6
      ComputeForces←LJcut
+ :ElseIf 'LJcutOpt'≡⊃style
+     rcutoff epsilon←1↓style
+     phicutoff←-/4÷rcutoff*12 6
+     ComputeForces←LJcutOpt
  :EndIf

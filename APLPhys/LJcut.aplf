@@ -1,29 +1,24 @@
- LJcut←{
-   ⍝ pos←⍵
-     Table←{⍺⍺⍤1⍤1 99⍨⍵}
-     S←-Table ⍵ ⍝ Relative displacements between pairs of particles
-     S-←{periodic:((0.5∘<)-(¯0.5∘>))⍵ ⋄ 0}S ⍝ Wrap displacements if periodic boundary conditions set
-     R←S×⍤1⊢boxdim ⍝ Scale to reduced LJ units
-   ⍝ Calculate potential inside cutoff
-     Rmask←(rcutoff*2)>Rsq←+/R*2
-     Rmask←∘.>⍨⍳≢Rmask ⍝ Compute forces for Fji
-     calcpos←⍸,Rmask ⍝ ≡ ↑⍸Rmask
-     Rcalcsq←(,Rmask)⌿,[1 2]Rsq
-     rm2←÷Rcalcsq
-     rm6←rm2*3
-     rm12←rm6*2
-     phi←epsilon×4×(rm12-rm6)-phicutoff
-     dphi←epsilon×24×rm2×(2×rm12)-rm6
-     ene_pot←+/0.5×phi
-     virial←-+/dphi×Rcalcsq
-   ⍝ Accumulate forces
-     acc←natoms dim⍴0
-     t0←calcpos⌷⍤0 99⊢((2*⍨≢S),dim)⍴S
-     t1←dphi×⍤0 1⊢t0
-     t1⍪←-t1 ⍝ Fji = -Fij
-     ids←,1+(⍴Rmask)⊤¯1+calcpos
-     t2←ids{+⌿⍵}⌸t1
-     acc[∪ids;]←t2
-   ⍝ Return forces/accelerations, average potential energy and virial (for pressure calculation)
-     acc(ene_pot÷natoms)(-virial÷dim)
- }
+ result←LJcut pos;S;R;Rmask;Rsq;calcpos;Rcalcsq;rm2;rm6;rm12;phi;dphi;ene_pot;virial;acc;ids;f
+  ⍝ Lennard-Jones force with cutoff, defined as a dfn in APLPhys
+  ⍝ Number of atoms natoms
+  ⍝ Number of dimensions dim
+  ⍝ pos is a matrix with natoms rows and dim columns
+ S←∘.-⍨↓pos             ⍝ Calculate distances between all pairs of atoms
+ S-←((0.5∘<)-(¯0.5∘>))S ⍝ Periodic boundary conditions: If distance > 0.5, subtract 1. If distance < ¯0.5, add 1.
+ R←S×⊂boxdim        ⍝ Scale back to reduced LJ units
+  ⍝ Calculate forces for distances inside cutoff
+ Rmask←(rcutoff*2)>Rsq←+/¨R*2
+ (1 1⍉Rmask)←0
+ calcpos←⍸Rmask
+ Rcalcsq←Rsq[calcpos]
+ rm2←÷Rcalcsq
+ rm6←rm2*3
+ rm12←rm6*2
+ phi←epsilon×4×(rm12-rm6)-phicutoff
+ dphi←epsilon×24×rm2×(2×rm12)-rm6
+ ene_pot←+/0.5×phi
+ virial←-+/dphi×Rcalcsq
+ acc←natoms dim⍴0
+ (ids f)←↓[1](⊃¨calcpos){⍺,+/⍵}⌸dphi×S[calcpos] ⍝ Sum forces for each particle due to its neighbours
+ {⍬≢⍵:acc[∪ids;]←↑⍵}f ⍝ Assign forces to corresponding rows in acc
+ result←acc(ene_pot÷natoms)(-virial÷dim)
