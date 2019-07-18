@@ -1,8 +1,12 @@
  CreateAtoms(n posopt velopt)
- natoms←n
+ natoms←n+≢pos
  density←natoms÷volume
  :If posopt∊random
-     pos←?natoms dim⍴0 ⍝ Generate random positions
+     :If pos≡⍬
+         pos←?n dim⍴0 ⍝ Generate random positions
+     :Else
+         pos⍪←?n dim⍴0
+     :EndIf
  :EndIf
  :If velopt∊random
      vel←?natoms dim⍴0

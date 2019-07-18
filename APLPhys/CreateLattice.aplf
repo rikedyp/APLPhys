@@ -1,0 +1,28 @@
+ regionParams CreateLattice(type seperation);types;typeVectors;vec;regionpos;regiondim;latpos
+
+ regionpos←regionParams[1]
+ regiondim←regionParams[2]
+
+ types←'square' 'hexagonal'
+ typeVectors←((1 0)(0 1))((1 0.5)(0,(0.5*⍨3)÷2))
+
+ ⍝xNumParticles←⌊boxDim[1]÷seperation
+ ⍝yNumParticles←⌊boxDim[2]÷seperation
+
+ vec←typeVectors[⍸(⊂type)⍷types]
+
+ latpos←(⊂boxdim)÷⍨regionpos+{⊃¯1++/⍵}¨vec×(⍳⊃⌊regiondim÷seperation)
+ latpos←↑,latpos
+ latpos←{⍵⌿⍨(∧/(⍵<1)∧(⍵>0))}latpos
+
+
+ :If pos≡⍬
+     pos←latpos
+ :Else
+     pos⍪←latpos
+ :EndIf
+ natoms←≢pos
+ density←natoms÷volume
+
+ vel←?natoms dim⍴0
+ vel←vel-⍤1⊢(+⌿÷≢)vel
