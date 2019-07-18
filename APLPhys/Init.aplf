@@ -5,6 +5,5 @@
  hexagonal←⊂'hexagonal'
  ⍝ Default values
  Thermostat←{⍵}
- neighfreq←1
  ⍝ Output dump options
  dumps dumpfreqs dumpfiles←⍬ ⍬ ⍬
