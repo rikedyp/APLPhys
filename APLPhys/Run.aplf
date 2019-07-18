@@ -2,6 +2,7 @@
  ⍝ Load user script
  file←{⍵/⍨∨\⍵≠' '}{⍵↓⍨-⊥⍨' '=⍵}file ⍝ Remove leading and trailing blanks
  file←{⍵/⍨∨\⍵≠'"'}{⍵↓⍨-⊥⍨'"'=⍵}file ⍝ Remove leading and trailing double quotes
+ ⍝ ↑↑↑ From aplcart.info ↑↑↑
  :If '.aplphys'≢¯8↑file
      file,←'.aplphys'
  :EndIf
