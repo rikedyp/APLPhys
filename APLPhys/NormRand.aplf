@@ -1,6 +1,6 @@
  NormRand←{               ⍝ Random numbers with a normal distribution
      n sigma←⍵
      rnd←?n 2⍴0           ⍝ two random variables within 0;1
-     z←{((¯2×⍟⍺)*0.5)×2○○2×⍵}/rnd ⍝ Box-Muller distribution
+     z←{((¯2×⍟⍺)*0.5)×1○○2×⍵}/rnd ⍝ Box-Muller distribution
      z×sigma
  }
