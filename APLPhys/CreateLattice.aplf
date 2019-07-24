@@ -11,7 +11,7 @@
 
  vec←typeVectors[⍸(⊂type)⍷types]
 
- latpos←(⊂boxdim)÷⍨regionpos+{⊃¯1++/⍵}¨vec×(⍳⊃⌊regiondim÷seperation)
+ latpos←(⊂boxdim)÷⍨regionpos+{⊃+/⍵}¨vec×(seperation×⍳⊃¯1+⌊regiondim÷seperation)
  latpos←↑,latpos
  latpos←{⍵⌿⍨(∧/(⍵<1)∧(⍵>0))}latpos
 
