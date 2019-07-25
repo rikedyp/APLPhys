@@ -1,6 +1,6 @@
 ⍝ LJmelt.aplphys
 ⍝ Demo APLPhys script
-⍝ Velocity-verlet integration of Lennard-Jones particles with Berendsen thermostat
+⍝ Velocity-verlet integration of Lennard-Jones particles with TempRescale thermostat
 
 ⍝ Simulation parameters
  periodic←1            ⍝ Periodic boundary conditions?
@@ -8,17 +8,21 @@
  ∆t←0.0032             ⍝ Timestep (PairStyle's units)
 
 ⍝ Simulation setup functions
- CreateBox 400 600       ⍝ Dimensions of box (PairStyle's units)
+ CreateBox 10 10       ⍝ Dimensions of box (PairStyle's units)
 ⍝ CreateAtoms natoms positions velocities
- CreateAtoms 12 random random
+ CreateAtoms 32 random random
 ⍝ Pairstyle LJcut sigma epsilon
  PairStyle'LJcut' 2.5 1
- Thermostat←TempRescale  ⍝ Choice of thermostat (default none)
+ Thermostat←TempRescale ⍝ Choice of thermostat (default none)
  RunStyle←Verlet
 
 ⍝ Output parameters
 ⍝ Dump to text file every 100 steps
- TextDump'pos' 100 './Dumps/pos.txt'
- TextDump'vel' 100 './Dumps/vel.csv'
+⍝ Dump'pos' 100 './Dumps/pos.txt' ⍝ Dump pos to Dumps/pos.txt
+⍝ Dump'vel' 100 './Dumps/vel.csv' ⍝ Dump vel to *.csv in Dumps/vel folder (for e.g. ParaView)
+ Dump'temp' 100 './Dumps/temp.txt'
+ Dump'pressure' 100 './Dumps/pressure.txt'
+ Dump'ene_kin_avg' 100 './Dumps/ene_kin_avg.txt'
+ Dump'ene_pot_avg' 100 './Dumps/ene_pot_avg.txt'
 
- Simulate 3000                ⍝ Run the simulation for 3000 steps
+ Simulate 10000                ⍝ Run the simulation for 10000 steps

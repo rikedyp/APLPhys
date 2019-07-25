@@ -1,0 +1,29 @@
+ LJcutOpt←{
+   ⍝ pos←⍵
+     Table←{⍺⍺⍤1⍤1 99⍨⍵}
+     S←-Table ⍵ ⍝ Relative displacements between pairs of particles
+     S-←{periodic:((0.5∘<)-(¯0.5∘>))⍵ ⋄ 0}S ⍝ Wrap displacements if periodic boundary conditions set
+     R←S×⍤1⊢boxdim ⍝ Scale to reduced LJ units
+   ⍝ Calculate potential inside cutoff
+     Rmask←(rcutoff*2)>Rsq←+/R*2
+     Rmask∧←∘.>⍨⍳≢Rmask ⍝ Compute forces for Fji
+     calcpos←⍸,Rmask ⍝ ≡ ↑⍸Rmask
+     Rcalcsq←(,Rmask)⌿,[1 2]Rsq
+     rm2←÷Rcalcsq
+     rm6←rm2*3
+     rm12←rm6*2
+     phi←epsilon×4×(rm12-rm6)-phicutoff
+     dphi←epsilon×24×rm2×(2×rm12)-rm6
+     ene_pot←+/0.5×phi
+     virial←-+/dphi×Rcalcsq
+   ⍝ Accumulate forces
+     acc←natoms dim⍴0
+     t0←(⊂calcpos)⌷,[1 2]S
+     t1←dphi×⍤0 1⊢t0
+     t1⍪←-t1 ⍝ Fji = -Fij
+     ids←,1+(⍴Rmask)⊤¯1+calcpos
+     t2←ids{+⌿⍵}⌸t1
+     acc[∪ids;]←t2
+   ⍝ Return forces/accelerations, average potential energy and virial (for pressure calculation)
+     acc(ene_pot÷natoms)(-virial÷dim)
+ }

@@ -3,8 +3,6 @@
 ⍝ MiPhys index page
 ⍝ The MiServer based GUI frontend to APLPhys demos
 
-    APLPhysPath←'C:\Users\rpark\Documents\APL\Projects\APLPhys\APLPhys\'
-
     ∇ Compose;tabs;about;ljmelt;ljframe
       :Access Public
       Add _.StyleSheet'Assets/style.css'    

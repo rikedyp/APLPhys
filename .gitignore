@@ -10,4 +10,8 @@ Maybes/*
 JSON_APL/*
 sessions.dcf
 Jupyter/.ipynb_checkpoints/*
-dumps/
+Dumps/
+APLPhys/RunStyle.aplo
+APLPhys/Thermostat.aplf
+APLPhys/currentscript.aplf
+APLPhys/aplscript.aplf
