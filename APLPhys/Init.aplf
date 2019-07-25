@@ -1,6 +1,6 @@
  {r}←Init
  ⍝ Names that script files can use
- pos←⍬
+ pos←0 2⍴⍬
  ⍝ Initial values
  random←⊂'random'
  hexagonal←⊂'hexagonal'

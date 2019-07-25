@@ -2,11 +2,7 @@
  natoms←n+≢pos
  density←natoms÷volume
  :If posopt∊random
-     :If pos≡⍬
-         pos←?n dim⍴0 ⍝ Generate random positions
-     :Else
-         pos⍪←?n dim⍴0
-     :EndIf
+     pos⍪←?n dim⍴0 ⍝ Generate random positions
  :EndIf
  :If velopt∊random
      vel←?natoms dim⍴0

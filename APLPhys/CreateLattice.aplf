@@ -16,11 +16,9 @@
  latpos←{⍵⌿⍨(∧/(⍵<1)∧(⍵>0))}latpos
 
 
- :If pos≡⍬
-     pos←latpos
- :Else
-     pos⍪←latpos
- :EndIf
+
+ pos⍪←latpos
+
  natoms←≢pos
  density←natoms÷volume
 
