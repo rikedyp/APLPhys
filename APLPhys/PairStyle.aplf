@@ -1,10 +1,6 @@
  PairStyle style
- :If 'LJcut'≡⊃style
+ :If 'LJcut'≡5↑⊃style
      rcutoff epsilon←1↓style
      phicutoff←-/4÷rcutoff*12 6
-     ComputeForces←LJcut
- :ElseIf 'LJcutOpt'≡⊃style
-     rcutoff epsilon←1↓style
-     phicutoff←-/4÷rcutoff*12 6
-     ComputeForces←LJcutOpt
+     ComputeForces←⍎⊃style
  :EndIf
