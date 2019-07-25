@@ -1,15 +1,20 @@
- Simulate nsteps;i;b
+ Simulate nsteps;i;b;quantities
  ⍝ Initial forces
  (acc ene_pot_avg virial)←ComputeForces pos
- ⍝ Set up log arrays
- (poslog vellog acclog)←3⍴⊂0 2⍴⍬
- (ene_kin_avglog ene_pot_avglog templog pressurelog)←4⍴⊂⍬
-
- :For i :In ⍳nsteps
-     steplog←ComputeForces RunStyle pos vel acc ⍬ ⍬ ⍬ ⍬
-     (pos vel acc ene_kin_avg ene_pot_avg temp pressure)←steplog
-     :If 0<≢d←(b←0=dumpfreqs|i)/dumps
-         {⍎((⍵,'log'),',←⊂',⍵)}¨d
-     :EndIf
- :EndFor
- (dumpfiles)DumpSave(i,⊂dumps)
+ :If 0=≢dumps
+     :For i :In ⍳nsteps
+         (pos vel acc)←3↑ComputeForces RunStyle pos vel acc ⍬ ⍬ ⍬ ⍬
+     :EndFor
+ :Else
+     log←⎕NS''
+     {⍎'log.',⍵,'←⍬'}¨dumps
+     lookup←'pos' 'vel' 'acc' 'ene_kin_avg' 'ene_pot_avg' 'temp' 'pressure'
+     :For i :In ⍳nsteps
+         quantities←ComputeForces RunStyle pos vel acc ⍬ ⍬ ⍬ ⍬
+         (pos vel acc)←3↑quantities
+         :If 0<≢d←(b←0=dumpfreqs|i)/dumps
+             {⍵{⍎'log.',⍺,',←⍵'}quantities[1⍳⍨(⊂⍵)⍷lookup]}¨d
+         :EndIf
+     :EndFor
+     (dumpfiles)DumpSave(i,⊂dumps)
+ :EndIf
