@@ -12,6 +12,7 @@
     :Field public bs        ⍝ Ball size
     :Field public bw        ⍝ Border width
 
+
     ∇ Compose
       :Access public
     ⍝ --- POPUPS AND STYLING ---
@@ -25,10 +26,13 @@
       ctrlform←'.ctrlform'ctrlpanel.Add _.form
       '#runscript'ctrlform.Add _.Button'Run script'
       (Add _.Handler'#runscript' 'click' 'RunScript').Hourglass←0
-      '#startstop'ctrlform.Add _.Button'Start/Stop'
-      (Add _.Handler'#startstop' 'click' 'StartStop').Hourglass←0
-      '#steponce'ctrlform.Add _.Button'Step once'
-      Add _.Handler'#steponce' 'click' 'StepOnce'
+      '#startstop' 'onclick="StartStop();"'ctrlform.Add _.Button'Start/Stop'
+      ⍝ Slightly hackish handler:
+      ⍝Add _.Handler'#startstop' 'click' 'Tick'
+     
+     ⍝ (Add _.Handler'#startstop' 'click' 'StartStop').Hourglass←0
+      '#steponce' 'onclick="RenderCanvas();"'ctrlform.Add _.Button'Step once'
+      ⍝Add _.Handler'#steponce' 'click' 'StepOnce'
       '#step'ctrlform.Add _.p'Step: '
       Add _.br
     ⍝ --- INPUT SCRIPT ---
@@ -50,14 +54,17 @@
       script←script,¨⎕UCS 10
       '#aplphys name=aplphys'ctrlform.Add _.textarea script
     ⍝ --- VIEWPORT ---
-      viewport←'viewport'Add _.div
+      viewport←'viewport'Add _.canvas
       viewport.Add _.jqDraggable'#viewport'
       maxatoms←40
       labels←'p',↑⍕¨⍳maxatoms
       labels viewport.Add⍤1⊢_.b
-      Add _.Timer 50 0 'tick' 'T' ⍝ Tick with update
+      Add _.Timer 1600 0 'tick' 'T' ⍝ Tick with update
       (On'tick' 'Tick').Hourglass←0
       play←0
+    ⍝ --- Global pos queue ---
+      Add _.Script'' '/render.js'
+     
     ∇
 
     ∇ js←Init
@@ -86,15 +93,15 @@
       css←'%W' '%H' '%BW'⎕R(⍕¨width height bw)⊢css
       js←'parent.frames[0].document.getElementById("viewport").style.cssText+="',css,'";'
     ⍝ Show natoms
-      :For b :In ⍳maxatoms
-          :If (⊂l←('p',⍕b))∊' '~⍨¨↓labels
-              css←'display:block;width:',(bs),'px;height:',(bs←⍕ballsize×scale÷2),'px;'⍝filter:hue-rotate(',(⍕b×360÷natoms),'deg);'
-              js,←'parent.frames[0].document.getElementById("',(⍕l),'").style.cssText+="',css,'";'
-          ⍝ Ball colour
-          :Else
-              js,←'parent.frames[0].document.getElementById("',(⍕l),'").style.display="None";'
-          :EndIf
-      :EndFor
+      ⍝:For b :In ⍳maxatoms
+       ⍝   :If (⊂l←('p',⍕b))∊' '~⍨¨↓labels
+        ⍝      css←'display:block;width:',(bs),'px;height:',(bs←⍕ballsize×scale÷2),'px;'⍝filter:hue-rotate(',(⍕b×360÷natoms),'deg);'
+         ⍝   ⍝  js,←'parent.frames[0].document.getElementById("',(⍕l),'").style.cssText+="',css,'";'
+⍝           Ball colour
+⍝          :Else
+⍝              js,←'parent.frames[0].document.getElementById("',(⍕l),'").style.display="None";'
+⍝          :EndIf
+⍝      :EndFor
       js←Execute(js)
     ∇
 
@@ -108,15 +115,17 @@
       step←0
       js←Init
       js,←Render
+      js,←Execute'posQueue=[];'
     ∇
 
     ∇ js←StartStop
       :Access public
       :Trap 6
-          ⎕←scale
+          ⍝⎕←scale
           ⎕←('Timer start' 'Timer stop')[1+play]
-          js←Execute('Trun()' 'Tstop()')[1+play]
+          js←Execute('parent.frames[0].Trun();' 'parent.frames[0].Tstop();')[1+play]
           play←~play
+          js,←Execute'StartStop();'
       :Else
           js←Execute _.jBox.Modal'Run the script before starting the simulation'
       :EndTrap
@@ -125,7 +134,7 @@
     ∇ js←StepOnce
     ⍝ Wrap step once in trap so Tick can be minimal (execute quickly)
       :Access public
-      :Trap 6 
+      :Trap 6
           ⎕←scale
           js←Tick
       :Else
@@ -133,13 +142,20 @@
       :EndTrap
     ∇
 
-    ∇ js←Tick;i
+    ∇ js←Tick;i;poslist
+      ⎕←'TICK'
       :Access public
-      #.APLPhys.(pos vel acc←3↑ComputeForces RunStyle⍣dumpfreq⊢pos vel acc ⍬ ⍬ ⍬ ⍬)
-      r←(-bw÷scale)+#.APLPhys.boxdim×⍤1⊢{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Reduced LJ units | Rounded to 3dp
-      js←Execute labels CSS⍤1⊢r
-      step+←dumpfreq
-      js,←Execute'parent.frames[0].$("#step").html("Step: ',step,'")'
+      poslist←⍬
+      :For i :In ⍳200
+          #.APLPhys.(pos vel acc←3↑ComputeForces RunStyle⍣dumpfreq⊢pos vel acc ⍬ ⍬ ⍬ ⍬)
+          r←{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Reduced LJ units | Rounded to 3dp  
+         
+      ⍝js←Execute labels CSS⍤1⊢r
+          step+←dumpfreq
+          poslist,←⊂r
+      :EndFor
+      ⍝js,←Execute'parent.frames[0].$("#step").html("Step: ',step,'")'
+      js←Execute'posQueue.push(',(¯1↓1↓⎕JSON↓¨poslist),')'
     ∇
 
     ∇ css←id CSS(top left)
