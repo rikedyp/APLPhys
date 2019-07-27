@@ -38,7 +38,6 @@
       script,←⊂'periodic ← 1'
       script,←⊂'∆t ← 0.0032'
       script,←⊂'fixtemp ← 0.01'
-      script,←⊂'neighfreq ← 1'
       script,←⊂' '
       script,←⊂'CreateBox 30 30'
       script,←⊂'CreateAtoms 32 random random'
