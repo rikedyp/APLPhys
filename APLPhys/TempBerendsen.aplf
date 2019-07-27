@@ -1,0 +1,5 @@
+ TempBerendsen←{
+  ⍝ vel × ← scaling factor
+  ⍝ requires global tau set
+     ⍵×0.5*⍨1+(∆t÷tau)×¯1+fixtemp÷⍺
+ }

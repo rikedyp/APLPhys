@@ -1,0 +1,23 @@
+⍝ LJBallistic.aplphys
+⍝ Demo APLPhys script
+
+periodic ← 1
+∆t ← 0.0032
+fixtemp ← 1
+tau←0.1
+ 
+CreateBox 30 30
+⍝CreateAtoms 32 random random
+(3 3)(7 5)CreateLattice 'square' 1.2
+
+⍝ Create ballistic atom
+natoms+←1
+pos⍪←0.2 0.8
+vel×←0.1
+vel⍪←0 ¯5
+
+PairStyle 'LJcut' 2.5 1
+Thermostat ← TempBerendsen
+RunStyle ← Verlet
+ 
+dumpfreq ← 1
