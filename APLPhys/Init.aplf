@@ -1,6 +1,10 @@
  {r}←Init
  ⍝ Names that script files can use
- pos←0 2⍴⍬
+ ⍝ natoms←0
+ groups←⍬
+ fixgroups←⍬
+ allforce←{}
+⍝ pos←0 dim⍴⍬
  ⍝ Initial values
  random←⊂'random'
  hexagonal←⊂'hexagonal'
