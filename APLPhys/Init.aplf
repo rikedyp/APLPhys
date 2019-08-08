@@ -3,7 +3,7 @@
  ⍝ natoms←0
  groups←⍬
  fixgroups←⍬
- allforce←{}
+ allforce←0
 ⍝ pos←0 dim⍴⍬
  ⍝ Initial values
  random←⊂'random'
