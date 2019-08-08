@@ -18,3 +18,6 @@ APLPhys/aplscript.aplf
 Isolate/isolate.dws
 APLPhys/ComputeForces.aplf
 Jupyter/Python.ipynb
+Devf/NaClDissolve.dws
+Devf/ParaView/NaCl_Test.pvsm
+Devf/ParaView/NaCl_Test2.pvsm
