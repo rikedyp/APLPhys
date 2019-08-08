@@ -27,12 +27,7 @@
       '#runscript'ctrlform.Add _.Button'Run script'
       (Add _.Handler'#runscript' 'click' 'RunScript').Hourglass←0
       '#startstop' 'onclick="StartStop();"'ctrlform.Add _.Button'Start/Stop'
-      ⍝ Slightly hackish handler:
-      ⍝Add _.Handler'#startstop' 'click' 'Tick'
-     
-     ⍝ (Add _.Handler'#startstop' 'click' 'StartStop').Hourglass←0
       '#steponce' 'onclick="RenderCanvas();"'ctrlform.Add _.Button'Step once'
-      ⍝Add _.Handler'#steponce' 'click' 'StepOnce'
       '#step'ctrlform.Add _.p'Step: '
       Add _.br
     ⍝ --- INPUT SCRIPT ---
@@ -45,7 +40,7 @@
       script,←⊂' '
       script,←⊂'CreateBox 30 30'
       script,←⊂'CreateAtoms 32 random random'
-      script,←⊂'PairStyle ''LJcut'' 2.5 1'
+      script,←⊂'PairStyle ''LJcutOpt'' 2.5 1'
       script,←⊂'Thermostat ← TempRescale'
       script,←⊂'RunStyle ← Verlet'
       script,←⊂' '
@@ -55,9 +50,6 @@
     ⍝ --- VIEWPORT ---
       viewport←'viewport'Add _.canvas
       viewport.Add _.jqDraggable'#viewport'
-      maxatoms←1000
-      labels←'p',↑⍕¨⍳maxatoms
-      labels viewport.Add⍤1⊢_.b
       Add _.Timer 1600 0 'tick' 'T' ⍝ Tick with update
       (On'tick' 'Tick').Hourglass←0
       play←0
@@ -70,13 +62,8 @@
     ⍝ Link MiPhys with APLPhys parameters
       #.APLPhys.(acc←⊃ComputeForces pos)
       dumpfreq←#.APLPhys.dumpfreq
-      :If #.APLPhys.natoms≤maxatoms
-          natoms←#.APLPhys.natoms
-          js←⍬
-      :Else
-          js←Execute _.jBox.Modal'Number of atoms exceeds maximum allowed for this demo (',(⍕maxatoms),' atoms)'
-      :EndIf
-      labels←'p',↑⍕¨⍳natoms
+      natoms←#.APLPhys.natoms
+      js←⍬
       boxdim←#.APLPhys.boxdim
       ∆t←#.APLPhys.∆t
       pos←#.APLPhys.pos
@@ -85,22 +72,11 @@
 
     ∇ js←Render;b;disp;l;css;height;width
     ⍝ Viewport size
-      scale←14
+      scale←10
       (height width)←boxdim×scale
       css←'width:%Wpx;height:%Hpx;border-width:%BWpx;'
-      bs←⍕2×bw←ballsize×scale÷4
-      css←'%W' '%H' '%BW'⎕R(⍕¨width height bw)⊢css
+      css←'%W' '%H'⎕R(⍕¨width height)⊢css
       js←'parent.frames[0].document.getElementById("viewport").style.cssText+="',css,'";'
-    ⍝ Show natoms
-      ⍝:For b :In ⍳maxatoms
-       ⍝   :If (⊂l←('p',⍕b))∊' '~⍨¨↓labels
-        ⍝      css←'display:block;width:',(bs),'px;height:',(bs←⍕ballsize×scale÷2),'px;'⍝filter:hue-rotate(',(⍕b×360÷natoms),'deg);'
-         ⍝   ⍝  js,←'parent.frames[0].document.getElementById("',(⍕l),'").style.cssText+="',css,'";'
-⍝           Ball colour
-⍝          :Else
-⍝              js,←'parent.frames[0].document.getElementById("',(⍕l),'").style.display="None";'
-⍝          :EndIf
-⍝      :EndFor
       js←Execute(js)
     ∇
 
@@ -147,8 +123,8 @@
       poslist←⍬
       :For i :In ⍳200
           #.APLPhys.(pos vel acc←3↑ComputeForces RunStyle⍣dumpfreq⊢pos vel acc ⍬ ⍬ ⍬ ⍬)
-          r←{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Reduced LJ units | Rounded to 3dp  
-         
+          r←{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Reduced LJ units | Rounded to 3dp
+     
       ⍝js←Execute labels CSS⍤1⊢r
           step+←dumpfreq
           poslist,←⊂r
