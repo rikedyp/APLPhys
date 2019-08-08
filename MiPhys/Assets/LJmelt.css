@@ -42,21 +42,9 @@
   border: outset;
   right: 3.5vw;
   top: 5vh;
-  width: 60vw;
-  height: 50vw;
+  /*width: 60vw;
+  height: 50vw;*/
 }
 .collapsebtn {
   margin-left: 40%; 
 }
-b {
-  height:40px;
-  width:40px;
-  border-radius:50%;
-  background:radial-gradient(circle at 40% 30%, rgba(127,255,255,1) 10%,rgba(0,255,255,0.9) 30%,transparent 70%);
-  position:absolute;
-  display:block;
-  z-index: -1;
-}
-/*.viewframe {
-  height: 100vh;
-}*/
