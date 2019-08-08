@@ -2,3 +2,6 @@
  boxdim←args
  dim←≢boxdim
  volume←×/boxdim
+ pos←0 dim⍴⍬
+ vel←0 dim⍴⍬
+ acc←0 dim⍴⍬
