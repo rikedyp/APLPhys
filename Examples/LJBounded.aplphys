@@ -1,0 +1,46 @@
+⍝ LJBounded.aplphys
+⍝ Demo APLPhys script
+⍝ Simulation parameters
+periodic ← 1
+∆t ← 0.0032
+fixtemp ← 0.1
+allforce←0 0.1 ⍝ gravity
+tau←0.1
+ 
+CreateBox 30 30
+
+⍝ Free atom grid
+pos←↑,0.1×⍳3 3
+vel←¯0.5+?9 2⍴0
+vel-⍤1←(+⌿÷≢)vel
+acc←9 2⍴0
+natoms←≢pos
+groups←9
+fixgroups,←0
+
+⍝ Floor
+natoms+←new←97
+pos⍪←↑0.99,⍨¨0.01×⍳new
+vel⍪←new 2⍴0
+acc⍪←new 2⍴0
+groups,←new
+fixgroups,←1
+
+⍝ Right wall
+⍝natoms+←new←49
+⍝pos⍪←↑0.99,¨0.02×⍳new
+⍝vel⍪←new 2⍴0
+⍝acc⍪←new 2⍴0
+⍝groups,←new
+⍝fixgroups,←1
+
+density←natoms÷volume
+
+ComputeForces←{
+  (natoms dim⍴0)(1)(1)
+}
+PairStyle 'LJcutOpt' 2.5 1
+Thermostat ← TempRescale
+RunStyle ← Verlet
+ 
+dumpfreq ← 20

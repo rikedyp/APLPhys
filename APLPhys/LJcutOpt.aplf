@@ -25,5 +25,5 @@
      t2←ids{+⌿⍵}⌸t1
      acc[∪ids;]←t2
    ⍝ Return forces/accelerations, average potential energy and virial (for pressure calculation)
-     acc(ene_pot÷natoms)(-virial÷dim)
+     (acc÷⍤1 0⊢mass)(ene_pot÷natoms)(-virial÷dim)
  }
