@@ -1,0 +1,59 @@
+⍝ BrazilNut.aplphys
+⍝ Sun, J., Battaglia, F. and Subramaniam, S., 2006. Dynamics and structures of segregation in a dense, vibrating granular bed. Physical Review E, 74(6), p.061307.     
+
+⍝ GranHooke Globals   
+⍝ =================
+g ← 9.81          ⍝ Gravity (m/s2) 
+n0← 10 ⍝ 7600          ⍝ Number of small particles
+n1 ← 1            ⍝ Number of large particles 
+
+⍝ Granular units scaling factors
+d0 ← 1            ⍝ Distance scaling factor / small particle diameter 
+d1 ← 3.16×d0      ⍝ Large particle diameter
+m0 ← 1            ⍝ Small particle mass
+m1 ← 1            ⍝ Large particle mass 
+cr0 ← 0.9   ⍝ Small particle restitution coefficient
+cr1 ← 0.86  ⍝ Large particle restitution coefficient
+
+mu ← 0.5       ⍝ Friction coefficient   
+b ← 0          ⍝ Background damping coefficient (0:0 ⋄ 1: m0÷sqrt g÷d0)
+
+vf ← 0.107×÷t0 ⍝ Vibrational frequency
+va ← 7.5×d0    ⍝ Vibrational amplitude
+
+∆t ← 2E¯4×t0
+
+⍝ Simulation container shapes
+⍝ ===========================  
+radius ← 12.25×d0    
+bedheight ← 43×d0 ⍝ ? Cylinder center should be (r,r) height is infinite in Z
+cylinder ← radius bedheight
+cuboid ← x y z   
+
+⍝ Forces
+⍝ ======
+⍝ Gravity
+Fg ← m×g    
+⍝ GranHooke https://lammps.sandia.gov/doc/pair_gran.html 
+⍝ F = (kn×S-meff×gn×vel)-(kt×St+meff×gt×vel)
+GranHooke ← {}
+
+⍝ Simulation setup functions
+ CreateBox 10 10       ⍝ Dimensions of box (PairStyle's units)
+⍝ CreateAtoms natoms positions velocities
+ CreateAtoms 32 random random
+⍝ Pairstyle LJcut sigma epsilon
+ PairStyle'LJcut' 2.5 1
+ Thermostat←TempRescale ⍝ Choice of thermostat (default none)
+ RunStyle←Verlet
+
+⍝ Output parameters
+⍝ Dump to text file every 100 steps
+⍝ Dump'pos' 100 './Dumps/pos.txt' ⍝ Dump pos to Dumps/pos.txt
+⍝ Dump'vel' 100 './Dumps/vel.csv' ⍝ Dump vel to *.csv in Dumps/vel folder (for e.g. ParaView)
+ Dump'temp' 100 './Dumps/temp.txt'
+ Dump'pressure' 100 './Dumps/pressure.txt'
+ Dump'ene_kin_avg' 100 './Dumps/ene_kin_avg.txt'
+ Dump'ene_pot_avg' 100 './Dumps/ene_pot_avg.txt'
+
+ Simulate 10000                ⍝ Run the simulation for 10000 steps
