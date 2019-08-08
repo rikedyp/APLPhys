@@ -7,6 +7,7 @@
      (ene_kin_avg temp)←ComputeTemp vel
      vel←temp Thermostat vel ⍝ Thermostat rescale velocities
      (acc ene_pot_avg virial)←⍺⍺ pos ⍝ Compute forces
+     acc[⍸groups/fixgroups;]←0 ⍝ Fixed atoms don't experience forces
      vel+←0.5×∆t×acc ⍝ Complete velocity step
      (ene_kin_avg temp)←ComputeTemp vel
      pressure←(density×temp)+virial÷volume
