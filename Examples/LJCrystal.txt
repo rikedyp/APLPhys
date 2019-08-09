@@ -1,0 +1,19 @@
+⍝ LJCrystal.aplphys
+⍝ Demo APLPhys script
+⍝ Simulation parameters
+periodic ← 1
+∆t ← 0.0032
+fixtemp ← 0.00001
+ 
+CreateBox 30 30
+
+natoms←new←×/lat←24 24
+pos←new dim⍴↑,0.04×⍳lat
+vel←¯0.5+?new dim⍴0
+density←natoms÷volume
+
+PairStyle 'LJcutOpt' 2.5 1
+Thermostat ← TempRescale
+RunStyle ← Verlet
+ 
+dumpfreq ← 10

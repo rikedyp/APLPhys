@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"><meta name="viewport" content="width=device-width"><title>http://www.kevs3d.co.uk/dev/phoria/test0.html</title><link rel="stylesheet" type="text/css" href="resource://content-accessible/viewsource.css"></head><body id="viewsource" class="highlight" style="-moz-tab-size: 4" contextmenu="actions"><pre id="line1"><span></span><span class="doctype">&lt;!DOCTYPE html&gt;</span><span>
+<span id="line2"></span></span><span>&lt;<span class="start-tag">html</span>&gt;</span><span>
+<span id="line3"></span>   </span><span>&lt;<span class="start-tag">head</span>&gt;</span><span>
+<span id="line4"></span>      </span><span>&lt;<span class="start-tag">meta</span> <span class="attribute-name">charset</span>="<a class="attribute-value">utf-8</a>"&gt;</span><span>
+<span id="line5"></span>      </span><span>&lt;<span class="start-tag">title</span>&gt;</span><span>Phoria - Dev test page 0</span><span>&lt;/<span class="end-tag">title</span>&gt;</span><span>
+<span id="line6"></span>      </span><span>&lt;<span class="start-tag">script</span> <span class="attribute-name">src</span>="<a class="attribute-value" href="view-source:http://www.kevs3d.co.uk/dev/phoria/scripts/gl-matrix.js">scripts/gl-matrix.js</a>"&gt;</span><span></span><span>&lt;/<span class="end-tag">script</span>&gt;</span><span>
+<span id="line7"></span>      </span><span>&lt;<span class="start-tag">script</span> <span class="attribute-name">src</span>="<a class="attribute-value" href="view-source:http://www.kevs3d.co.uk/dev/phoria/scripts/phoria-util.js">scripts/phoria-util.js</a>"&gt;</span><span></span><span>&lt;/<span class="end-tag">script</span>&gt;</span><span>
+<span id="line8"></span>      </span><span>&lt;<span class="start-tag">script</span> <span class="attribute-name">src</span>="<a class="attribute-value" href="view-source:http://www.kevs3d.co.uk/dev/phoria/scripts/phoria-entity.js">scripts/phoria-entity.js</a>"&gt;</span><span></span><span>&lt;/<span class="end-tag">script</span>&gt;</span><span>
+<span id="line9"></span>      </span><span>&lt;<span class="start-tag">script</span> <span class="attribute-name">src</span>="<a class="attribute-value" href="view-source:http://www.kevs3d.co.uk/dev/phoria/scripts/phoria-scene.js">scripts/phoria-scene.js</a>"&gt;</span><span></span><span>&lt;/<span class="end-tag">script</span>&gt;</span><span>
+<span id="line10"></span>      </span><span>&lt;<span class="start-tag">script</span> <span class="attribute-name">src</span>="<a class="attribute-value" href="view-source:http://www.kevs3d.co.uk/dev/phoria/scripts/phoria-renderer.js">scripts/phoria-renderer.js</a>"&gt;</span><span></span><span>&lt;/<span class="end-tag">script</span>&gt;</span><span>
+<span id="line11"></span>      </span><span>&lt;<span class="start-tag">script</span> <span class="attribute-name">src</span>='<a class="attribute-value" href="view-source:http://www.kevs3d.co.uk/dev/phoria/scripts/dat.gui.min.js">scripts/dat.gui.min.js</a>'&gt;</span><span></span><span>&lt;/<span class="end-tag">script</span>&gt;</span><span>
+<span id="line12"></span>      </span><span>&lt;<span class="start-tag">script</span>&gt;</span><span>
+<span id="line13"></span>var requestAnimFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame ||
+<span id="line14"></span>                       window.mozRequestAnimationFrame || window.msRequestAnimationFrame || 
+<span id="line15"></span>                       function(c) {window.setTimeout(c, 15)};
+<span id="line16"></span>/**
+<span id="line17"></span>   Phoria
+<span id="line18"></span>   pho·ri·a (fôr-)
+<span id="line19"></span>   n. The relative directions of the eyes during binocular fixation on a given object
+<span id="line20"></span>*/
+<span id="line21"></span>
+<span id="line22"></span>// bind to window onload event
+<span id="line23"></span>window.addEventListener('load', onloadHandler, false);
+<span id="line24"></span>
+<span id="line25"></span>function onloadHandler()
+<span id="line26"></span>{
+<span id="line27"></span>   // get the canvas DOM element and the 2D drawing context
+<span id="line28"></span>   var canvas = document.getElementById('canvas');
+<span id="line29"></span>   
+<span id="line30"></span>   // create the scene and setup camera, perspective and viewport
+<span id="line31"></span>   var scene = new Phoria.Scene();
+<span id="line32"></span>   scene.camera.position = {x:0.0, y:5.0, z:-15.0};
+<span id="line33"></span>   scene.perspective.aspect = canvas.width / canvas.height;
+<span id="line34"></span>   scene.viewport.width = canvas.width;
+<span id="line35"></span>   scene.viewport.height = canvas.height;
+<span id="line36"></span>   
+<span id="line37"></span>   // create a canvas renderer
+<span id="line38"></span>   var renderer = new Phoria.CanvasRenderer(canvas);
+<span id="line39"></span>   
+<span id="line40"></span>   // add a grid to help visualise camera position etc.
+<span id="line41"></span>   var plane = Phoria.Util.generateTesselatedPlane(8,8,0,20);
+<span id="line42"></span>   scene.graph.push(Phoria.Entity.create({
+<span id="line43"></span>      points: plane.points,
+<span id="line44"></span>      edges: plane.edges,
+<span id="line45"></span>      polygons: plane.polygons,
+<span id="line46"></span>      style: {
+<span id="line47"></span>         drawmode: "wireframe",
+<span id="line48"></span>         shademode: "plain",
+<span id="line49"></span>         linewidth: 0.5,
+<span id="line50"></span>         objectsortmode: "back"
+<span id="line51"></span>      }
+<span id="line52"></span>   }));
+<span id="line53"></span>   var c = Phoria.Util.generateUnitCube();
+<span id="line54"></span>   var cube = Phoria.Entity.create({
+<span id="line55"></span>      points: c.points,
+<span id="line56"></span>      edges: c.edges,
+<span id="line57"></span>      polygons: c.polygons
+<span id="line58"></span>   });
+<span id="line59"></span>   scene.graph.push(cube);
+<span id="line60"></span>   scene.graph.push(new Phoria.DistantLight());
+<span id="line61"></span>
+<span id="line62"></span>   var pause = false;
+<span id="line63"></span>   var fnAnimate = function() {
+<span id="line64"></span>      if (!pause)
+<span id="line65"></span>      {
+<span id="line66"></span>         // rotate local matrix of the cube
+<span id="line67"></span>         cube.rotateY(0.5*Phoria.RADIANS);
+<span id="line68"></span>         
+<span id="line69"></span>         // execute the model view 3D pipeline and render the scene
+<span id="line70"></span>         scene.modelView();
+<span id="line71"></span>         renderer.render(scene);
+<span id="line72"></span>      }
+<span id="line73"></span>      requestAnimFrame(fnAnimate);
+<span id="line74"></span>   };
+<span id="line75"></span>
+<span id="line76"></span>   // key binding
+<span id="line77"></span>   document.addEventListener('keydown', function(e) {
+<span id="line78"></span>      switch (e.keyCode)
+<span id="line79"></span>      {
+<span id="line80"></span>         case 27: // ESC
+<span id="line81"></span>            pause = !pause;
+<span id="line82"></span>            break;
+<span id="line83"></span>      }
+<span id="line84"></span>   }, false);
+<span id="line85"></span>   // add GUI controls
+<span id="line86"></span>   var gui = new dat.GUI();
+<span id="line87"></span>   var f = gui.addFolder('Perspective');
+<span id="line88"></span>   f.add(scene.perspective, "fov").min(5).max(175);
+<span id="line89"></span>   f.add(scene.perspective, "near").min(1).max(100);
+<span id="line90"></span>   f.add(scene.perspective, "far").min(1).max(1000);
+<span id="line91"></span>   //f.open();
+<span id="line92"></span>   f = gui.addFolder('Camera LookAt');
+<span id="line93"></span>   f.add(scene.camera.lookat, "x").min(-100).max(100);
+<span id="line94"></span>   f.add(scene.camera.lookat, "y").min(-100).max(100);
+<span id="line95"></span>   f.add(scene.camera.lookat, "z").min(-100).max(100);
+<span id="line96"></span>   f.open();
+<span id="line97"></span>   f = gui.addFolder('Camera Position');
+<span id="line98"></span>   f.add(scene.camera.position, "x").min(-100).max(100);
+<span id="line99"></span>   f.add(scene.camera.position, "y").min(-100).max(100);
+<span id="line100"></span>   f.add(scene.camera.position, "z").min(-100).max(100);
+<span id="line101"></span>   f.open();
+<span id="line102"></span>   f = gui.addFolder('Camera Up');
+<span id="line103"></span>   f.add(scene.camera.up, "x").min(-10).max(10).step(0.1);
+<span id="line104"></span>   f.add(scene.camera.up, "y").min(-10).max(10).step(0.1);
+<span id="line105"></span>   f.add(scene.camera.up, "z").min(-10).max(10).step(0.1);
+<span id="line106"></span>   f = gui.addFolder('Rendering');
+<span id="line107"></span>   f.add(cube.style, "drawmode", ["point", "wireframe", "solid"]);
+<span id="line108"></span>   f.add(cube.style, "shademode", ["plain", "lightsource"]);
+<span id="line109"></span>   f.add(cube.style, "fillmode", ["fill", "filltwice", "inflate", "fillstroke", "hiddenline"]);
+<span id="line110"></span>   f.open();
+<span id="line111"></span>   
+<span id="line112"></span>   // start animation
+<span id="line113"></span>   requestAnimFrame(fnAnimate);
+<span id="line114"></span>}
+<span id="line115"></span>      </span><span>&lt;/<span class="end-tag">script</span>&gt;</span><span>
+<span id="line116"></span>   </span><span>&lt;/<span class="end-tag">head</span>&gt;</span><span>
+<span id="line117"></span>   
+<span id="line118"></span>   </span><span>&lt;<span class="start-tag">body</span> <span class="attribute-name">style</span>="<a class="attribute-value">background-color: #bfbfbf</a>"&gt;</span><span>
+<span id="line119"></span>      </span><span>&lt;<span class="start-tag">canvas</span> <span class="attribute-name">id</span>="<a class="attribute-value">canvas</a>" <span class="attribute-name">width</span>="<a class="attribute-value">768</a>" <span class="attribute-name">height</span>="<a class="attribute-value">512</a>" <span class="attribute-name">style</span>="<a class="attribute-value">background-color: #eee</a>"&gt;</span><span></span><span>&lt;/<span class="end-tag">canvas</span>&gt;</span><span>
+<span id="line120"></span>      </span><span>&lt;<span class="start-tag">div</span>&gt;</span><span></span><span>&lt;<span class="start-tag">a</span> <span class="attribute-name">style</span>="<a class="attribute-value">color:#225588;text-decoration:none;</a>" <span class="attribute-name">href</span>="<a class="attribute-value" href="view-source:http://www.kevs3d.co.uk/dev/phoria/index.html">./index.html</a>"&gt;</span><span><span class="entity"><span>&amp;</span>lt;</span><span class="entity"><span>&amp;</span>lt;</span> Phoria demos</span><span>&lt;/<span class="end-tag">a</span>&gt;</span><span></span><span>&lt;/<span class="end-tag">div</span>&gt;</span><span>
+<span id="line121"></span>   </span><span>&lt;/<span class="end-tag">body</span>&gt;</span><span>
+<span id="line122"></span></span><span>&lt;/<span class="end-tag">html</span>&gt;</span><span></span></pre><menu type="context" id="actions"><menuitem id="goToLine" label="Go to Line…" accesskey="L"></menuitem><menuitem id="wrapLongLines" label="Wrap Long Lines" type="checkbox"></menuitem><menuitem id="highlightSyntax" label="Syntax Highlighting" type="checkbox" checked="true"></menuitem></menu></body></html>

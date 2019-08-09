@@ -1,0 +1,18 @@
+:Class Phoria :MiPage
+
+    ∇ Compose
+	  :Access public
+	  viewport← 'viewport width="600" height="400" style="background-color: #edf"' Add _.canvas
+	  viewport.Add _.jqDraggable'#viewport'
+    ⍝ https://github.com/kevinroast/phoria.js
+      Add _.Script'' '/phoria.js/gl-matrix.js'
+      Add _.Script'' '/phoria.js/phoria-util.js'
+      Add _.Script'' '/phoria.js/phoria-entity.js'
+      Add _.Script'' '/phoria.js/phoria-scene.js'
+      Add _.Script'' '/phoria.js/phoria-renderer.js'
+      Add _.Script'' '/phoria.js/phoria-view.js'
+      Add _.Script'' '/phoria.js/dat.gui.min.js'
+      Add _.Script'' '/ptest.js'	  
+	∇
+
+:EndClass
