@@ -70,12 +70,12 @@
     ⍝ Link MiPhys with APLPhys parameters
       #.APLPhys.(acc←⊃ComputeForces pos)
       dumpfreq←#.APLPhys.dumpfreq
-      :If #.APLPhys.natoms≤maxatoms
-          natoms←#.APLPhys.natoms
-          js←⍬
-      :Else
-          js←Execute _.jBox.Modal'Number of atoms exceeds maximum allowed for this demo (',(⍕maxatoms),' atoms)'
-      :EndIf
+⍝      :If #.APLPhys.natoms≤maxatoms
+      natoms←#.APLPhys.natoms
+      js←⍬
+⍝      :Else
+⍝          js←Execute _.jBox.Modal'Number of atoms exceeds maximum allowed for this demo (',(⍕maxatoms),' atoms)'
+⍝      :EndIf
       labels←'p',↑⍕¨⍳natoms
       boxdim←#.APLPhys.boxdim
       ∆t←#.APLPhys.∆t
@@ -147,8 +147,8 @@
       poslist←⍬
       :For i :In ⍳200
           #.APLPhys.(pos vel acc←3↑ComputeForces RunStyle⍣dumpfreq⊢pos vel acc ⍬ ⍬ ⍬ ⍬)
-          r←{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Reduced LJ units | Rounded to 3dp  
-         
+          r←{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Reduced LJ units | Rounded to 3dp
+     
       ⍝js←Execute labels CSS⍤1⊢r
           step+←dumpfreq
           poslist,←⊂r
