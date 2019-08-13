@@ -103,7 +103,8 @@
       #.APLPhys.aplscript
       step←0
       js←Init
-      js,←Render
+⍝      js,←Render               
+      ⍝js,←Execute'createAtoms();'
       js,←Execute'posQueue=[];'
     ∇
 
