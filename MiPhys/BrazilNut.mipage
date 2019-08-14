@@ -48,21 +48,14 @@
       '#aplphys name=aplphys'ctrlform.Add _.textarea script
     ⍝ --- VIEWPORT ---
       viewport←'viewport width="700" height="400" style="background-color: #edf"'Add _.canvas
-      viewport.Add _.jqDraggable'#viewport'
+      ⍝viewport.Add _.jqDraggable'#viewport'
       Add _.Timer 1600 0 'tick' 'T' ⍝ Tick with update
       (On'tick' 'Tick').Hourglass←0
       play←0
     ⍝ --- Add HTML5 canvas rendering scripts ---
-      Add _.Script'' '/3drender.js'
-    ⍝ https://github.com/kevinroast/phoria.js
-      Add _.Script'' '/phoria.js/gl-matrix.js'
-      Add _.Script'' '/phoria.js/phoria-util.js'
-      Add _.Script'' '/phoria.js/phoria-entity.js'
-      Add _.Script'' '/phoria.js/phoria-scene.js'
-      Add _.Script'' '/phoria.js/phoria-renderer.js'
-      Add _.Script'' '/phoria.js/phoria-view.js'
-      Add _.Script'' '/phoria.js/dat.gui.min.js'
-      Add _.Script'' '/ptest.js'
+      Add _.Script'' '/3drender.js'  
+      ⍝Add _.Script'' '/babylon.js' ⍝ Local copy
+      Add _.Script'' 'https://preview.babylonjs.com/babylon.js'
     ∇
 
     ∇ js←Init
@@ -104,7 +97,7 @@
       step←0
       js←Init
 ⍝      js,←Render               
-      ⍝js,←Execute'createAtoms();'
+      js,←Execute'WakeBaby();'
       js,←Execute'posQueue=[];'
     ∇
 
