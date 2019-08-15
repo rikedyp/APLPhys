@@ -1,3 +1,5 @@
+//https://playground.babylonjs.com/#LXXL6Y#1
+
 var posQueue = [];
 var pos;
 var reQueue = 0;
@@ -24,6 +26,9 @@ async function WakeBaby() {
 	catch (error) {
 		baby = new BABYLON.Engine(canvas, true);
 		scene = createScene(baby);
+		baby.runRenderLoop(function(){
+			scene.render();
+		});
 	}
 }
 
@@ -42,7 +47,7 @@ function StartStop(){
 function getAPLPhys(){
 	console.log(posQueue.length);
 	return new Promise(function (resolve) {
-		if (reQueue < 5 && posQueue.length < 1000) {
+		if (reQueue < 3 && posQueue.length < 600) {
 			requesting=1;
 			reQueue+=1;
 			var data = new FormData();
@@ -86,12 +91,11 @@ var updateParticle = function(particle){
 
 var createScene = function(engine) {
 	// BJS Scene 
-	//scene.dispose();
 	var scene = new BABYLON.Scene(engine);
 	// Scene optimisations https://doc.babylonjs.com/how_to/optimizing_your_scene
-	scene.autoClear = false; // Color buffer
-	scene.autoClearDepthAndStencil = false; // Depth and stencil, obviously
-	scene.blockMaterialDirtyMechanism = true; 
+	//scene.autoClear = false; // Color buffer
+	//scene.autoClearDepthAndStencil = false; // Depth and stencil, obviously
+	//scene.blockMaterialDirtyMechanism = true; 
 	scene.useMaterialMeshMap = true;
     // Set up camera
 	var camera = new BABYLON.ArcRotateCamera("Camera", 30, 1, 20, new BABYLON.Vector3(7, 5, 4), scene);
@@ -108,7 +112,7 @@ var createScene = function(engine) {
 	pos = posQueue[0];
 	// Set up SPS
 	SPS = new BABYLON.SolidParticleSystem("SPS", scene);
-	var sphere = BABYLON.MeshBuilder.CreateSphere("s", {diameter:0.3, segments: 1}, scene);
+	var sphere = BABYLON.MeshBuilder.CreateSphere("s", {diameter:0.3, segments: 10}, scene);
 	SPS.addShape(sphere, pos.length);      // 20 spheres
 	sphere.dispose();
 	var mesh = SPS.buildMesh();  // Build and display the mesh
@@ -119,7 +123,5 @@ var createScene = function(engine) {
 function RenderBabylon() {
 	if (posQueue.length === 0) {return;}
 	stepScene();
-	baby.runRenderLoop(function(){
-		scene.render();
-	});
+	
 }
