@@ -9,6 +9,9 @@ body.w {
   filter:invert(0);
   background: rgba(0,0,0,0.1);
 }
+html {
+	overflow: hidden;
+}
 .ctrlpanel {
   display: block;
   position: fixed;

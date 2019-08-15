@@ -5,6 +5,9 @@
   color: white;
   background: rgba(1,1,1,0.9);
 }
+html {
+	overflow: hidden;
+}
 /*body.w {
   filter:invert(0);
   background: rgba(0,0,0,0.1);
