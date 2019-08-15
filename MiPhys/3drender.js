@@ -7,6 +7,8 @@ var Rrunning=0;
 var spin = 30.0;
 var scale = 12.0;
 var SPS;
+var step;
+var dumpfreq;
 
 // Get canvas DOM
 var canvas = document.getElementById("viewport");
@@ -14,6 +16,9 @@ var baby;
 
 // Function attached to "Run script" button
 async function WakeBaby() {
+	// Reset step counter
+	step = 0;
+	document.getElementById("step").innerHTML = "Step: " + step;
 	// Get first set of frames to render
 	posQueue = [];
 	await getAPLPhys();
@@ -69,14 +74,18 @@ function getAPLPhys(){
 
 function Rnext() {
 	// Render the next frame
+	
+	
 	RenderBabylon();    
     getAPLPhys();
+	document.getElementById("step").innerHTML = "Step: " + step;
     Ttimer = setTimeout("Rnext()", 17); // Every 17ms
 }
 
 function stepScene() {
 	// Get latest positions
 	pos = posQueue.shift();
+	step += dumpfreq;
 	// Update particle positions
 	SPS.updateParticle = updateParticle;
 	SPS.setParticles();
@@ -96,7 +105,7 @@ var createScene = function(engine) {
 	//scene.autoClear = false; // Color buffer
 	//scene.autoClearDepthAndStencil = false; // Depth and stencil, obviously
 	//scene.blockMaterialDirtyMechanism = true; 
-	scene.useMaterialMeshMap = true;
+	//scene.useMaterialMeshMap = true;
     // Set up camera
 	var camera = new BABYLON.ArcRotateCamera("Camera", 30, 1, 20, new BABYLON.Vector3(7, 5, 4), scene);
 	camera.attachControl(canvas, true);

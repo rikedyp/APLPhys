@@ -98,7 +98,8 @@
       js←Init
 ⍝      js,←Render               
       js,←Execute'WakeBaby();'
-      js,←Execute'posQueue=[];'
+      js,←Execute'posQueue=[];' 
+      js,←Execute'dumpfreq=',dumpfreq,';'
     ∇
 
     ∇ js←StartStop
