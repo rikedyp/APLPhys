@@ -35,7 +35,7 @@
       script,←⊂'⍝ Simulation parameters'
       script,←⊂'periodic ← 1'
       script,←⊂'∆t ← 0.0032'
-      script,←⊂'fixtemp ← 0.01'
+      script,←⊂'fixtemp ← 0.5'
       script,←⊂' '
       script,←⊂'CreateBox 30 30 30'
       script,←⊂'CreateAtoms 32 random random'
