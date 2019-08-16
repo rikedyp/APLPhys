@@ -9,6 +9,8 @@ var scale = 12.0;
 var SPS;
 var step;
 var dumpfreq;
+var re_time = 0;
+var frame_time = 17;
 
 // Get canvas DOM
 var canvas = document.getElementById("viewport");
@@ -52,16 +54,22 @@ function StartStop(){
 function getAPLPhys(){
 	console.log(posQueue.length);
 	return new Promise(function (resolve) {
-		if (reQueue < 3 && posQueue.length < 600) {
-			requesting=1;
+		//console.log(reQueue)
+		// TODO standardise FunNames + var_names
+		if (reQueue < 6 && posQueue.length < 600) {
+		//if (re_time < 1000) {			
 			reQueue+=1;
+			var re_start_time = new Date().getTime();
 			var data = new FormData();
+			data.append("re_time", re_time);
 			data.append("_callback", "Tick");
 			var xhr = new XMLHttpRequest();
 			xhr.open('POST', "/BrazilNut.mipage", true);
 			xhr.setRequestHeader("isAPLJax", true);
 			xhr.onreadystatechange = function() {                                   
-				if (this.readyState == 4 && this.status == 200) {                                       
+				if (this.readyState == 4 && this.status == 200) { 
+					re_time = new Date().getTime() - re_start_time;
+					//console.log(re_time);
 					APLJaxReturn(eval(this.responseText));
 					resolve();
 					reQueue-=1;				
@@ -79,7 +87,7 @@ function Rnext() {
 	RenderBabylon();    
     getAPLPhys();
 	document.getElementById("step").innerHTML = "Step: " + step;
-    Ttimer = setTimeout("Rnext()", 17); // Every 17ms
+    Ttimer = setTimeout("Rnext()", frame_time); // Every 17ms
 }
 
 function stepScene() {
@@ -107,13 +115,13 @@ var createScene = function(engine) {
 	//scene.blockMaterialDirtyMechanism = true; 
 	//scene.useMaterialMeshMap = true;
     // Set up camera
-	var camera = new BABYLON.ArcRotateCamera("Camera", 30, 1, 20, new BABYLON.Vector3(7, 5, 4), scene);
+	var camera = new BABYLON.ArcRotateCamera("Camera", 30, 1, 30, new BABYLON.Vector3(7, 5, 4), scene);
 	camera.attachControl(canvas, true);
 	// Create a basic light, aiming 0,1,0 - meaning, to the sky
 	var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0), scene);
 	// Create a built-in "ground" shape;
-	var ground = BABYLON.Mesh.CreateGround('ground1', 10, 10, 10, scene);
-	ground.position = new BABYLON.Vector3(5,0,5);
+	var ground = BABYLON.Mesh.CreateGround('ground1', scale, scale, 5, scene);
+	ground.position = new BABYLON.Vector3((scale/2),0,(scale/2));
 	var groundmesh = new BABYLON.StandardMaterial("groundmesh", scene);
 	groundmesh.wireframe = true;
 	ground.material = groundmesh;

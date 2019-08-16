@@ -53,7 +53,7 @@
       (On'tick' 'Tick').Hourglass←0
       play←0
     ⍝ --- Add HTML5 canvas rendering scripts ---
-      Add _.Script'' '/3drender.js'  
+      Add _.Script'' '/3drender.js'
       ⍝Add _.Script'' '/babylon.js' ⍝ Local copy
       Add _.Script'' 'https://preview.babylonjs.com/babylon.js'
     ∇
@@ -87,19 +87,30 @@
       js←⍬
     ∇
 
-    ∇ js←RunScript
+    ∇ js←RunScript;content
       :Access public
+      js←⍬
       script←''Get'aplphys'
       script←(⎕UCS 10 13){⍵⊆⍨∧⌿⍺∘.≠⍵}script
       #.APLPhys.Init
       #.APLPhys.⎕FX'aplscript' '',script
-      #.APLPhys.aplscript
+      :Trap 0
+          #.APLPhys.aplscript
+      :Else
+          content←New _.div
+          content.Add _.p'Error running APLPhys script'
+          content.Add _.pre(∊⎕DM,¨⎕UCS 10)
+          js,←Execute _.jBox.Modal content
+      :EndTrap
       step←0
-      js←Init
-⍝      js,←Render               
+      js,←Init
+⍝      js,←Render
       js,←Execute'WakeBaby();'
-      js,←Execute'posQueue=[];' 
+      js,←Execute'posQueue=[];'
       js,←Execute'dumpfreq=',dumpfreq,';'
+      pre_time←0 ⍝ Previous request time
+      nframes←5 ⍝ Initial guess at number of frames to request
+      pnframes←5 ⍝ Previous number of frames requested
     ∇
 
     ∇ js←StartStop
@@ -127,15 +138,22 @@
     ∇
 
     ∇ js←Tick;i;poslist
-      ⎕←'TICK'
+      ⍝⎕←'---Tick---'
+      re_time←Get're_time'
       :Access public
       poslist←⍬
-      :For i :In ⍳200
+      ⍝ Increase number of frames to process for each request
+      ⍝   unless the request time increases
+      ∆ren←re_time-pre_time ⍝ ∆request_time
+      nframes←1⌈nframes-×∆ren
+      ⎕←10 0⍕∆ren nframes
+      :For i :In ⍳nframes
           #.APLPhys.(pos vel acc←3↑ComputeForces RunStyle⍣dumpfreq⊢pos vel acc ⍬ ⍬ ⍬ ⍬)
           r←{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Reduced LJ units | Rounded to 3dp
           step+←dumpfreq
           poslist,←⊂r
       :EndFor
+      pre_time←re_time
       js←Execute'posQueue.push(',(¯1↓1↓⎕JSON↓¨poslist),')'
     ∇
 
