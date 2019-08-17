@@ -1,0 +1,27 @@
+⍝ Ballistic.aplphys
+⍝ Demo APLPhys script
+⍝ Simulation parameters
+periodic ← 0
+∆t ← 0.0032
+fixtemp ← 0.0001
+tau←0.5
+ 
+CreateBox 30 30 30
+
+natoms ←×/ lattice ← 5 5 5
+pos ← 0 0.2 0.2+⍤1⊢↑,0.05×⍳lattice
+vel ← natoms dim⍴0
+acc ← natoms dim⍴0
+
+pos⍪← 0.8 0.4 0.4
+vel⍪← ¯1 0 0
+acc⍪← 1 dim⍴0
+
+natoms←≢pos
+density←natoms÷volume
+
+PairStyle 'LJcutOpt' 10.5 1
+Thermostat ← {⍵}⍝TempBerendsen
+RunStyle ← Verlet
+ 
+dumpfreq ← 10
