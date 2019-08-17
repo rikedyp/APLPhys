@@ -60,7 +60,6 @@
 
     ∇ js←Init
     ⍝ Link MiPhys with APLPhys parameters
-⍝    ∘∘∘
       #.APLPhys.(acc←⊃ComputeForces pos)
       dumpfreq←#.APLPhys.dumpfreq
 ⍝      :If #.APLPhys.natoms≤maxatoms
@@ -146,7 +145,6 @@
       ⍝   unless the request time increases
       ∆ren←re_time-pre_time ⍝ ∆request_time
       nframes←1⌈nframes-×∆ren
-      ⎕←10 0⍕∆ren nframes
       :For i :In ⍳nframes
           #.APLPhys.(pos vel acc←3↑ComputeForces RunStyle⍣dumpfreq⊢pos vel acc ⍬ ⍬ ⍬ ⍬)
           r←{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Reduced LJ units | Rounded to 3dp
