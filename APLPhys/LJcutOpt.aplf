@@ -2,6 +2,7 @@
    ⍝ pos←⍵
      ⎕IO←0
      Table←{⍺⍺⍤1⍤1 99⍨⍵}
+     MergeLayers←,[⍳2]
      S←-Table ⍵ ⍝ Relative displacements between pairs of particles
      S-←{periodic:((0.5∘<)-(¯0.5∘>))⍵ ⋄ 0}S ⍝ Wrap displacements if periodic boundary conditions set
      R←S×⍤1⊢boxdim ⍝ Scale to reduced LJ units
@@ -9,7 +10,6 @@
      Rmask←(rcutoff*2)>Rsq←+/R*2
      Rmask∧←∘.>⍨⍳≢Rmask ⍝ Compute forces for Fji
      calcpos←⍸,Rmask ⍝ ≡ ↑⍸Rmask
-     MergeLayers←,[⍳2]
      Rcalcsq←(,Rmask)⌿MergeLayers Rsq
      rm2←÷Rcalcsq
      rm6←rm2*3
