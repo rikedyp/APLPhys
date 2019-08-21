@@ -8,5 +8,6 @@
  hexagonal←⊂'hexagonal'
  ⍝ Default values
  Thermostat←{⍵}
+ mass←1
  ⍝ Output dump options
  dumps dumpfreqs dumpfiles←⍬ ⍬ ⍬
