@@ -152,24 +152,29 @@
       poslist←⍬
       ⍝ Increase number of frames to process for each request
       ⍝   unless the request time increases
-      ∆ren←re_time-pre_time ⍝ ∆request_time
-      nframes←1⌈nframes-×∆ren
-      :Trap 0
-          :For i :In ⍳nframes
-              #.APLPhys.(pos vel acc←3↑ComputeForces RunStyle⍣dumpfreq⊢pos vel acc ⍬ ⍬ ⍬ ⍬)
-              r←{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Reduced LJ units | Rounded to 3dp
-              step+←dumpfreq
-              poslist,←⊂r
-          :EndFor
+      :Trap 6
+          ∆ren←re_time-pre_time ⍝ ∆request_time
+          nframes←1⌈nframes-×∆ren
+          :Trap 0
+              :For i :In ⍳nframes
+                  #.APLPhys.(pos vel acc←3↑ComputeForces RunStyle⍣dumpfreq⊢pos vel acc ⍬ ⍬ ⍬ ⍬)
+                  r←{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Reduced LJ units | Rounded to 3dp
+                  step+←dumpfreq
+                  poslist,←⊂r
+              :EndFor
+          :Else
+              content←New _.div
+              content.Add _.p'Error running APLPhys script'
+              content.Add _.pre(∊⎕DM,¨⎕UCS 10)
+              js,←Execute'if (Rrunning){StartStop();}'
+              js,←Execute _.jBox.Modal content
+          :EndTrap
+          pre_time←re_time
+          js,←Execute'posQueue.push(',(¯1↓1↓⎕JSON↓¨poslist),')'
       :Else
-          content←New _.div
-          content.Add _.p'Error running APLPhys script'
-          content.Add _.pre(∊⎕DM,¨⎕UCS 10)
-          js,←Execute'if (Rrunning){StartStop();}'
-          js,←Execute _.jBox.Modal content          
+          js←Execute'if (Rrunning){StartStop();}'
+          js,←Execute _.jBox.Modal'Run the script before starting the simulation'
       :EndTrap
-      pre_time←re_time
-      js,←Execute'posQueue.push(',(¯1↓1↓⎕JSON↓¨poslist),')'
     ∇
 
     ∇ css←id CSS(top left)
