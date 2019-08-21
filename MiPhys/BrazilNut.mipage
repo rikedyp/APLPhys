@@ -26,7 +26,7 @@
       '#runscript'ctrlform.Add _.Button'Run script'
       (Add _.Handler'#runscript' 'click' 'RunScript').Hourglass←0
       '#startstop' 'onclick="StartStop();"'ctrlform.Add _.Button'Start/Stop'
-      '#steponce' 'onclick="RenderCanvas();"'ctrlform.Add _.Button'Step once'
+      '#steponce' 'onclick="StepOnce();"'ctrlform.Add _.Button'Step once'
       '#step'ctrlform.Add _.p'Step: '
       Add _.br
     ⍝ --- INPUT SCRIPT ---

@@ -80,13 +80,15 @@ function getAPLPhys(){
 	});
 }
 
-function Rnext() {
+function StepOnce(){
 	// Render the next frame
-	
-	
 	RenderBabylon();    
     getAPLPhys();
 	document.getElementById("step").innerHTML = "Step: " + step;
+}
+
+function Rnext() {
+	StepOnce();
     Ttimer = setTimeout("Rnext()", frame_time); // Every 17ms
 }
 
