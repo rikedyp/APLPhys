@@ -88,25 +88,6 @@ function babyMenu(){
   td.appendChild(p);
   tr.appendChild(td);
   table.appendChild(tr);  
-  var transparent = document.createElement("input");
-  transparent.id = "alpha";
-  transparent.addEventListener("change", updateScene);
-  transparent.type = "range";
-  transparent.min = 0;
-  transparent.max = 1;
-  transparent.step = 0.05;
-  //transparent.width = 90%;
-  tr = document.createElement("tr");
-  td = document.createElement("td");
-  td.appendChild(transparent);
-  tr.appendChild(td);
-  table.appendChild(tr);
-  p = document.createElement("p");
-  p.innerHTML = "Atom transparency";
-  td = document.createElement("td");
-  td.appendChild(p);
-  tr.appendChild(td);
-  table.appendChild(tr); 
   
   babySet.appendChild(document.createElement("br"));
   babySet.appendChild(table);
@@ -120,13 +101,10 @@ function updateScene() {
 
 var newParticleColors = function(particle) {
   var pid = particle.idx;
-  var group = document.getElementById("groupSelect").value.split(",");
   var color = document.getElementById("colSelect").value;
-  var alpha = document.getElementById("alpha").value;
-  console.log(alpha);
+  var group = document.getElementById("groupSelect").value.split(",");
   if (group[0] <= pid && pid < group[1]) {
     particle.color = BABYLON.Color3.FromHexString(color);    
-    particle.color.a = alpha;
   }  
 }
 
@@ -226,7 +204,6 @@ var createScene = function(engine) {
   SPS.addShape(sphere, pos.length);      // 20 spheres
   sphere.dispose();
   var mesh = SPS.buildMesh();  // Build and display the mesh
-  SPS.mesh.hasVertexAlpha = true;
   
   return scene;
 }
