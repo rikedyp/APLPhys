@@ -1,0 +1,36 @@
+⍝ MovingWall3D.aplphys
+⍝ Demo APLPhys script
+⍝ Simulation parameters
+periodic ← 0
+∆t ← 0.0032
+fixtemp ← 0.0001
+tau←0.5
+ 
+CreateBox 30 30 30
+
+⍝ Pushable atoms
+natoms ←×/ lattice ← 3 3 3
+pos⍪←↑,0.1×⍳lattice
+⍝pos+⍤1←0.5 0 0
+pos←pos+⍤1⊢0.3 0 0
+vel⍪←natoms dim⍴0
+acc⍪←natoms dim⍴0
+groups,←natoms
+fixgroups,←0
+
+⍝ Wall which pushes
+natoms ←×/ lattice ← 20 20
+pos⍪←↑,0.1,¨0.03×⍳lattice
+vel⍪←natoms dim ⍴ 0.8 0 0
+acc⍪←natoms dim⍴0
+groups,←natoms
+fixgroups,←1
+
+natoms←≢pos
+density←natoms÷volume
+
+PairStyle 'LJcutOpt' 10.5 1
+Thermostat ← TempBerendsen
+RunStyle ← Verlet
+ 
+dumpfreq ← 1

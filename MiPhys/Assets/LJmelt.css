@@ -2,16 +2,15 @@
 @font-face{font-family:'APL385 Unicode';src:local('APL385 Unicode'),url(Assets/APL385.ttf)}
 *{
   font-family: 'APL385 Unicode';
-  color: white;
+  color: white !important;
   background: rgba(1,1,1,0.9);
 }
 html {
-	overflow: hidden;
+  overflow: hidden;
 }
-/*body.w {
-  filter:invert(0);
-  background: rgba(0,0,0,0.1);
-}*/
+#tabs {
+  width: 100vw;
+}
 .ctrlpanel {
   display: block;
   position: fixed;
@@ -24,7 +23,6 @@ html {
   margin-left: 1em;
 }
 .ctrlform > textarea {
-  /*background: black;*/
   display: block;
   margin: 1em;
   width: 23em;
@@ -35,31 +33,25 @@ html {
   margin-left: 1.6em;
   font-size: 0.95em;
 }
-#tabs {
-  width: 100vw;
+#ctrltabs > input[type="radio"] + label {
+  border-bottom: 0.25em solid white !important;
+}
+#aplphys {
+  width:  28vw;
+  height: 45vh;
+  border: none;
+}
+#babySet form > button, select, input {
+	display: block;
+	margin: 1em;
 }
 #viewport {
   display: inline-block;
-  background: rgba(1,1,1,0.1);
+  background: rgba(0.2, 0.2, 0.2, 0.1);
   position: absolute!important;
   border: outset;
   right: 3.5vw;
   top: 5vh;
   width: 60vw;
-  height: 50vw;
+  height: 40vw;
 }
-.collapsebtn {
-  margin-left: 40%; 
-}
-b {
-  height:40px;
-  width:40px;
-  border-radius:50%;
-  background:radial-gradient(circle at 40% 30%, rgba(127,255,255,1) 10%,rgba(0,255,255,0.9) 30%,transparent 70%);
-  position:absolute;
-  display:block;
-  z-index: -1;
-}
-/*.viewframe {
-  height: 100vh;
-}*/

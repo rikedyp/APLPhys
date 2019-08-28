@@ -1,6 +1,7 @@
 //https://playground.babylonjs.com/#LXXL6Y#1
 
 var posQueue = [];
+var groups = [];
 var pos;
 var reQueue = 0;
 var Rrunning=0;	   
@@ -11,6 +12,10 @@ var step;
 var dumpfreq;
 var re_time = 0;
 var frame_time = 17;
+
+// TODO deprecate RenderCanvas 
+// TODO tabs to 2 spaces 
+// TODO make style consistent
 
 // Get canvas DOM
 var canvas = document.getElementById("viewport");
@@ -37,6 +42,69 @@ async function WakeBaby() {
 			scene.render();
 		});
 	}
+}
+
+function BabyMenu(){
+	// Clear old form 
+	const babySet = document.getElementById("babySet");
+	while (babySet.firstChild) {
+		babySet.removeChild(babySet.firstChild);
+	}
+	// Create new form 
+	var form = document.createElement("form");
+	var groupSelect = document.createElement("select");
+	groupSelect.name = "groupSelect";
+	groupSelect.id = "groupSelect";
+	for (var i=0; i<groups.length; i++) {
+		//console.log(groups[i]);
+		var option = document.createElement("option");
+		//console.log(option.value);
+		if (i===0) {
+			option.value = [0,groups[i]];
+		} else {
+			option.value = [groups[i-1], groups[i-1] + groups[i]];
+		}
+		//option.value = [groups[i-1],groups[i-1]+groups[i]];
+		option.innerHTML = (i+1) + " (" + groups[i] + ")";
+		groupSelect.appendChild(option);
+	}
+	form.appendChild(groupSelect);
+	var colSelect = document.createElement("input");
+	colSelect.type = "color";
+	colSelect.name = "colSelect";
+	colSelect.id = "colSelect";
+	form.appendChild(colSelect);
+	var applyBtn = document.createElement("button");
+	applyBtn.innerHTML = "Apply";
+	applyBtn.type = "button";
+	applyBtn.addEventListener("click", updateScene);
+	form.appendChild(applyBtn);
+	
+	babySet.appendChild(document.createElement("br"));
+	babySet.appendChild(form);
+}
+
+function updateScene() {
+	//console.log("update sceneeee");
+	// Update mesh and particle properties from the Render Settings
+	SPS.updateParticle = newParticleColors;
+	SPS.setParticles();
+}
+
+var newParticleColors = function(particle) {
+	var pid = particle.idx
+	var color = document.getElementById("colSelect").value;
+	var group = document.getElementById("groupSelect").value.split(",");
+	if (group[0] <= pid && pid < group[1]) {
+		//console.log(group);
+		//console.log(pid);
+		particle.color = BABYLON.Color3.FromHexString(color);
+		//console.log(color);		
+	}	
+	// particle.color.r = 0.5;
+	// particle.color.g = 0.5;
+	// particle.color.b = 0.1;
+	// particle.color.a = 0.8;
 }
 
 // Function attached to "Start/Stop" button 
@@ -102,7 +170,7 @@ function stepScene() {
 }
 
 var updateParticle = function(particle){
-	pid = particle.idx
+	var pid = particle.idx
 	particle.position.x = pos[pid][0]*scale;
 	particle.position.y = pos[pid][1]*scale;
 	particle.position.z = pos[pid][2]*scale;

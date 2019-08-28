@@ -9,7 +9,8 @@
     :Field public play      ⍝ Simulation play state
     :Field public step      ⍝ Simulation step number
     :Field public bs        ⍝ Ball size
-    :Field public bw        ⍝ Border width
+    :Field public bw        ⍝ Border width 
+    :Field public groups    ⍝ Atom groups 
 
 
     ∇ Compose
@@ -29,7 +30,12 @@
       '#steponce' 'onclick="StepOnce();"'ctrlform.Add _.Button'Step once'
       '#step'ctrlform.Add _.p'Step: '
       Add _.br
+    ⍝ --- SIMULATION INPUT AND RENDERING OPTIONS ---
+      ctrltabs←'ctrltabs'ctrlpanel.Add _.Tabs
     ⍝ --- INPUT SCRIPT ---
+      ctrltabs.Titles,←⊂'Input Script'
+      inscript←ctrltabs.Sections,←'inscript'New _.div
+      inform←inscript.Add _.form
       script←⊂'⍝ BrazilNut.aplphys'
       script,←⊂'⍝ Demo APLPhys script'
       script,←⊂'⍝ Simulation parameters'
@@ -38,24 +44,32 @@
       script,←⊂'fixtemp ← 0.5'
       script,←⊂' '
       script,←⊂'CreateBox 30 30 30'
-      script,←⊂'CreateAtoms 32 random random'
+      script,←⊂'CreateAtoms 32 random random' 
+      script,←⊂'groups,←natoms'
+      script,←⊂'fixgroups,←0'
       script,←⊂'PairStyle ''LJcutOpt'' 2.5 1'
       script,←⊂'Thermostat ← TempRescale'
       script,←⊂'RunStyle ← Verlet'
       script,←⊂' '
       script,←⊂'dumpfreq ← 10'
       script←script,¨⎕UCS 10
-      '#aplphys name=aplphys'ctrlform.Add _.textarea script
+      inform.Add _.br
+      '#aplphys name=aplphys'inform.Add _.textarea script
+    ⍝ --- BABYLON RENDERER SETTINGS ---
+    ⍝     Modify simulation display e.g. atom colours
+      ctrltabs.Titles,←⊂'Render Settings'
+      babyset←ctrltabs.Sections,←'babySet'New _.div
+      babyset.Add _.p'Babylon Renderer Settings'  
     ⍝ --- VIEWPORT ---
-      viewport←'viewport width="700" height="400" style="background-color: #edf"'Add _.canvas
+      viewport←'viewport'Add _.canvas
       ⍝viewport.Add _.jqDraggable'#viewport'
       Add _.Timer 1600 0 'tick' 'T' ⍝ Tick with update
       (On'tick' 'Tick').Hourglass←0
-      play←0
+      play←0              
     ⍝ --- Add HTML5 canvas rendering scripts ---
       Add _.Script'' '/3drender.js'
-      ⍝Add _.Script'' '/babylon.js' ⍝ Local copy
-      Add _.Script'' 'https://preview.babylonjs.com/babylon.js'
+      Add _.Script'' '/babylon.js' ⍝ Local copy
+      ⍝Add _.Script'' 'https://preview.babylonjs.com/babylon.js'
     ∇
 
     ∇ js←Init
@@ -97,7 +111,7 @@
     ∇ js←RunScript;content
       :Access public
       js←⍬
-      script←''Get'aplphys'
+      script←''Get'aplphys' ⍝'inscript'
       script←(⎕UCS 10 13){⍵⊆⍨∧⌿⍺∘.≠⍵}script
       #.APLPhys.Init
       #.APLPhys.⎕FX'aplscript' '',script
@@ -112,8 +126,11 @@
       step←0
       js,←Init
 ⍝      js,←Render
-      js,←Execute'WakeBaby();'
-      js,←Execute'posQueue=[];'
+      js,←Execute'WakeBaby();' ⍝ Initialise rendering engine
+      js,←Execute'posQueue=[];'⍝ Clear animation frames
+⍝      ∘∘∘
+      js,←Execute'groups=',(⎕JSON #.APLPhys.groups),';'  ⍝ Number of atoms in each group 
+      js,←Execute'BabyMenu();' ⍝ Set up the Babylon Render Settings
       js,←Execute'dumpfreq=',dumpfreq,';'
       pre_time←0 ⍝ Previous request time
       nframes←5 ⍝ Initial guess at number of frames to request
@@ -123,8 +140,6 @@
     ∇ js←StartStop
       :Access public
       :Trap 6
-          ⍝⎕←scale
-          ⎕←('Timer start' 'Timer stop')[1+play]
           js←Execute('parent.frames[1].Trun();' 'parent.frames[1].Tstop();')[1+play]
           play←~play
           js,←Execute'StartStop();'
@@ -137,7 +152,6 @@
     ⍝ Wrap step once in trap so Tick can be minimal (execute quickly)
       :Access public
       :Trap 6
-          ⎕←scale
           js←Tick
       :Else
           js←Execute _.jBox.Modal'Run the script before starting the simulation'
