@@ -11,6 +11,8 @@ var step;
 var dumpfreq;
 var reTime = 0;
 var frameTime = 17;
+var rTimer;
+var tTimer;
 
 // Get canvas DOM
 var canvas = document.getElementById("viewport");
@@ -119,9 +121,11 @@ var newParticleColors = function(particle) {
 function startStop(){
     if (!playing){
         Rnext();
+        clearTimeout(rTimer);
     }
     else {
-        clearTimeout(Ttimer);
+        clearTimeout(tTimer);
+        frameBuffer();
     }
     playing = !playing;
 }
@@ -163,7 +167,12 @@ function stepOnce(){
 
 function Rnext() {
   stepOnce();
-  Ttimer = setTimeout("Rnext()", frameTime); // Every frameTime milliseconds
+  tTimer = setTimeout("Rnext()", frameTime); // Every frameTime milliseconds
+}
+
+function frameBuffer() {
+  getAPLPhys();
+  rTimer = setTimeout("frameBuffer()", 100);
 }
 
 function stepScene() {
