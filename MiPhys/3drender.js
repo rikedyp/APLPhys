@@ -47,7 +47,7 @@ function babyMenu(){
   while (babySet.firstChild) {
     babySet.removeChild(babySet.firstChild);
   }
-  // Create new form 
+  // Create render settings interface
   var table = document.createElement("table");
   var tr = document.createElement("tr");
   var td = document.createElement("td");
@@ -55,9 +55,7 @@ function babyMenu(){
   groupSelect.name = "groupSelect";
   groupSelect.id = "groupSelect";
   for (var i=0; i<groups.length; i++) {
-    //console.log(groups[i]);
     var option = document.createElement("option");
-    //console.log(option.value);
     if (i===0) {
       option.value = [0,groups[i]];
     } else {
@@ -78,6 +76,7 @@ function babyMenu(){
   colSelect.type = "color";
   colSelect.name = "colSelect";
   colSelect.id = "colSelect";
+  colSelect.addEventListener("change", updateScene);
   p = document.createElement("p");
   p.innerHTML = "Atom colour";
   tr = document.createElement("tr");
@@ -88,15 +87,6 @@ function babyMenu(){
   td.appendChild(p);
   tr.appendChild(td);
   table.appendChild(tr);  
-  var applyBtn = document.createElement("button");
-  applyBtn.innerHTML = "Apply";
-  applyBtn.type = "button";
-  applyBtn.addEventListener("click", updateScene);
-  tr = document.createElement("tr");
-  td = document.createElement("td");
-  td.appendChild(applyBtn);
-  tr.appendChild(td);
-  table.appendChild(tr);
   
   babySet.appendChild(document.createElement("br"));
   babySet.appendChild(table);
