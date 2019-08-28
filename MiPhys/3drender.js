@@ -68,12 +68,22 @@ function BabyMenu(){
 		option.innerHTML = (i+1) + " (" + groups[i] + ")";
 		groupSelect.appendChild(option);
 	}
-	form.appendChild(groupSelect);
+	var p = document.createElement("p");
+	p.innerHTML = "Atom group (number of atoms)";
+	var div = document.createElement("div");
+	div.appendChild(groupSelect);
+	div.appendChild(p);
+	form.appendChild(div);
 	var colSelect = document.createElement("input");
 	colSelect.type = "color";
 	colSelect.name = "colSelect";
 	colSelect.id = "colSelect";
-	form.appendChild(colSelect);
+	div = document.createElement("div");
+	p = document.createElement("p");
+	p.innerHTML = "Atom colour";
+	div.appendChild(colSelect);
+	div.appendChild(p);	
+	form.appendChild(div);
 	var applyBtn = document.createElement("button");
 	applyBtn.innerHTML = "Apply";
 	applyBtn.type = "button";

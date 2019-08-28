@@ -41,9 +41,12 @@ html {
   height: 45vh;
   border: none;
 }
-#babySet form > button, select, input {
-	display: block;
+#babySet form > button, select, input, p {
+	display: inline-block;
 	margin: 1em;
+}
+#babySet div {
+	display: block;
 }
 #viewport {
   display: inline-block;
