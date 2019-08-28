@@ -12,7 +12,6 @@
     :Field public bw        ⍝ Border width 
     :Field public groups    ⍝ Atom groups 
 
-
     ∇ Compose
       :Access public
     ⍝ --- POPUPS AND STYLING ---
@@ -26,7 +25,7 @@
       ctrlform←'.ctrlform'ctrlpanel.Add _.form
       '#runscript'ctrlform.Add _.Button'Run script'
       (Add _.Handler'#runscript' 'click' 'RunScript').Hourglass←0
-      '#startstop' 'onclick="StartStop();"'ctrlform.Add _.Button'Start/Stop'
+      '#startstop' 'onclick="startStop();"'ctrlform.Add _.Button'Start/Stop'
       '#steponce' 'onclick="StepOnce();"'ctrlform.Add _.Button'Step once'
       '#step'ctrlform.Add _.p'Step: '
       Add _.br
@@ -84,28 +83,12 @@
           js,←Execute _.jBox.Modal content
       :EndTrap
       dumpfreq←#.APLPhys.dumpfreq
-⍝      :If #.APLPhys.natoms≤maxatoms
       natoms←#.APLPhys.natoms
-      js←⍬
-⍝      :Else
-⍝          js←Execute _.jBox.Modal'Number of atoms exceeds maximum allowed for this demo (',(⍕maxatoms),' atoms)'
-⍝      :EndIf
       labels←'p',↑⍕¨⍳natoms
       boxdim←#.APLPhys.boxdim
       ∆t←#.APLPhys.∆t
       pos←#.APLPhys.pos
       ballsize←#.APLPhys.rcutoff
-    ∇
-
-    ∇ js←Render;b;disp;l;css;height;width
-    ⍝ Viewport size
-      scale←14
-⍝      (height width)←boxdim×scale
-⍝      css←'width:%Wpx;height:%Hpx;border-width:%BWpx;'
-⍝      bs←⍕2×bw←ballsize×scale÷4
-⍝      css←'%W' '%H' '%BW'⎕R(⍕¨width height bw)⊢css
-⍝      js←'parent.frames[1].document.getElementById("viewport").style.cssText+="',css,'";'
-      js←⍬
     ∇
 
     ∇ js←RunScript;content
@@ -125,37 +108,14 @@
       :EndTrap
       step←0
       js,←Init
-⍝      js,←Render
-      js,←Execute'WakeBaby();' ⍝ Initialise rendering engine
+      js,←Execute'wakeBaby();' ⍝ Initialise rendering engine
       js,←Execute'posQueue=[];'⍝ Clear animation frames
-⍝      ∘∘∘
       js,←Execute'groups=',(⎕JSON #.APLPhys.groups),';'  ⍝ Number of atoms in each group 
-      js,←Execute'BabyMenu();' ⍝ Set up the Babylon Render Settings
+      js,←Execute'babyMenu();' ⍝ Set up the Babylon Render Settings menu
       js,←Execute'dumpfreq=',dumpfreq,';'
       pre_time←0 ⍝ Previous request time
       nframes←5 ⍝ Initial guess at number of frames to request
       pnframes←5 ⍝ Previous number of frames requested
-    ∇
-
-    ∇ js←StartStop
-      :Access public
-      :Trap 6
-          js←Execute('parent.frames[1].Trun();' 'parent.frames[1].Tstop();')[1+play]
-          play←~play
-          js,←Execute'StartStop();'
-      :Else
-          js←Execute _.jBox.Modal'Run the script before starting the simulation'
-      :EndTrap
-    ∇
-
-    ∇ js←StepOnce
-    ⍝ Wrap step once in trap so Tick can be minimal (execute quickly)
-      :Access public
-      :Trap 6
-          js←Tick
-      :Else
-          js←Execute _.jBox.Modal'Run the script before starting the simulation'
-      :EndTrap
     ∇
 
     ∇ js←Tick;i;poslist
@@ -169,7 +129,7 @@
       :Trap 6
           ∆ren←re_time-pre_time ⍝ ∆request_time
           nframes←1⌈nframes-×∆ren
-          :Trap 0
+          :Trap 0              
               :For i :In ⍳nframes
                   #.APLPhys.(pos vel acc←3↑ComputeForces RunStyle⍣dumpfreq⊢pos vel acc ⍬ ⍬ ⍬ ⍬)
                   r←{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Reduced LJ units | Rounded to 3dp
@@ -180,29 +140,15 @@
               content←New _.div
               content.Add _.p'Error running APLPhys script'
               content.Add _.pre(∊⎕DM,¨⎕UCS 10)
-              js,←Execute'if (Rrunning){StartStop();}'
+              js,←Execute'if (playing){startStop();}'
               js,←Execute _.jBox.Modal content
           :EndTrap
           pre_time←re_time
           js,←Execute'posQueue.push(',(¯1↓1↓⎕JSON↓¨poslist),')'
       :Else
-          js←Execute'if (Rrunning){StartStop();}'
+          js←Execute'if (playing){startStop();}'
           js,←Execute _.jBox.Modal'Run the script before starting the simulation'
       :EndTrap
     ∇
-
-    ∇ css←id CSS(top left)
-    ⍝ Scale and translate positions for display
-    ⍝ (top left)←scale×top left
-      top←'calc(',scale,'*',top F'px)'
-      left←'calc(',scale,'*',left F'px)'
-    ⍝ Format positions for CSS
-      css←'{"top":"',top F'",'
-      css,←'"left":"',left F'"}'
-      css←'$("#',(id~' '),'").css(',css,');'
-    ∇
-
-    ⍝ Format numbers for javascript
-    F←{⍵,⍨'¯'⎕R'-'⍕⍺⍺}
 
 :EndClass

@@ -12,7 +12,6 @@
     :Field public bs        ⍝ Ball size
     :Field public bw        ⍝ Border width
 
-
     ∇ Compose
       :Access public
     ⍝ --- POPUPS AND STYLING ---
@@ -68,7 +67,6 @@
 
     ∇ js←Init
     ⍝ Link MiPhys with APLPhys parameters
-⍝    ∘∘∘
       #.APLPhys.(acc←⊃ComputeForces pos)
       dumpfreq←#.APLPhys.dumpfreq
 ⍝      :If #.APLPhys.natoms≤maxatoms
@@ -143,7 +141,7 @@
     ∇
 
     ∇ js←Tick;i;poslist
-      ⎕←'TICK'
+      ⎕←'Tick2D'
       :Access public
       poslist←⍬
       :For i :In ⍳200
