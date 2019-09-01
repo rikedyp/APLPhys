@@ -1,0 +1,34 @@
+ GranularHooke←{
+⍝ ⍵: pos vel
+     (pos vel)←⍵
+⍝ ⍺: kn gn mass r
+⍝ Normal elastic constant kn
+⍝ Normal viscoelastic constant gn
+⍝ Particle masses mass
+⍝ Particle radii r
+⍝ ←: acc
+⍝ pair_gran_hooke https://lammps.sandia.gov/doc/pair_gran.html
+⍝ No rolling friction, no tangential shear
+⍝ Helper functions
+     Table←{⍺⍺⍤1⍤1 99⍨⍵} ⍝ {∘.⍺⍺⍨↓⍵} with rank
+     Mag←{0.5*⍨+/⍵*2} ⍝ Magnitude of vector in Euclidean space
+     InDirOf←{norm←⍵÷Mag ⍵ ⋄ norm×⍺+.×norm} ⍝ Component of vector ⍺ in direction of ⍵
+⍝ Relative displacements of particle pairs S
+     S←,[1 2]-Table pos
+     radsum←,∘.+⍨r ⍝ Sum of radii
+⍝ Overlap distance of particles ∆S ← (Mag S)-radsum
+     ∆S←(Mag⍤1⊢S)-radsum
+⍝ Only consider touching particles
+     touching←∆S<0
+     ∆S←∆S[⍸touching]
+⍝ Relative velocities of particle pairs vr
+     vr←,[1 2]-Table vel
+⍝ Normal component of relative velocity of 2 particles vn
+     vn←vr InDirOf⍤1⊢S
+⍝ Effective mass meff
+     meff←(∘.×⍨m)
+⍝ force = (kn×∆S×S)-(meff×gn×vn)
+     force←(kn×∆S×S)-meff×gn×vn
+⍝ acc = force÷mass
+     force÷mass
+ }
