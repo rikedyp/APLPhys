@@ -1,7 +1,8 @@
  GranularHooke←{
 ⍝ ⍵: pos vel
      (pos vel)←⍵
-⍝ ⍺: kn gn mass r
+⍝ ⍺: kn gn mass radii
+     (kn gn mass r)←⍺
 ⍝ Normal elastic constant kn
 ⍝ Normal viscoelastic constant gn
 ⍝ Particle masses mass
@@ -9,26 +10,41 @@
 ⍝ ←: acc
 ⍝ pair_gran_hooke https://lammps.sandia.gov/doc/pair_gran.html
 ⍝ No rolling friction, no tangential shear
+     ⎕IO←0
 ⍝ Helper functions
      Table←{⍺⍺⍤1⍤1 99⍨⍵} ⍝ {∘.⍺⍺⍨↓⍵} with rank
+     MergeLayers←,[⍳2]
      Mag←{0.5*⍨+/⍵*2} ⍝ Magnitude of vector in Euclidean space
-     InDirOf←{norm←⍵÷Mag ⍵ ⋄ norm×⍺+.×norm} ⍝ Component of vector ⍺ in direction of ⍵
+     Norm←÷∘Mag⍨ ⍝ Normalised vector
+     ⍝InDirOf←{norm←⍵÷Mag ⍵ ⋄ norm×⍺+.×norm} ⍝ Component of vector ⍺ in direction of ⍵
+     ⍝InDirOf←{(⊢×⍺+.×⊢)⍵÷Mag ⍵} ⍝ Component of vector ⍺ in direction of ⍵
+     InDirOf←(⊢×+.×)∘Norm ⍝ Component of vector ⍺ in direction of ⍵
 ⍝ Relative displacements of particle pairs S
-     S←,[1 2]-Table pos
-     radsum←,∘.+⍨r ⍝ Sum of radii
+     S←-Table pos
+     radsum←↑∘.+⍨r ⍝ Sum of radii
 ⍝ Overlap distance of particles ∆S ← (Mag S)-radsum
-     ∆S←(Mag⍤1⊢S)-radsum
+     ∆S←radsum-(Mag⍤1⊢S)
 ⍝ Only consider touching particles
-     touching←∆S<0
-     ∆S←∆S[⍸touching]
+     touchmask←∆S>0
+     touchmask∧←∘.>⍨⍳≢touchmask
+     calcpos←⍸,touchmask
+     Scalc←(,touchmask)⌿MergeLayers S
+     ∆Scalc←(,touchmask)⌿MergeLayers ∆S
 ⍝ Relative velocities of particle pairs vr
-     vr←,[1 2]-Table vel
+     vr←(,touchmask)⌿MergeLayers-Table vel
 ⍝ Normal component of relative velocity of 2 particles vn
-     vn←vr InDirOf⍤1⊢S
+     vn←vr InDirOf⍤1⊢Scalc
 ⍝ Effective mass meff
-     meff←(∘.×⍨m)
+     meff←(,touchmask)⌿,(∘.×⍨mass)÷(∘.+⍨mass)
 ⍝ force = (kn×∆S×S)-(meff×gn×vn)
-     force←(kn×∆S×S)-meff×gn×vn
+     force←natoms dim⍴0
+     f0←(kn×∆Scalc×⍤0 1⊢Scalc)-gn×meff×⍤0 1⊢vn
+     f0⍪←-f0 ⍝ Fji = -Fij
+     ids←,(⍴touchmask)⊤calcpos
+    ⍝ f0 ← (⊂calcpos)⌷MergeLayers S
+     f1←ids{+⌿⍵}⌸f0
+     force[∪ids;]←f1
+     ⍝ force←ids{+⌿⍵}⌸t1
 ⍝ acc = force÷mass
-     force÷mass
+     (force÷⍤1 0⊢(≢force)⍴mass)1 1
  }
