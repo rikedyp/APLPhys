@@ -132,14 +132,14 @@
       :Trap 6
           ∆ren←re_time-pre_time ⍝ ∆request_time
           nframes←1⌈nframes-×∆ren
-         ⍝ :Trap 0
+     ⍝     :Trap 0
               :For i :In ⍳nframes
                   #.APLPhys.(pos vel acc←3↑ComputeForces RunStyle⍣dumpfreq⊢pos vel acc ⍬ ⍬ ⍬ ⍬)
                   r←{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Granular units | Rounded to 3dp
                   step+←dumpfreq
                   poslist,←⊂r
               :EndFor
-⍝          :Else
+ ⍝         :Else
 ⍝              content←New _.div
 ⍝              content.Add _.p'Error running APLPhys script'
 ⍝              content.Add _.pre(∊⎕DM,¨⎕UCS 10)

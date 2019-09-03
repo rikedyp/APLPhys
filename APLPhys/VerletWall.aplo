@@ -8,6 +8,7 @@
      vel←temp Thermostat vel ⍝ Thermostat rescale velocities
      (acc ene_pot_avg virial)←⍺⍺ pos vel⍝ Compute forces
      acc+⍤1←allforce ⍝ Add uniform force e.g. gravity
+     acc+←WallForce pos vel
 ⍝     acc+←+/{kn gn mass radii ⍵ WallForce pos vel}¨walls
      acc[⍸groups/fixgroups;]←0 ⍝ Fixed atoms don't experience forces
      vel+←0.5×∆t×acc ⍝ Complete velocity step

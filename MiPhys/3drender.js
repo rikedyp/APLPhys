@@ -185,6 +185,7 @@ var updateParticle = function(particle){
 
 var createScene = function(engine) {
   var scene = new BABYLON.Scene(engine);
+  scene.clearColor = new BABYLON.Color3(0,0,0);
     // Set up camera
   var camera = new BABYLON.ArcRotateCamera("Camera", 30, 1, 30, new BABYLON.Vector3(7, 5, 4), scene);
   camera.attachControl(canvas, true);
@@ -198,7 +199,7 @@ var createScene = function(engine) {
   ground.material = groundmesh;
   // Create APLPhys walls 
   walls.forEach(function(wall){
-    var sourcePlane = new BABYLON.Plane(wall[0], wall[1], wall[2], wall[3]);
+    var sourcePlane = new BABYLON.Plane(wall[0], wall[1], wall[2], wall[3]*scale/2);
     sourcePlane.normalize();
     var wall = BABYLON.MeshBuilder.CreatePlane("plane", {height:15, width: 15, sourcePlane: sourcePlane, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
     wall.material = new BABYLON.StandardMaterial("wallGrid", scene);

@@ -5,7 +5,7 @@
  ∆t←0.0032
  fixtemp←0.0001
  tau←0.5
- allforce←0 ¯10 0 ⍝ Gravity
+ allforce←0 ¯0.1 0 ⍝ Gravity
 ⍝ GranularHooke
  kn←1
  gn←1
@@ -46,4 +46,4 @@
  RunStyle←VerletWall
 
  dumpfreq←30
- Simulate 10
+ ⍝Simulate 10

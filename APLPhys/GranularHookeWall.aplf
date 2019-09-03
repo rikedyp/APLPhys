@@ -12,22 +12,40 @@
      InDirOf←(⊢×+.×)∘Norm ⍝ Component of vector ⍺ in direction of ⍵
 ⍝ Plane normals
      norms←(Norm 3↑⊢)⍤1⊢walls
+⍝ Relative point-wall directions
+⍝     ∘∘∘
+     Sdir←-1+2×-walls[;4]>⍤0 1⊢norms+.×⍤1⍤1 99⊢pos
+⍝     S←pos-⍤1⍤1 99⊢walls
+⍝     Snorms←walls[;4]>⍤99 1⊢pos+.×⍤1⍤1 99⊢3↑[2]walls
+⍝     Snorm←Norm⍤1⊢S ⍝ Normalised
 ⍝ Overlap distance from points to planes
      ∆S←radii-⍤1⊢walls DistPlane2Point⍤1⍤1 99⊢pos
+⍝     ∘∘∘
 ⍝ Overlap distance of particles
      touchmask←∆S>0
 ⍝     touchmask∧←∘.>⍨⍳≢touchmask
-     ∆Scalc←(,touchmask)⌿MergeLayers ∆S
+     ⍝∆Scalc←(,touchmask)⌿MergeLayers ∆S
+     ∆Scalc←∆S×touchmask
      calcpos←⍸,touchmask
 ⍝     0
 ⍝ Relative velocities of particles and walls
      vr←-vel-⍤1⍤1 99⍨wvel
+     ⍝⎕←⍴¨vr touchmask
+⍝ Only touching particles
+     vr←vr×⍤1 0⍤2 1⊢touchmask
+⍝     ⎕←vr
 ⍝ Normal component of relative velocity of 2 particles vn
      vn←+⌿vr InDirOf⍤1⍤2 1⊢norms
      ⍝(,touchmask)⌿MergeLayers vn
 ⍝ Effective mass meff
      meff←mass ⍝ Wall mass is infinite
 ⍝ force = (kn×∆S×norms)-(meff×gn×vn)
-     force←(+⌿kn×norms×⍤1 0⍤1⊢∆S)-(gn×meff×⍤0 1⊢vn)
+     force←(+⌿kn×norms×⍤1 0⍤1⊢Sdir×∆Scalc)⍝-(gn×meff×⍤0 1⊢vn)
+    ⍝ ⎕←(∧⌿touchmask)
+    ⍝ ⎕←∧/touchmask
+    ⍝ ∘∘∘
+    ⍝ ⎕←force
+    ⍝ ⎕←'ok'
+    ⍝ ⎕←'---'
      force÷⍤1 0⊢meff
  }
