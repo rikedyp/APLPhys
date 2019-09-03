@@ -192,24 +192,32 @@ var createScene = function(engine) {
   // Create a basic light, aiming 0,1,0 - meaning, to the sky
   var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0), scene);
   // Create a built-in "ground" shape;
-  var ground = BABYLON.Mesh.CreateGround('ground1', scale, scale, 5, scene);
+  var ground = BABYLON.Mesh.CreateGround('ground1', scale*10, scale*10, 20, scene);
   ground.position = new BABYLON.Vector3((scale/2),0,(scale/2));
   var groundmesh = new BABYLON.StandardMaterial("groundmesh", scene);
   groundmesh.wireframe = true;
   ground.material = groundmesh;
   // Create APLPhys walls 
-  walls.forEach(function(wall){
-    var sourcePlane = new BABYLON.Plane(wall[0], wall[1], wall[2], wall[3]*scale/2);
+  for (var i=0; i<walls.length; i++){
+    var sourcePlane = new BABYLON.Plane(walls[i][0], walls[i][1], walls[i][2], walls[i][3]*scale);
     sourcePlane.normalize();
-    var wall = BABYLON.MeshBuilder.CreatePlane("plane", {height:15, width: 15, sourcePlane: sourcePlane, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+    var wall = BABYLON.MeshBuilder.CreatePlane("plane", {height:50, width: 50, sourcePlane: sourcePlane, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
     wall.material = new BABYLON.StandardMaterial("wallGrid", scene);
-    wall.material.diffuseColor = new BABYLON.Color3(0.1,0.6,0.6);
-    wall.material.ambientColor = new BABYLON.Color3(1,0,0);
-    wall.material.alpha = 0.3;
-    wall.position.x += (scale/2);
-    wall.position.z += (scale/2);
-    //wall.material.wireframe = true;
-  });
+    var col = ((1+i)/walls.length);
+    console.log(col);
+    wall.material.diffuseColor = new BABYLON.Color3(col*0.5,1-col,col);
+    //wall.material.ambientColor = new BABYLON.Color3(1,0,0);
+    wall.material.alpha = 0.5;
+  }
+  // walls.forEach(function(wall){
+    // var sourcePlane = new BABYLON.Plane(wall[0], wall[1], wall[2], wall[3]*scale);
+    // sourcePlane.normalize();
+    // var wall = BABYLON.MeshBuilder.CreatePlane("plane", {height:50, width: 50, sourcePlane: sourcePlane, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+    // wall.material = new BABYLON.StandardMaterial("wallGrid", scene);
+    // wall.material.diffuseColor = new BABYLON.Color3(0.1,0.6,0.6);
+    // wall.material.ambientColor = new BABYLON.Color3(1,0,0);
+    // wall.material.alpha = 0.6;
+  // });
   // Get this frame's atom positions
   pos = posQueue[0];
   // Set up SPS
