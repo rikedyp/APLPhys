@@ -185,7 +185,7 @@ var updateParticle = function(particle){
 
 var createScene = function(engine) {
   var scene = new BABYLON.Scene(engine);
-  scene.clearColor = new BABYLON.Color3(0,0,0);
+  scene.clearColor = new BABYLON.Color3(1, 1, 1);
     // Set up camera
   var camera = new BABYLON.ArcRotateCamera("Camera", 30, 1, 30, new BABYLON.Vector3(7, 5, 4), scene);
   camera.attachControl(canvas, true);
