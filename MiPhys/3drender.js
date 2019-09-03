@@ -196,13 +196,31 @@ var createScene = function(engine) {
   var groundmesh = new BABYLON.StandardMaterial("groundmesh", scene);
   groundmesh.wireframe = true;
   ground.material = groundmesh;
+  // Create APLPhys walls 
+  walls.forEach(function(wall){
+    var sourcePlane = new BABYLON.Plane(wall[0], wall[1], wall[2], wall[3]);
+    sourcePlane.normalize();
+    var wall = BABYLON.MeshBuilder.CreatePlane("plane", {height:15, width: 15, sourcePlane: sourcePlane, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+    wall.material = new BABYLON.StandardMaterial("wallGrid", scene);
+    wall.material.diffuseColor = new BABYLON.Color3(0.1,0.6,0.6);
+    wall.material.ambientColor = new BABYLON.Color3(1,0,0);
+    wall.material.alpha = 0.3;
+    wall.position.x += (scale/2);
+    wall.position.z += (scale/2);
+    //wall.material.wireframe = true;
+  });
   // Get this frame's atom positions
   pos = posQueue[0];
   // Set up SPS
   SPS = new BABYLON.SolidParticleSystem("SPS", scene);
-  var sphere = BABYLON.MeshBuilder.CreateSphere("s", {diameter:0.3, segments: 10}, scene);
-  SPS.addShape(sphere, pos.length);      // 20 spheres
-  sphere.dispose();
+  //var sphere = BABYLON.MeshBuilder.CreateSphere("s", {diameter:0.3, segments: 10}, scene);
+  for (var i=0; i<groups.length; i++){
+    var sphere = BABYLON.MeshBuilder.CreateSphere("s", {diameter: radii[i], segments: 10}, scene);
+    SPS.addShape(sphere, groups[i]);
+    sphere.dispose();
+  }
+  //SPS.addShape(sphere, pos.length);      // 20 spheres
+  //sphere.dispose();
   var mesh = SPS.buildMesh();  // Build and display the mesh
   
   return scene;

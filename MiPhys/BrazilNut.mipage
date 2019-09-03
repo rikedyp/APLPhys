@@ -9,8 +9,8 @@
     :Field public play      ⍝ Simulation play state
     :Field public step      ⍝ Simulation step number
     :Field public bs        ⍝ Ball size
-    :Field public bw        ⍝ Border width 
-    :Field public groups    ⍝ Atom groups 
+    :Field public bw        ⍝ Border width
+    :Field public groups    ⍝ Atom groups
 
     ∇ Compose
       :Access public
@@ -43,7 +43,7 @@
       script,←⊂'fixtemp ← 0.5'
       script,←⊂' '
       script,←⊂'CreateBox 30 30 30'
-      script,←⊂'CreateAtoms 32 random random' 
+      script,←⊂'CreateAtoms 32 random random'
       script,←⊂'groups,←natoms'
       script,←⊂'fixgroups,←0'
       script,←⊂'PairStyle ''LJcutOpt'' 2.5 1'
@@ -58,13 +58,13 @@
     ⍝     Modify simulation display e.g. atom colours
       ctrltabs.Titles,←⊂'Render Settings'
       babyset←ctrltabs.Sections,←'babySet'New _.div
-      babyset.Add _.p'Babylon Renderer Settings'  
+      babyset.Add _.p'Babylon Renderer Settings'
     ⍝ --- VIEWPORT ---
       viewport←'viewport'Add _.canvas
       ⍝viewport.Add _.jqDraggable'#viewport'
       Add _.Timer 1600 0 'tick' 'T' ⍝ Tick with update
       (On'tick' 'Tick').Hourglass←0
-      play←0              
+      play←0
     ⍝ --- Add HTML5 canvas rendering scripts ---
       Add _.Script'' '/3drender.js'
       Add _.Script'' '/babylon.js' ⍝ Local copy
@@ -75,7 +75,7 @@
       js←⍬
     ⍝ Link MiPhys with APLPhys parameters
       :Trap 0
-          #.APLPhys.(acc←⊃ComputeForces pos)
+          #.APLPhys.(acc←⊃ComputeForces pos vel)
       :Else
           content←New _.div
           content.Add _.p'Error running APLPhys script'
@@ -96,6 +96,7 @@
       js←⍬
       script←''Get'aplphys' ⍝'inscript'
       script←(⎕UCS 10 13){⍵⊆⍨∧⌿⍺∘.≠⍵}script
+    ⍝ ∘∘∘
       #.APLPhys.Init
       #.APLPhys.⎕FX'aplscript' '',script
       :Trap 0
@@ -110,7 +111,9 @@
       js,←Init
       js,←Execute'wakeBaby();' ⍝ Initialise rendering engine
       js,←Execute'posQueue=[];'⍝ Clear animation frames
-      js,←Execute'groups=',(⎕JSON #.APLPhys.groups),';'  ⍝ Number of atoms in each group 
+      js,←Execute'groups=',(⎕JSON #.APLPhys.groups),';'  ⍝ Number of atoms in each group
+      js,←Execute'radii=',(⎕JSON #.APLPhys.radii),';' ⍝ Radii of particles
+      js,←Execute'walls=',(⎕JSON{1=≢⍵:⍬,⍵ ⋄ ⍵}↓#.APLPhys.walls),';' ⍝ Equations of ideal plane walls
       js,←Execute'babyMenu();' ⍝ Set up the Babylon Render Settings menu
       js,←Execute'dumpfreq=',dumpfreq,';'
       pre_time←0 ⍝ Previous request time
@@ -128,21 +131,23 @@
       ⍝   unless the request time increases
       :Trap 6
           ∆ren←re_time-pre_time ⍝ ∆request_time
-          nframes←1⌈nframes-×∆ren        
-          :Trap 0                        
-              :For i :In ⍳nframes           
+          nframes←1⌈nframes-×∆ren
+         ⍝ :Trap 0
+              :For i :In ⍳nframes
                   #.APLPhys.(pos vel acc←3↑ComputeForces RunStyle⍣dumpfreq⊢pos vel acc ⍬ ⍬ ⍬ ⍬)
-                  r←{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Reduced LJ units | Rounded to 3dp
+                  r←{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Granular units | Rounded to 3dp
                   step+←dumpfreq
                   poslist,←⊂r
               :EndFor
-          :Else
-              content←New _.div
-              content.Add _.p'Error running APLPhys script'
-              content.Add _.pre(∊⎕DM,¨⎕UCS 10)
-              js,←Execute'if (playing){startStop();}'
-              js,←Execute _.jBox.Modal content
-          :EndTrap
+⍝          :Else
+⍝              content←New _.div
+⍝              content.Add _.p'Error running APLPhys script'
+⍝              content.Add _.pre(∊⎕DM,¨⎕UCS 10)
+⍝              js,←Execute'if (playing){startStop();}'
+⍝              js,←Execute'clearTimeout(tTimer);'
+⍝              js,←Execute'clearTimeout(rTimer);'
+⍝              js,←Execute _.jBox.Modal content
+⍝          :EndTrap
           pre_time←re_time
           js,←Execute'posQueue.push(',(¯1↓1↓⎕JSON↓¨poslist),')'
       :Else

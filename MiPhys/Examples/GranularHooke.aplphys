@@ -1,0 +1,49 @@
+⍝ GranularHooke.aplphys
+⍝ Demo APLPhys script
+⍝ Simulation parameters
+ periodic←0
+ ∆t←0.0032
+ fixtemp←0.0001
+ tau←0.5
+ allforce←0 ¯10 0 ⍝ Gravity
+⍝ GranularHooke
+ kn←1
+ gn←1
+
+ CreateBox 30 30 30
+
+⍝ Pushable atoms
+ natoms←×/lattice←2 2 2
+ pos⍪←↑,0.1×⍳lattice
+ pos+⍤1←0.5 0 0
+ pos←pos+⍤1⊢0 0.3 0.1
+ vel⍪←natoms dim⍴0
+ acc⍪←natoms dim⍴0
+ mass←1
+ radii←1
+ groups,←natoms
+ fixgroups,←0
+
+ natoms←≢pos
+ density←volume÷⍨mass×.×groups
+ mass←groups/mass
+ rcutoff←groups/radii
+⍝ Idealised container
+⍝ General planes
+ walls←⊂0 0 1 ¯5
+ walls,←⊂0 0 1 5
+ walls,←⊂1 0 0 ¯5
+ walls,←⊂1 0 0 5
+ walls,←⊂0 1 0 0
+ walls←↑walls
+ wallvels←(≢walls)dim⍴0
+ wallvars←kn gn mass rcutoff walls wallvels
+ WallForce←wallvars∘GranularHookeWall
+
+ ⍝PairStyle'GranularHooke' kn gn mass radii
+ ComputeForces←(kn gn mass rcutoff)∘GranularHooke
+ Thermostat←TempRescale
+ RunStyle←VerletWall
+
+ dumpfreq←30
+ Simulate 10

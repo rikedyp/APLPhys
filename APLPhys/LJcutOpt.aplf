@@ -1,9 +1,11 @@
  LJcutOpt←{
-   ⍝ pos←⍵
+⍝ ⍵: pos vel
+⍝ ←: acc ene_pot_avg virial
+     (pos vel)←⍵
      ⎕IO←0
      Table←{⍺⍺⍤1⍤1 99⍨⍵}
      MergeLayers←,[⍳2]
-     S←-Table ⍵ ⍝ Relative displacements between pairs of particles
+     S←-Table pos ⍝ Relative displacements between pairs of particles
      S-←{periodic:((0.5∘<)-(¯0.5∘>))⍵ ⋄ 0}S ⍝ Wrap displacements if periodic boundary conditions set
      R←S×⍤1⊢boxdim ⍝ Scale to reduced LJ units
    ⍝ Calculate potential inside cutoff

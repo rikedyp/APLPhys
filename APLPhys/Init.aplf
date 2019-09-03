@@ -3,11 +3,13 @@
  groups←⍬
  fixgroups←⍬
  allforce←0
+ walls←⍬
  ⍝ Initial values
  random←⊂'random'
  hexagonal←⊂'hexagonal'
  ⍝ Default values
  Thermostat←{⍵}
+ ComputeWall←{⍵}
  mass←1
  ⍝ Output dump options
  dumps dumpfreqs dumpfiles←⍬ ⍬ ⍬

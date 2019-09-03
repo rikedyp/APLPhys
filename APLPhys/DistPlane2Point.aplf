@@ -1,0 +1,7 @@
+ DistPlane2Point←{
+⍝ ⍺ ← A B C D
+⍝ For plane Ax + By + Cz + D = 0
+⍝ ⍵ ← x y z
+⍝ For point x y z
+     (0.5*⍨+/2*⍨3↑⍺)÷⍨|(4⊃⍺)+⍵+.×3↑⍺
+ }
