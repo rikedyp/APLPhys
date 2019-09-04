@@ -14,6 +14,8 @@
 
     ∇ Compose
       :Access public
+    ⍝ --- DEBUG ---
+      #.Debug←0
     ⍝ --- POPUPS AND STYLING ---
       Use'jBox'
       Use'dcPanel'
@@ -132,28 +134,32 @@
       :Trap 6
           ∆ren←re_time-pre_time ⍝ ∆request_time
           nframes←1⌈nframes-×∆ren
-          :Trap 0
+          :Trap #.Debug↓0
               :For i :In ⍳nframes
-                  #.APLPhys.(pos vel acc←3↑ComputeForces RunStyle⍣dumpfreq⊢pos vel acc ⍬ ⍬ ⍬ ⍬)
+⍝                  ∘∘∘
+                  #.APLPhys.(pos vel acc walls wallvels←5↑ComputeForces RunStyle⍣dumpfreq⊢pos vel acc walls wallvels)
                   r←{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Granular units | Rounded to 3dp
                   step+←dumpfreq
                   poslist,←⊂r
               :EndFor
           :Else
-              content←New _.div
-              content.Add _.p'Error running APLPhys script'
-              content.Add _.pre(∊⎕DM,¨⎕UCS 10)
-              js,←Execute'if (playing){startStop();}'
-              js,←Execute'clearTimeout(tTimer);'
-              js,←Execute'clearTimeout(rTimer);'
-              js,←Execute _.jBox.Modal content
+              js←StopRender
           :EndTrap
           pre_time←re_time
           js,←Execute'posQueue.push(',(¯1↓1↓⎕JSON↓¨poslist),')'
       :Else
-          js←Execute'if (playing){startStop();}'
-          js,←Execute _.jBox.Modal'Run the script before starting the simulation'
+          js←StopRender
       :EndTrap
+    ∇
+
+    ∇ js←StopRender
+      content←New _.div
+      content.Add _.p'Error running APLPhys script'
+      content.Add _.pre(∊⎕DM,¨⎕UCS 10)
+      js←Execute'if (playing){startStop();}'
+      js,←Execute'clearTimeout(tTimer);'
+      js,←Execute'clearTimeout(rTimer);'
+      js,←Execute _.jBox.Modal content
     ∇
 
 :EndClass

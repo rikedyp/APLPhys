@@ -1,8 +1,8 @@
  GranularHookeWall←{
 ⍝ ⍵: pos vel
-     (pos vel)←⍵
-⍝ ⍺: kn gn mass radii walls
-     (kn gn mass radii walls wvel)←⍺
+     (pos vel walleq wallvel)←⍵
+⍝ ⍺: kn gn mass radii walleq
+     (kn gn mass radii)←⍺
 ⍝ ⍵: pos vel
 ⍝ ←: acc
 ⍝ Helper functions
@@ -11,15 +11,15 @@
      Norm←÷∘Mag⍨ ⍝ Normalised vector
      InDirOf←(⊢×+.×)∘Norm ⍝ Component of vector ⍺ in direction of ⍵
 ⍝ Plane normals
-     norms←(Norm 3↑⊢)⍤1⊢walls
+     norms←(Norm 3↑⊢)⍤1⊢walleq
 ⍝ Relative point-wall directions
 ⍝     ∘∘∘
-     Sdir←-1+2×-walls[;4]>⍤0 1⊢norms+.×⍤1⍤1 99⊢pos
-⍝     S←pos-⍤1⍤1 99⊢walls
-⍝     Snorms←walls[;4]>⍤99 1⊢pos+.×⍤1⍤1 99⊢3↑[2]walls
+     Sdir←-1+2×-walleq[;4]>⍤0 1⊢norms+.×⍤1⍤1 99⊢pos
+⍝     S←pos-⍤1⍤1 99⊢walleq
+⍝     Snorms←walleq[;4]>⍤99 1⊢pos+.×⍤1⍤1 99⊢3↑[2]walleq
 ⍝     Snorm←Norm⍤1⊢S ⍝ Normalised
 ⍝ Overlap distance from points to planes
-     ∆S←radii-⍤1⊢walls DistPlane2Point⍤1⍤1 99⊢pos
+     ∆S←radii-⍤1⊢walleq DistPlane2Point⍤1⍤1 99⊢pos
 ⍝     ∘∘∘
 ⍝ Overlap distance of particles
      touchmask←∆S>0
@@ -28,8 +28,8 @@
      ∆Scalc←∆S×touchmask
      calcpos←⍸,touchmask
 ⍝     0
-⍝ Relative velocities of particles and walls
-     vr←-vel-⍤1⍤1 99⍨wvel
+⍝ Relative velocities of particles and walleq
+     vr←-vel-⍤1⍤1 99⍨wallvel
      ⍝⎕←⍴¨vr touchmask
 ⍝ Only touching particles
      vr←vr×⍤1 0⍤2 1⊢touchmask

@@ -2,6 +2,7 @@
 
 var posQueue = [];
 var groups = [];
+var babywalls = []; // Wall objects in the scene
 var pos;
 var reQueue = 0;
 var playing=0;     
@@ -208,6 +209,7 @@ var createScene = function(engine) {
     wall.material.diffuseColor = new BABYLON.Color3(col*0.5,1-col,col);
     //wall.material.ambientColor = new BABYLON.Color3(1,0,0);
     wall.material.alpha = 0.5;
+    babywalls.push(wall);
   }
   // walls.forEach(function(wall){
     // var sourcePlane = new BABYLON.Plane(wall[0], wall[1], wall[2], wall[3]*scale);

@@ -1,18 +1,22 @@
  VerletWall←{
    ⍝ Velocity-Verlet numerical integrator
-     (pos vel acc _ _ _ _)←⍵ ⍝ Previous state
+   ⍝ ⍵: pos vel acc ene_kin_avg temp pressure
+     (pos vel acc walleq wallvel)←⍵ ⍝ Previous state
+   ⍝ ⍺: gnw knw mass radii walleq wallvel
+⍝     (kn gn mass radii)←⍺
      pos+←∆t×vel+0.5×acc×∆t ⍝ Step position
+     walleq[;4]+←∆t×wallvel+.×⍤1⊢3↑[2]walleq ⍝ Step wall positions
      pos←periodic|pos ⍝ Fold positions if periodic boundary conditions set
      vel+←0.5×∆t×acc ⍝ Half-step velocity
      (ene_kin_avg temp)←ComputeTemp vel
      vel←temp Thermostat vel ⍝ Thermostat rescale velocities
      (acc ene_pot_avg virial)←⍺⍺ pos vel⍝ Compute forces
      acc+⍤1←allforce ⍝ Add uniform force e.g. gravity
-     acc+←WallForce pos vel
-⍝     acc+←+/{kn gn mass radii ⍵ WallForce pos vel}¨walls
+     acc+←WallForce pos vel walleq wallvel
+⍝     acc+←+/{kn gn mass radii ⍵ WallForce pos vel}¨walleq
      acc[⍸groups/fixgroups;]←0 ⍝ Fixed atoms don't experience forces
      vel+←0.5×∆t×acc ⍝ Complete velocity step
      (ene_kin_avg temp)←ComputeTemp vel
      pressure←(density×temp)+virial÷volume
-     pos vel acc ene_kin_avg ene_pot_avg temp pressure
+     pos vel acc walleq wallvel
  }

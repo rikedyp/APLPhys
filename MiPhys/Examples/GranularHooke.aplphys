@@ -40,8 +40,8 @@
  walls,←⊂0 1 0 .1
  walls←↑walls
  wallvels←(≢walls)dim⍴0
- ⍝wallvels[≢wallvels;]←0.1 0 0
- wallvars←knw gnw mass rcutoff walls wallvels
+ wallvels[3;]←0.01 0 0
+ wallvars←knw gnw mass rcutoff
  WallForce←wallvars∘GranularHookeWall
 
  ⍝PairStyle'GranularHooke' kn gn mass radii
