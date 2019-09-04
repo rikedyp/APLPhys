@@ -112,7 +112,8 @@
       step←0
       js,←Init
       js,←Execute'wakeBaby();' ⍝ Initialise rendering engine
-      js,←Execute'posQueue=[];'⍝ Clear animation frames
+      js,←Execute'posQueue=[];'⍝ Queue of atom positions
+      js,←Execute'wallQueue=[];'⍝ Queue of changes in wall position
       js,←Execute'groups=',(⎕JSON #.APLPhys.groups),';'  ⍝ Number of atoms in each group
       js,←Execute'radii=',(⎕JSON #.APLPhys.radii),';' ⍝ Radii of particles
       js,←Execute'walls=',(⎕JSON{1=≢⍵:⍬,⍵ ⋄ ⍵}↓#.APLPhys.walls),';' ⍝ Equations of ideal plane walls
@@ -123,12 +124,13 @@
       pnframes←5 ⍝ Previous number of frames requested
     ∇
 
-    ∇ js←Tick;i;poslist
+    ∇ js←Tick;i;poslist;wall∆list
       js←⍬
       ⍝⎕←'---Tick---'
       re_time←Get'reTime'
       :Access public
       poslist←⍬
+      wall∆list←⍬
       ⍝ Increase number of frames to process for each request
       ⍝   unless the request time increases
       :Trap 6
@@ -141,12 +143,14 @@
                   r←{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Granular units | Rounded to 3dp
                   step+←dumpfreq
                   poslist,←⊂r
+                  wall∆list,←⊂#.APLPhys.(wallvels×∆t×dumpfreq)
               :EndFor
           :Else
               js←StopRender
           :EndTrap
           pre_time←re_time
-          js,←Execute'posQueue.push(',(¯1↓1↓⎕JSON↓¨poslist),')'
+          js,←Execute'posQueue.push(',(¯1↓1↓⎕JSON↓¨poslist),');'
+          js,←Execute'wallQueue.push(',(¯1↓1↓⎕JSON↓¨wall∆list),');'
       :Else
           js←StopRender
       :EndTrap

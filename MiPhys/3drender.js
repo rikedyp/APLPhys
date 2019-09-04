@@ -2,12 +2,12 @@
 
 var posQueue = [];
 var groups = [];
-var babywalls = []; // Wall objects in the scene
 var pos;
 var reQueue = 0;
 var playing=0;     
 var scale = 12.0;
-var SPS;
+var SPS; // Atom Solid Particle System
+var wallSPS; // Wall solid particle system
 var step;
 var dumpfreq;
 var reTime = 0;
@@ -171,10 +171,15 @@ function stepScene() {
   if (posQueue.length === 0) {return;}
   // Get latest positions, update step counter
   pos = posQueue.shift();
+  wallmove = wallQueue.shift();
   step += dumpfreq;
   // Update particle positions in Babylon SolidParticleSystem
   SPS.updateParticle = updateParticle;
   SPS.setParticles();
+  // Update wall positions in scene 
+  wallSPS.updateParticle = updateWalls;
+  wallSPS.setParticles();
+  //updateWalls(wallmove);
 }
 
 var updateParticle = function(particle){
@@ -184,9 +189,16 @@ var updateParticle = function(particle){
   particle.position.z = pos[pid][2]*scale;
 }
 
+var updateWalls = function(wall){
+  var wid = wall.idx;
+  wall.position.x -= wallmove[wid][0]*scale;
+  wall.position.y -= wallmove[wid][1]*scale;
+  wall.position.z -= wallmove[wid][2]*scale;
+}
+
 var createScene = function(engine) {
   var scene = new BABYLON.Scene(engine);
-  scene.clearColor = new BABYLON.Color3(1, 1, 1);
+  scene.clearColor = new BABYLON.Color3(.1, .5, .5);
     // Set up camera
   var camera = new BABYLON.ArcRotateCamera("Camera", 30, 1, 30, new BABYLON.Vector3(7, 5, 4), scene);
   camera.attachControl(canvas, true);
@@ -199,27 +211,41 @@ var createScene = function(engine) {
   groundmesh.wireframe = true;
   ground.material = groundmesh;
   // Create APLPhys walls 
+  wallSPS = new BABYLON.SolidParticleSystem("babywalls", scene);
+  var wallPos = [];
+  var wallPlanes = [];
   for (var i=0; i<walls.length; i++){
     var sourcePlane = new BABYLON.Plane(walls[i][0], walls[i][1], walls[i][2], walls[i][3]*scale);
     sourcePlane.normalize();
+    wallPlanes.push(sourcePlane);
     var wall = BABYLON.MeshBuilder.CreatePlane("plane", {height:50, width: 50, sourcePlane: sourcePlane, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
-    wall.material = new BABYLON.StandardMaterial("wallGrid", scene);
-    var col = ((1+i)/walls.length);
-    console.log(col);
-    wall.material.diffuseColor = new BABYLON.Color3(col*0.5,1-col,col);
-    //wall.material.ambientColor = new BABYLON.Color3(1,0,0);
-    wall.material.alpha = 0.5;
-    babywalls.push(wall);
+    
+    //wall.material = new BABYLON.StandardMaterial("wallGrid", scene);
+    //var col = ((1+i)/walls.length);
+    //wall.material.diffuseColor = new BABYLON.Color3(col*0.5,1-col,col);
+    //wall.material.alpha = 0.5;
+    wallSPS.addShape(wall, 1);
+    wallPos.push(wall.position);
+    wall.dispose();
   }
-  // walls.forEach(function(wall){
-    // var sourcePlane = new BABYLON.Plane(wall[0], wall[1], wall[2], wall[3]*scale);
-    // sourcePlane.normalize();
-    // var wall = BABYLON.MeshBuilder.CreatePlane("plane", {height:50, width: 50, sourcePlane: sourcePlane, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
-    // wall.material = new BABYLON.StandardMaterial("wallGrid", scene);
-    // wall.material.diffuseColor = new BABYLON.Color3(0.1,0.6,0.6);
-    // wall.material.ambientColor = new BABYLON.Color3(1,0,0);
-    // wall.material.alpha = 0.6;
-  // });
+  //wallSPS.hasVertexAlpha = true;
+  var wallmesh = wallSPS.buildMesh();
+  wallmesh.hasVertexAlpha = true;
+  var pi = 1.57;
+  wallSPS.updateParticle = function(wall){
+    wid = wall.idx;
+    console.log(wallPlanes[wid].normal);
+    //wall.rotation.x = pi;
+    wall.rotation.x = wallPlanes[wid].normal.y*pi;
+    wall.rotation.y = wallPlanes[wid].normal.x*pi;
+    wall.rotation.z = wallPlanes[wid].normal.z*pi;
+    wall.position = wallPos[wid];
+    wall.color.r = 0.3;
+    wall.color.g = 0.9;
+    wall.color.b = 0;
+    wall.color.a = 0.5;
+  }
+  wallSPS.setParticles();
   // Get this frame's atom positions
   pos = posQueue[0];
   // Set up SPS
