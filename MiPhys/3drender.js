@@ -163,8 +163,7 @@ function stepOnce(){
 
 function stepScene() {
   if (posQueue.length === 0) {return;}
-  console.log(playframe);
-  if (playframe > posQueue.length) {return;}
+  if (playframe > posQueue.length) {startStop();return;}
   // Get latest positions, update step counter
   pos = posQueue[playframe];
   wallmove = wallQueue[playframe];
@@ -266,7 +265,7 @@ var createScene = function(engine) {
   SPS = new BABYLON.SolidParticleSystem("SPS", scene);
   //var sphere = BABYLON.MeshBuilder.CreateSphere("s", {diameter:0.3, segments: 10}, scene);
   for (var i=0; i<groups.length; i++){
-    var sphere = BABYLON.MeshBuilder.CreateSphere("s", {diameter: radii[i], segments: 10}, scene);
+    var sphere = BABYLON.MeshBuilder.CreateSphere("s", {diameter: radii[i]*scale, segments: 10}, scene);
     SPS.addShape(sphere, groups[i]);
     sphere.dispose();
   }

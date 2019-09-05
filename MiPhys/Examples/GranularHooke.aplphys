@@ -14,17 +14,25 @@
 
  CreateBox 1 1 1
 
-⍝ Pushable atoms
- natoms←×/lattice←1 1 4
+⍝ Small particles
+ natoms←×/lattice←4 4 4
  pos⍪←↑,0.1×⍳lattice
  pos+⍤1←0 0 0
- pos←pos+⍤1⊢0 0.5 0.3
+ pos←pos+⍤1⊢0 0 0
  vel⍪←natoms dim⍴0
- vel[≢vel;]←0.3 0 .3
  acc⍪←natoms dim⍴0
  mass←1
  radii←.08
  groups,←natoms
+ fixgroups,←0
+
+⍝ Big particle
+ pos⍪←.5 1 0
+ vel⍪←3⍴0
+ acc⍪←3⍴0
+ mass,←1
+ radii,←.15
+ groups,←1
  fixgroups,←0
 
  natoms←≢pos
@@ -37,11 +45,10 @@
  walleq,←⊂0 0 1 1
  walleq,←⊂1 0 0 ¯2
  walleq,←⊂1 0 0 1
- walleq,←⊂0 1 0 .1
+ walleq,←⊂0 1 0 0
  walleq←↑walleq
  wallvel←(≢walleq)dim⍴0
-⍝ wallvel[≢walleq;]←0 0 0
- wallacc←wallvel∘{-¯1⌽⊖(⍴⍺)↑0.001×1○×⍵}
+ wallacc←wallvel∘{-¯1⌽⊖(⍴⍺)↑⍵}{0.1×1○⍵}
  wallvars←knw gnw mass rcutoff
  WallForce←wallvars∘GranularHookeWall
 
@@ -49,5 +56,5 @@
  Thermostat←{⍵}⍝TempRescale
  RunStyle←VerletWall
 
- dumpfreq←20
+ dumpfreq←1
  ⍝Simulate 10
