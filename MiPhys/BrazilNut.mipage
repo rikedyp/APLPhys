@@ -28,8 +28,12 @@
       '#runscript'ctrlform.Add _.Button'Run script'
       (Add _.Handler'#runscript' 'click' 'RunScript').Hourglass←0
       '#startstop' 'onclick="startStop();"'ctrlform.Add _.Button'Start/Stop'
-      '#steponce' 'onclick="StepOnce();"'ctrlform.Add _.Button'Step once'
-      '#step'ctrlform.Add _.p'Step: '
+      '#steponce' 'onclick="stepOnce();"'ctrlform.Add _.Button'Step once'
+      '#restart' 'onclick="reStart();"'ctrlform.Add _.Button'Restart movie'
+      '#step'ctrlform.Add _.p'Step: ' 
+      '#loaded'ctrlform.Add _.p'Loaded: '
+      '#pslabel'ctrlform.Add 'Playback multiplier   ' 
+      '#playspeed value=1 type=number'ctrlform.Add _.Input 
       Add _.br
     ⍝ --- SIMULATION INPUT AND RENDERING OPTIONS ---
       ctrltabs←'ctrltabs'ctrlpanel.Add _.Tabs
@@ -116,9 +120,11 @@
       js,←Execute'wallQueue=[];'⍝ Queue of changes in wall position
       js,←Execute'groups=',(⎕JSON #.APLPhys.groups),';'  ⍝ Number of atoms in each group
       js,←Execute'radii=',(⎕JSON #.APLPhys.radii),';' ⍝ Radii of particles
-      js,←Execute'walls=',(⎕JSON{1=≢⍵:⍬,⍵ ⋄ ⍵}↓#.APLPhys.walls),';' ⍝ Equations of ideal plane walls
+      js,←Execute'walls=',(⎕JSON{1=≢⍵:⍬,⍵ ⋄ ⍵}↓#.APLPhys.walleq),';' ⍝ Equations of ideal plane walls
       js,←Execute'babyMenu();' ⍝ Set up the Babylon Render Settings menu
       js,←Execute'dumpfreq=',dumpfreq,';'
+      js,←Execute'reStart();'
+      js,←Execute'frameBuffer();'
       pre_time←0 ⍝ Previous request time
       nframes←5 ⍝ Initial guess at number of frames to request
       pnframes←5 ⍝ Previous number of frames requested
@@ -139,11 +145,12 @@
           :Trap #.Debug↓0
               :For i :In ⍳nframes
 ⍝                  ∘∘∘
-                  #.APLPhys.(pos vel acc walls wallvels←5↑ComputeForces RunStyle⍣dumpfreq⊢pos vel acc walls wallvels)
+                  #.APLPhys.(wallvel←wallacc ∆t×dumpfreq) ⍝ Update wall velocities
+                  #.APLPhys.(pos vel acc walleq wallvel←5↑ComputeForces RunStyle⍣dumpfreq⊢pos vel acc walleq wallvel)
                   r←{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Granular units | Rounded to 3dp
                   step+←dumpfreq
                   poslist,←⊂r
-                  wall∆list,←⊂#.APLPhys.(wallvels×∆t×dumpfreq)
+                  wall∆list,←⊂#.APLPhys.(wallvel×∆t×dumpfreq)
               :EndFor
           :Else
               js←StopRender

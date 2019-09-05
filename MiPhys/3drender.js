@@ -4,7 +4,9 @@ var posQueue = [];
 var groups = [];
 var pos;
 var reQueue = 0;
-var playing=0;     
+var playing=0;  
+var playframe = 0;   
+var pbmult = 1;
 var scale = 12.0;
 var SPS; // Atom Solid Particle System
 var wallSPS; // Wall solid particle system
@@ -112,6 +114,7 @@ var newParticleColors = function(particle) {
 // Function attached to "Start/Stop" button 
 function startStop(){
     if (!playing){
+        pbmult = Number(document.getElementById("playspeed").value);
         Rnext();
         clearTimeout(rTimer);
     }
@@ -124,10 +127,10 @@ function startStop(){
 
 // Perform callback to the server to get particle trajectories
 function getAPLPhys(){
-  console.log(posQueue.length); // Print number of frames in queue
+ // console.log(posQueue.length); // Print number of frames in queue
   return new Promise(function (resolve) {
     // Request up to 6 frames at a time, kep buffer ~ 600 frames
-    if (reQueue < 6 && posQueue.length < 600) {    
+    if (reQueue < 6 && posQueue.length < 60000) {    
       reQueue+=1;
       var re_start_time = new Date().getTime();
       var data = new FormData();
@@ -142,7 +145,8 @@ function getAPLPhys(){
           reTime = new Date().getTime() - re_start_time;          
           APLJaxReturn(eval(this.responseText));
           resolve();
-          reQueue-=1;        
+          reQueue-=1;
+          document.getElementById("loaded").innerHTML = "Loaded: " + posQueue.length*dumpfreq;          
          }
       };                               
       xhr.send(data);
@@ -157,6 +161,29 @@ function stepOnce(){
   document.getElementById("step").innerHTML = "Step: " + step;
 }
 
+function stepScene() {
+  if (posQueue.length === 0) {return;}
+  console.log(playframe);
+  if (playframe > posQueue.length) {return;}
+  // Get latest positions, update step counter
+  pos = posQueue[playframe];
+  wallmove = wallQueue[playframe];
+  playframe += pbmult;
+  step += dumpfreq*pbmult;
+  // Update particle positions in Babylon SolidParticleSystem
+  SPS.updateParticle = updateParticle;
+  SPS.setParticles();
+  // Update wall positions in scene 
+  wallSPS.updateParticle = updateWalls;
+  wallSPS.setParticles();
+}
+
+function reStart(){
+  playframe = 0;
+  step = 0;
+  document.getElementById("step").innerHTML = "Step: " + step;
+}
+
 function Rnext() {
   stepOnce();
   tTimer = setTimeout("Rnext()", frameTime); // Every frameTime milliseconds
@@ -165,21 +192,6 @@ function Rnext() {
 function frameBuffer() {
   getAPLPhys();
   rTimer = setTimeout("frameBuffer()", 100);
-}
-
-function stepScene() {
-  if (posQueue.length === 0) {return;}
-  // Get latest positions, update step counter
-  pos = posQueue.shift();
-  wallmove = wallQueue.shift();
-  step += dumpfreq;
-  // Update particle positions in Babylon SolidParticleSystem
-  SPS.updateParticle = updateParticle;
-  SPS.setParticles();
-  // Update wall positions in scene 
-  wallSPS.updateParticle = updateWalls;
-  wallSPS.setParticles();
-  //updateWalls(wallmove);
 }
 
 var updateParticle = function(particle){
@@ -198,7 +210,7 @@ var updateWalls = function(wall){
 
 var createScene = function(engine) {
   var scene = new BABYLON.Scene(engine);
-  scene.clearColor = new BABYLON.Color3(.1, .5, .5);
+  scene.clearColor = new BABYLON.Color3(.8, .8, .8);
     // Set up camera
   var camera = new BABYLON.ArcRotateCamera("Camera", 30, 1, 30, new BABYLON.Vector3(7, 5, 4), scene);
   camera.attachControl(canvas, true);
@@ -232,18 +244,20 @@ var createScene = function(engine) {
   var wallmesh = wallSPS.buildMesh();
   wallmesh.hasVertexAlpha = true;
   var pi = 1.57;
+  var numwalls = wallSPS.particles.length;
   wallSPS.updateParticle = function(wall){
     wid = wall.idx;
+    var col = (1+wid)/numwalls;
     console.log(wallPlanes[wid].normal);
     //wall.rotation.x = pi;
     wall.rotation.x = wallPlanes[wid].normal.y*pi;
     wall.rotation.y = wallPlanes[wid].normal.x*pi;
     wall.rotation.z = wallPlanes[wid].normal.z*pi;
     wall.position = wallPos[wid];
-    wall.color.r = 0.3;
-    wall.color.g = 0.9;
-    wall.color.b = 0;
-    wall.color.a = 0.5;
+    wall.color.r = col*0.2;
+    wall.color.g = 0.8*col;
+    wall.color.b = 0.5*1-col;
+    wall.color.a = 0.4;
   }
   wallSPS.setParticles();
   // Get this frame's atom positions

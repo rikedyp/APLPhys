@@ -9,7 +9,7 @@
 ⍝ GranularHooke
  kn←.5
  gn←1
- knw←10
+ knw←100
  gnw←10
 
  CreateBox 1 1 1
@@ -33,18 +33,18 @@
  rcutoff←groups/radii
 ⍝ Idealised container
 ⍝ General planes
- walls←⊂0 0 1 ¯0.8
- walls,←⊂0 0 1 1
- walls,←⊂1 0 0 ¯2
- walls,←⊂1 0 0 1
- walls,←⊂0 1 0 .1
- walls←↑walls
- wallvels←(≢walls)dim⍴0
- wallvels[3;]←0.01 0 0
+ walleq←⊂0 0 1 ¯0.8
+ walleq,←⊂0 0 1 1
+ walleq,←⊂1 0 0 ¯2
+ walleq,←⊂1 0 0 1
+ walleq,←⊂0 1 0 .1
+ walleq←↑walleq
+ wallvel←(≢walleq)dim⍴0
+⍝ wallvel[≢walleq;]←0 0 0
+ wallacc←wallvel∘{-¯1⌽⊖(⍴⍺)↑0.001×1○×⍵}
  wallvars←knw gnw mass rcutoff
  WallForce←wallvars∘GranularHookeWall
 
- ⍝PairStyle'GranularHooke' kn gn mass radii
  ComputeForces←(kn gn mass rcutoff)∘GranularHooke
  Thermostat←{⍵}⍝TempRescale
  RunStyle←VerletWall
