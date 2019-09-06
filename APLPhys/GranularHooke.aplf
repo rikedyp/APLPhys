@@ -30,8 +30,15 @@
      calcpos←⍸,touchmask
      Scalc←(,touchmask)⌿MergeLayers S
      ∆Scalc←(,touchmask)⌿MergeLayers ∆S
+⍝ Velocities of touching particle pairs only
+     t←(,touchmask)
+     t1←∨/touchmask
+     t2←∨⌿touchmask
+     vt1←t1⌿vel
+     vt2←t2⌿vel
 ⍝ Relative velocities of particle pairs vr
-     vr←(,touchmask)⌿MergeLayers-Table vel
+     vr←t⌿MergeLayers t2⍀[1]t1⍀vt1-⍤1⍤1 99⊢vt2
+⍝     vr←(,touchmask)⌿MergeLayers-Table vel
 ⍝ Normal component of relative velocity of 2 particles vn
      vn←vr InDirOf⍤1⊢Scalc
 ⍝ Effective mass meff

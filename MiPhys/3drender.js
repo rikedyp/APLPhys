@@ -28,6 +28,7 @@ async function wakeBaby() {
   document.getElementById("step").innerHTML = "Step: " + step;
   // Get first set of frames to render
   posQueue = [];
+  wallQueue = [];
   await getAPLPhys();
   console.log("Baby awake");  
   // Create engine and scene, dispose of old ones if applicable
@@ -125,12 +126,42 @@ function startStop(){
     playing = !playing;
 }
 
+function Rnext() {
+  stepOnce();
+  tTimer = setTimeout("Rnext()", frameTime); // Every frameTime milliseconds
+}
+
+function stepOnce(){
+  // Render the next frame
+  stepScene(); 
+  getAPLPhys();
+  document.getElementById("step").innerHTML = "Step: " + step;
+}
+
+function stepScene() {
+  if (posQueue.length === 0) {return;}
+  if (playframe > posQueue.length) {startStop();return;}
+  // Get latest positions, update step counter
+  pos = posQueue[playframe];
+  playframe += pbmult;
+  step += dumpfreq*pbmult;
+  // Update particle positions in Babylon SolidParticleSystem
+  SPS.updateParticle = updateParticle;
+  SPS.setParticles();
+  // Update wall positions in scene 
+  if (wallQueue[0].length > 1) {
+    wallmove = wallQueue[playframe];
+    wallSPS.updateParticle = updateWalls;
+    wallSPS.setParticles();
+  }
+}
+
 // Perform callback to the server to get particle trajectories
 function getAPLPhys(){
  // console.log(posQueue.length); // Print number of frames in queue
   return new Promise(function (resolve) {
     // Request up to 6 frames at a time, kep buffer ~ 600 frames
-    if (reQueue < 6 && posQueue.length < 60000) {    
+    if (reQueue < 3 && posQueue.length < 60000) {    
       reQueue+=1;
       var re_start_time = new Date().getTime();
       var data = new FormData();
@@ -154,38 +185,21 @@ function getAPLPhys(){
   });
 }
 
-function stepOnce(){
-  // Render the next frame
-  stepScene(); 
-  getAPLPhys();
-  document.getElementById("step").innerHTML = "Step: " + step;
-}
-
-function stepScene() {
-  if (posQueue.length === 0) {return;}
-  if (playframe > posQueue.length) {startStop();return;}
-  // Get latest positions, update step counter
-  pos = posQueue[playframe];
-  wallmove = wallQueue[playframe];
-  playframe += pbmult;
-  step += dumpfreq*pbmult;
-  // Update particle positions in Babylon SolidParticleSystem
-  SPS.updateParticle = updateParticle;
-  SPS.setParticles();
-  // Update wall positions in scene 
-  wallSPS.updateParticle = updateWalls;
-  wallSPS.setParticles();
-}
-
 function reStart(){
+  try {
+    scene.dispose();
+    engine.dispose();
+  }
+  catch (error) {
+    baby = new BABYLON.Engine(canvas, true);
+    scene = createScene(baby);
+    baby.runRenderLoop(function(){
+      scene.render();
+    });
+  }
   playframe = 0;
   step = 0;
   document.getElementById("step").innerHTML = "Step: " + step;
-}
-
-function Rnext() {
-  stepOnce();
-  tTimer = setTimeout("Rnext()", frameTime); // Every frameTime milliseconds
 }
 
 function frameBuffer() {
@@ -202,9 +216,9 @@ var updateParticle = function(particle){
 
 var updateWalls = function(wall){
   var wid = wall.idx;
-  wall.position.x -= wallmove[wid][0]*scale;
-  wall.position.y -= wallmove[wid][1]*scale;
-  wall.position.z -= wallmove[wid][2]*scale;
+  wall.position.x -= wallmove[wid][0]*scale*pbmult;
+  wall.position.y -= wallmove[wid][1]*scale*pbmult;
+  wall.position.z -= wallmove[wid][2]*scale*pbmult;
 }
 
 var createScene = function(engine) {
@@ -229,12 +243,7 @@ var createScene = function(engine) {
     var sourcePlane = new BABYLON.Plane(walls[i][0], walls[i][1], walls[i][2], walls[i][3]*scale);
     sourcePlane.normalize();
     wallPlanes.push(sourcePlane);
-    var wall = BABYLON.MeshBuilder.CreatePlane("plane", {height:50, width: 50, sourcePlane: sourcePlane, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
-    
-    //wall.material = new BABYLON.StandardMaterial("wallGrid", scene);
-    //var col = ((1+i)/walls.length);
-    //wall.material.diffuseColor = new BABYLON.Color3(col*0.5,1-col,col);
-    //wall.material.alpha = 0.5;
+    var wall = BABYLON.MeshBuilder.CreatePlane("plane", {height:10, width: 10, sourcePlane: sourcePlane, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
     wallSPS.addShape(wall, 1);
     wallPos.push(wall.position);
     wall.dispose();

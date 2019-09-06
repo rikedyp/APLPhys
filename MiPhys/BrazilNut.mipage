@@ -30,10 +30,10 @@
       '#startstop' 'onclick="startStop();"'ctrlform.Add _.Button'Start/Stop'
       '#steponce' 'onclick="stepOnce();"'ctrlform.Add _.Button'Step once'
       '#restart' 'onclick="reStart();"'ctrlform.Add _.Button'Restart movie'
-      '#step'ctrlform.Add _.p'Step: ' 
+      '#step'ctrlform.Add _.p'Step: '
       '#loaded'ctrlform.Add _.p'Loaded: '
-      '#pslabel'ctrlform.Add 'Playback multiplier   ' 
-      '#playspeed value=1 type=number'ctrlform.Add _.Input 
+      '#pslabel'ctrlform.Add'Playback multiplier   '
+      '#playspeed value=1 type=number'ctrlform.Add _.Input
       Add _.br
     ⍝ --- SIMULATION INPUT AND RENDERING OPTIONS ---
       ctrltabs←'ctrltabs'ctrlpanel.Add _.Tabs
@@ -59,7 +59,7 @@
       script,←⊂'dumpfreq ← 10'
       script←script,¨⎕UCS 10
       inform.Add _.br
-      '#aplphys name=aplphys'inform.Add _.textarea script
+      '#aplphys name=aplphys spellcheck="false"'inform.Add _.textarea script
     ⍝ --- BABYLON RENDERER SETTINGS ---
     ⍝     Modify simulation display e.g. atom colours
       ctrltabs.Titles,←⊂'Render Settings'
@@ -130,7 +130,7 @@
       pnframes←5 ⍝ Previous number of frames requested
     ∇
 
-    ∇ js←Tick;i;poslist;wall∆list
+    ∇ js←Tick;i;poslist;wall∆list;tmpstep
       js←⍬
       ⍝⎕←'---Tick---'
       re_time←Get'reTime'
@@ -145,8 +145,10 @@
           :Trap #.Debug↓0
               :For i :In ⍳nframes
 ⍝                  ∘∘∘
-                  #.APLPhys.(wallvel←wallacc ∆t×dumpfreq) ⍝ Update wall velocities
-                  #.APLPhys.(pos vel acc walleq wallvel←5↑ComputeForces RunStyle⍣dumpfreq⊢pos vel acc walleq wallvel)
+                  :For i :In ⍳dumpfreq
+                      #.APLPhys.wallvel←#.APLPhys.wallvel #.APLPhys.wallacc #.APLPhys.∆t×step ⍝ Update wall velocities
+                      #.APLPhys.(pos vel acc walleq wallvel←5↑ComputeForces RunStyle pos vel acc walleq wallvel)
+                  :EndFor
                   r←{e÷⍨⌊0.5+#.APLPhys.pos×e←10*⍵}3 ⍝ Granular units | Rounded to 3dp
                   step+←dumpfreq
                   poslist,←⊂r

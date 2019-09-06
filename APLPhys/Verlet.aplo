@@ -1,6 +1,6 @@
  Verlet←{
    ⍝ Velocity-Verlet numerical integrator
-     (pos vel acc _ _ _ _)←⍵ ⍝ Previous state
+     pos vel acc←3↑⍵ ⍝ Previous state
      pos+←∆t×vel+0.5×acc×∆t ⍝ Step position
      pos←periodic|pos ⍝ Fold positions if periodic boundary conditions set
      vel+←0.5×∆t×acc ⍝ Half-step velocity
@@ -8,7 +8,7 @@
      vel←temp Thermostat vel ⍝ Thermostat rescale velocities
      (acc ene_pot_avg virial)←⍺⍺ pos vel⍝ Compute forces
      acc+⍤1←allforce ⍝ Add uniform force e.g. gravity
-     acc+←⍺ WallForce pos vel
+⍝     acc+←⍺ WallForce pos vel
      acc[⍸groups/fixgroups;]←0 ⍝ Fixed atoms don't experience forces
      vel+←0.5×∆t×acc ⍝ Complete velocity step
      (ene_kin_avg temp)←ComputeTemp vel

@@ -67,7 +67,7 @@
 
     ∇ js←Init
     ⍝ Link MiPhys with APLPhys parameters
-      #.APLPhys.(acc←⊃ComputeForces pos)
+      #.APLPhys.(acc←⊃ComputeForces pos vel)
       dumpfreq←#.APLPhys.dumpfreq
 ⍝      :If #.APLPhys.natoms≤maxatoms
       natoms←#.APLPhys.natoms

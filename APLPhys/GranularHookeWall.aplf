@@ -6,6 +6,7 @@
 ⍝ ⍵: pos vel
 ⍝ ←: acc
 ⍝ Helper functions
+     Table←{⍺⍺⍤1⍤1 99⍨⍵}
      MergeLayers←,[⍳2]
      Mag←{0.5*⍨+/⍵*2} ⍝ Magnitude of vector in Euclidean space
      Norm←÷∘Mag⍨ ⍝ Normalised vector
@@ -24,23 +25,29 @@
 ⍝ Overlap distance of particles
      touchmask←∆S>0
 ⍝     touchmask∧←∘.>⍨⍳≢touchmask
+    ⍝ 1∊touchmask:∘∘∘
      ⍝∆Scalc←(,touchmask)⌿MergeLayers ∆S
      ∆Scalc←∆S×touchmask
      calcpos←⍸,touchmask
-⍝     0
+⍝ Velocities of touching particles and walls
+     tvel←(∨⌿touchmask)⌿vel
+     twvel←(∨/touchmask)⌿wallvel
 ⍝ Relative velocities of particles and walleq
-     vr←-vel-⍤1⍤1 99⍨wallvel
+⍝     vr←-vel-⍤1⍤1 99⍨wallvel
+     vr←-tvel-Table twvel
      ⍝⎕←⍴¨vr touchmask
 ⍝ Only touching particles
-     vr←vr×⍤1 0⍤2 1⊢touchmask
+⍝     vr←vr×⍤1 0⍤2 1⊢touchmask
 ⍝     ⎕←vr
 ⍝ Normal component of relative velocity of 2 particles vn
-     vn←+⌿vr InDirOf⍤1⍤2 1⊢norms
+    ⍝ vn←+⌿vr InDirOf⍤1⍤2 1⊢norms
+     vn←+⌿(vr↑⍨⍴touchmask)InDirOf⍤1⍤2 1⊢norms
      ⍝(,touchmask)⌿MergeLayers vn
 ⍝ Effective mass meff
      meff←mass ⍝ Wall mass is infinite
 ⍝ force = (kn×∆S×norms)-(meff×gn×vn)
-     force←(+⌿kn×norms×⍤1 0⍤1⊢Sdir×∆Scalc)⍝-(gn×meff×⍤0 1⊢vn)
+
+     force←(+⌿kn×norms×⍤1 0⍤1⊢Sdir×∆Scalc)-(gn×meff×⍤0 1⊢vn)
     ⍝ ⎕←(∧⌿touchmask)
     ⍝ ⎕←∧/touchmask
     ⍝ ∘∘∘

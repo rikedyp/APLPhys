@@ -1,10 +1,10 @@
  Simulate nsteps;i;b;quantities
  ⍝ Initial forces
  (acc ene_pot_avg virial)←ComputeForces pos vel
- acc+←WallForce pos vel
+ acc+←WallForce pos vel walleq wallvel
  :If 0=≢dumps
      :For i :In ⍳nsteps
-         (pos vel acc)←3↑ComputeForces RunStyle pos vel acc ⍬ ⍬ ⍬ ⍬
+         (pos vel acc)←3↑ComputeForces RunStyle pos vel acc ⍬ ⍬
          acc+←WallForce pos vel
      :EndFor
  :Else
