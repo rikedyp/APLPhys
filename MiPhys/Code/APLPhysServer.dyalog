@@ -3,21 +3,16 @@
     ∇ Make config
       :Access Public
       :Implements Constructor :Base config
-      ⍝ TODO Config file ↓↓
-      APLPhysPath←'C:\Users\rpark\Documents\APL\Projects\APLPhys\APLPhys'
+      #.Overrides.Make config
     ∇
 
     ∇ onServerStart
       :Access public override
-      ⎕←'Initialising APLPhys...'
-      ⎕SE.Link.Create'#.APLPhys'APLPhysPath
-      #.APLPhys.Init
-      ⎕←'APLPhys loaded.'
+      #.Overrides.onServerStart
     ∇
     ∇ onSessionStart req
       :Access public override
-      ⍝ Maybe reset stuff on server start
-      ⎕←'Session started at ',⎕TS
+      #.Overrides.onSessionStart
     ∇
 
 :EndClass

@@ -15,7 +15,7 @@
  CreateBox 1 1 1
 
 ⍝ Small particles
- natoms←×/lattice←2 1 1⍝10 8 4
+ natoms←×/lattice←8 16 6
  pos⍪←↑,0.1×⍳lattice
  pos+⍤1←0 0 0
  pos←pos+⍤1⊢¯.4 0.5 ¯0.4
