@@ -1,0 +1,16 @@
+ Verlet←{
+⍝ Velocity-Verlet numerical integrator
+⍝ ⍺: Constants
+⍝ ⍵: State at time t
+⍝ ←: State at time t+∆t
+     pos vel acc←⍵
+     ∆t periodic←⍺
+     pos+←∆t×vel+0.5×acc×∆t    ⍝ Step positions
+     pos←periodic|pos          ⍝ Fold positions if periodic boundary conditions
+     vel+←0.5×∆t×acc           ⍝ Half velocity step
+     temp←ComputeTemp vel      ⍝ Compute temperature
+     vel←temp Thermostat vel   ⍝ Adjust velocities using Thermostat
+     acc←ComputeForces pos vel
+     vel+←0.5×∆t×acc           ⍝ Complete velocity step
+     pos vel acc temp
+ }

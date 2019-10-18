@@ -1,0 +1,6 @@
+ LJ←{
+⍝ Lennard-Jones with radial cutoff
+⍝ ⍺: Constants
+⍝ ⍵: Position and velocity
+⍝ ←: Acceleration
+ }
