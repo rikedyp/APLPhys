@@ -2,16 +2,18 @@
  step←1
  posQ←⍬
  wallQ←⍬
- state←pos vel acc walleq wallvel
+ ⍝state←pos vel acc walleq wallvel
+ state←pos vel acc ⍬ ⍬ ⍬ ⍬
  :For i :In ⍳nsteps
      ⍝:For j :In ⍳dumpfreq
+⍝     ∘∘∘
         ⍝ (⊃⌽state)←(⊃⌽state)wallacc ∆t×step
-        state←ComputeForces RunStyle⍣dumpfreq⊢state
+     state←ComputeForces RunStyle⍣dumpfreq⊢state
         ⍝ step+←1
      ⍝:EndFor
      r←3{e÷⍨⌊0.5+⍵×e←10*⍺}⊃state ⍝ Round pos to 3dp
      posQ,←⊂r
-     wallQ,←⊂wallvel×∆t
+     ⍝wallQ,←⊂wallvel×∆t
      ⍝⎕←'step',i
  :EndFor
  (⊂'var posQ = ',';',⍨⎕JSON↓¨posQ)⎕NPUT'posQ.js' 1
