@@ -1,7 +1,7 @@
  LJcutOpt←{
 ⍝ ⍵: pos vel
 ⍝ ←: acc ene_pot_avg virial
-     (pos vel)←⍵
+     (pos vel)←{(⊂⍵),⊂⍬}⍣(⍬≡⍴⊆⍵)⊢⍵
      ⎕IO←0
      Table←{⍺⍺⍤1⍤1 99⍨⍵}
      MergeLayers←,[⍳2]
