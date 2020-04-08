@@ -73,8 +73,8 @@
       play←0
     ⍝ --- Add HTML5 canvas rendering scripts ---
       Add _.Script'' '/3drender.js'
-      Add _.Script'' '/babylon.js' ⍝ Local copy
-      ⍝Add _.Script'' 'https://preview.babylonjs.com/babylon.js'
+      ⍝Add _.Script'' '/babylon.js' ⍝ Local copy
+      Add _.Script'' 'https://cdn.babylonjs.com/babylon.js'
     ∇
 
     ∇ js←Init

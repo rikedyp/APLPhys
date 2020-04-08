@@ -1,4 +1,5 @@
  CreateAtoms(n posopt velopt)
+ pos←0 dim⍴0
  natoms←n+≢pos
  density←natoms÷volume
  :If posopt∊random
